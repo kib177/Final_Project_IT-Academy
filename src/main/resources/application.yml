@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/test
+    driver-class-name: org.postgresql.Driver
+    username:
+    password:
+
+  application:
+  name: finalProject
