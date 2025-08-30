@@ -1,14 +1,15 @@
-package com.example.finalProject.entity;
+package com.example.finalProject.storage.entity;
 
-import com.example.finalProject.dto.UserRole;
-import com.example.finalProject.dto.UserStatus;
+import com.example.finalProject.dto.enums.UserRole;
+import com.example.finalProject.dto.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.validator.constraints.Email;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
@@ -23,11 +24,12 @@ public class UserEntity {
     private UUID uuid;
 
     @Column(name = "dt_create", nullable = false, updatable = false)
-    private LocalDateTime dt_create;
+    private long dt_create;
 
     @Column(name = "dt_update", nullable = false)
-    private LocalDateTime dt_update;
+    private long dt_update;
 
+    @Email
     @Column(name = "mail", nullable = false, unique = true)
     private String mail;
 
@@ -47,12 +49,14 @@ public class UserEntity {
 
     @PrePersist
     protected void onCreate() {
-        dt_create = LocalDateTime.now();
+        dt_create = Instant.now().toEpochMilli();
         dt_update = dt_create;
+        role = UserRole.USER;
+        status = UserStatus.WAITING_ACTIVATION;
     }
 
     @PreUpdate
     protected void onUpdate() {
-        dt_update = LocalDateTime.now();
+        dt_update = Instant.now().toEpochMilli();
     }
 }

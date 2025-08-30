@@ -1,16 +1,11 @@
 package com.example.finalProject.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
+@Data
+@Builder
 public class PageOfUser<T>{
     private int number;
     private int size;

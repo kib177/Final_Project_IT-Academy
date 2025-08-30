@@ -1,4 +1,4 @@
-package com.example.finalProject.dto;
+package com.example.finalProject.dto.enums;
 
 public enum UserRole {
     ADMIN,
