@@ -3,10 +3,7 @@ package com.example.finalProject.storage.entity;
 import com.example.finalProject.dto.enums.UserRole;
 import com.example.finalProject.dto.enums.UserStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.validator.constraints.Email;
 
 import java.time.Instant;
@@ -15,8 +12,10 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 @Entity
+@Builder
 @Table(name = "users")
 public class UserEntity {
     @Id

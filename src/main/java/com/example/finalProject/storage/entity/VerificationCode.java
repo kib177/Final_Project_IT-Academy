@@ -1,8 +1,7 @@
 package com.example.finalProject.storage.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -11,6 +10,9 @@ import java.util.UUID;
 @Table(name = "verification")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class VerificationCode {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
