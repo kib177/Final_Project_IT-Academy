@@ -1,9 +1,23 @@
 spring:
+  application:
+   name: finalProject
+
   datasource:
     url: jdbc:postgresql://localhost:5432/test
     driver-class-name: org.postgresql.Driver
-    username:
-    password:
+    username: postgres
+    password: 1998177
 
-  application:
-  name: finalProject
+    spring:
+      jpa:
+        hibernate:
+          ddl-auto=update
+
+
+    application:
+        name: finalProject
+
+    server:
+      port: 8080
+
+

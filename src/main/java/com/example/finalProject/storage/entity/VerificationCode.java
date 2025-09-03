@@ -7,12 +7,12 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "verification")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "verification")
 public class VerificationCode {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
