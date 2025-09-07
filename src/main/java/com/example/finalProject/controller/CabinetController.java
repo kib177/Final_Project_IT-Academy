@@ -1,5 +1,6 @@
 package com.example.finalProject.controller;
 
+import com.example.finalProject.dto.User;
 import com.example.finalProject.dto.UserLogin;
 import com.example.finalProject.dto.UserRegistration;
 import com.example.finalProject.service.api.ICabinetService;
@@ -8,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/cabinet")
@@ -42,8 +45,9 @@ public class CabinetController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<String> aboutSelf() {
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<User> aboutSelf(UUID uuid) {
+        User user = cabinetService.getByUUID(uuid);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
     

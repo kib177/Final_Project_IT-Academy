@@ -19,7 +19,7 @@ public class UserEntity {
     @Id
     @GeneratedValue(generator = "UUID")
     private UUID uuid;
-
+@
     @Column(name = "dt_create", nullable = false, updatable = false)
     private long dt_create;
 

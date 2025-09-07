@@ -1,10 +1,11 @@
 package com.example.finalProject.service;
 
-import com.example.finalProject.dto.UserCreate;
+import com.example.finalProject.dto.User;
 import com.example.finalProject.dto.UserLogin;
 import com.example.finalProject.dto.UserRegistration;
 import com.example.finalProject.dto.enums.UserStatus;
 import com.example.finalProject.service.api.ICabinetService;
+import com.example.finalProject.service.api.exception.CabinetException;
 import com.example.finalProject.storage.entity.UserEntity;
 import com.example.finalProject.storage.entity.VerificationEntity;
 import com.example.finalProject.storage.repository.UserRepository;
@@ -13,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.beans.Transient;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,8 +26,9 @@ public class CabinetServiceImpl implements ICabinetService {
 
     @Override
     public boolean registration(UserRegistration userRegistration) {
+
         if (userRepository.existsByMail(userRegistration.getMail())) {
-            throw new RuntimeException("Email already exists");
+            throw new CabinetException("Email already exists" + userRegistration.getMail());
         }
 
         UserEntity userEntity = UserEntity.builder()
@@ -38,11 +39,11 @@ public class CabinetServiceImpl implements ICabinetService {
         userRepository.save(userEntity);
 
         String code = UUID.randomUUID().toString().substring(0, 6);
-        VerificationEntity verificationCode = VerificationEntity.builder()
+        VerificationEntity verifyCode = VerificationEntity.builder()
                 .mail(userRegistration.getMail())
                 .code(code)
                 .build();
-        verificationCodeRepository.save(verificationCode);
+        verificationCodeRepository.save(verifyCode);
 
         System.out.println("Verification code for " + userRegistration.getMail() + ": " + code);
         return true;
@@ -50,10 +51,10 @@ public class CabinetServiceImpl implements ICabinetService {
 
     @Transactional
     public boolean verifyUser(String mail, String code) {
-        Optional<VerificationEntity> storedCode = verificationCodeRepository.findByMailAndCode(mail, code);
-        if (storedCode.isPresent()) {
+        Optional<VerificationEntity> verifyCode = verificationCodeRepository.findByMailAndCode(mail, code);
+        if (verifyCode.isPresent()) {
             UserEntity user = userRepository.findByMail(mail)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new CabinetException("User not found" + mail));
             user.setStatus(UserStatus.ACTIVATED);
             userRepository.save(user);
             verificationCodeRepository.deleteByMail(mail);
@@ -62,12 +63,10 @@ public class CabinetServiceImpl implements ICabinetService {
         return false;
     }
 
-
-
     @Override
     public String login(UserLogin userLogin) {
         UserEntity userEntity = userRepository.findByMail(userLogin.getMail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new CabinetException("User not found" + userLogin.getMail()));
 
         if (!userLogin.getPassword().equals(userEntity.getPassword())) {
             throw new RuntimeException("Invalid password");
@@ -81,14 +80,18 @@ public class CabinetServiceImpl implements ICabinetService {
     }
 
 
-
     @Override
-    public boolean update(UUID uuid, long dt_update, UserCreate userCreate) {
-        return false;
-    }
-
-   /* @Override
     public User getByUUID(UUID uuid) {
-        return null;
-    }*/
+        UserEntity userEntity = userRepository.findByUuid(uuid)
+                .orElseThrow(() -> new CabinetException("User not found" + uuid));
+        return User.builder()
+                .uuid(userEntity.getUuid())
+                .dt_create(userEntity.getDt_create())
+                .dt_update(userEntity.getDt_update())
+                .mail(userEntity.getMail())
+                .fio(userEntity.getFio())
+                .role(userEntity.getRole())
+                .status(userEntity.getStatus())
+                .build();
+    }
 }
