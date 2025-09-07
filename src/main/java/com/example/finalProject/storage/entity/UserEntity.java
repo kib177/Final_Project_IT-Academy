@@ -9,11 +9,9 @@ import org.hibernate.validator.constraints.Email;
 import java.time.Instant;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Entity
 @Builder
 @Table(name = "users")
@@ -52,6 +50,10 @@ public class UserEntity {
         dt_update = dt_create;
         role = UserRole.USER;
         status = UserStatus.WAITING_ACTIVATION;
+
+        /*if (this.password != null && !this.password.startsWith("$2a$")) {
+            this.password = new BCryptPasswordEncoder().encode(this.password);
+        }*/
     }
 
     @PreUpdate

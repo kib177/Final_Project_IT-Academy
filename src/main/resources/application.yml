@@ -8,16 +8,15 @@ spring:
     username: postgres
     password: 1998177
 
-    spring:
-      jpa:
-        hibernate:
-          ddl-auto=update
-
-
-    application:
-        name: finalProject
-
-    server:
-      port: 8080
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+server:
+  port: 8080
 
 
