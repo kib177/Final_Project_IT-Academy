@@ -24,7 +24,7 @@ public class CabinetServiceImpl implements ICabinetService {
     private final VerificationCodeRepository verificationCodeRepository;
     //private final PasswordEncoder passwordEncoder;
 
-    @Override
+    @Transactional
     public boolean registration(UserRegistration userRegistration) {
 
         if (userRepository.existsByMail(userRegistration.getMail())) {
@@ -52,6 +52,7 @@ public class CabinetServiceImpl implements ICabinetService {
     @Transactional
     public boolean verifyUser(String mail, String code) {
         Optional<VerificationEntity> verifyCode = verificationCodeRepository.findByMailAndCode(mail, code);
+
         if (verifyCode.isPresent()) {
             UserEntity user = userRepository.findByMail(mail)
                     .orElseThrow(() -> new CabinetException("User not found" + mail));
@@ -79,12 +80,11 @@ public class CabinetServiceImpl implements ICabinetService {
         return "Login successful for user: " + userEntity.getFio();
     }
 
-
     @Override
-    public User getByUUID(UUID uuid) {
-        UserEntity userEntity = userRepository.findByUuid(uuid)
+    public Optional<User> getById(UUID uuid) {
+        UserEntity userEntity = userRepository.getByUuid(uuid)
                 .orElseThrow(() -> new CabinetException("User not found" + uuid));
-        return User.builder()
+        return Optional.ofNullable(User.builder()
                 .uuid(userEntity.getUuid())
                 .dt_create(userEntity.getDt_create())
                 .dt_update(userEntity.getDt_update())
@@ -92,6 +92,6 @@ public class CabinetServiceImpl implements ICabinetService {
                 .fio(userEntity.getFio())
                 .role(userEntity.getRole())
                 .status(userEntity.getStatus())
-                .build();
+                .build());
     }
 }

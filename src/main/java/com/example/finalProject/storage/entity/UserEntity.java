@@ -19,7 +19,7 @@ public class UserEntity {
     @Id
     @GeneratedValue(generator = "UUID")
     private UUID uuid;
-@
+
     @Column(name = "dt_create", nullable = false, updatable = false)
     private long dt_create;
 
@@ -48,8 +48,8 @@ public class UserEntity {
     protected void onCreate() {
         dt_create = Instant.now().toEpochMilli();
         dt_update = dt_create;
-        role = UserRole.USER;
-        status = UserStatus.WAITING_ACTIVATION;
+        if(role == null) {role = UserRole.USER;}
+        if(status == null) {status = UserStatus.WAITING_ACTIVATION;}
 
         /*if (this.password != null && !this.password.startsWith("$2a$")) {
             this.password = new BCryptPasswordEncoder().encode(this.password);
