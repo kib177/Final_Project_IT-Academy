@@ -22,6 +22,7 @@ import java.util.UUID;
 public class CabinetServiceImpl implements ICabinetService {
     private final UserRepository userRepository;
     private final VerificationCodeRepository verificationCodeRepository;
+    private final BaseUserMapper baseUserMapper;
     //private final PasswordEncoder passwordEncoder;
 
     public String sendCode(String mail){
@@ -35,7 +36,7 @@ public class CabinetServiceImpl implements ICabinetService {
             throw new CabinetException("Email already exists" + userRegistration.getMail());
         }
         
-        UserEntity userEntity = BaseUserMapper.fromRegistrationDto(userRegistration);
+        UserEntity userEntity = baseUserMapper.fromRegistrationDto(userRegistration);
         userRepository.save(userEntity);
        
         String code = UUID.randomUUID().toString().substring(0, 6);
@@ -54,10 +55,10 @@ public class CabinetServiceImpl implements ICabinetService {
         Optional<VerificationEntity> verifyCode = verificationCodeRepository.findByMailAndCode(mail, code);
 
         if (verifyCode.isPresent()) {
-            UserEntity user = userRepository.findByMail(mail)
+            UserEntity userEntity = userRepository.findByMail(mail)
                     .orElseThrow(() -> new CabinetException("User not found" + mail));
             user.setStatus(UserStatus.ACTIVATED);
-            userRepository.save(user);
+            userRepository.save(userEntity);
             verificationCodeRepository.deleteByMail(mail);
             return true;
         }
@@ -84,6 +85,6 @@ public class CabinetServiceImpl implements ICabinetService {
     public Optional<User> getById(UUID uuid) {
         UserEntity userEntity = userRepository.getByUuid(uuid)
                 .orElseThrow(() -> new CabinetException("User not found" + uuid));
-        return Optional.ofNullable(BaseUserMapper.toDto(userEntity));
+        return Optional.ofNullable(baseUserMapper.toDto(userEntity));
     }
 }
