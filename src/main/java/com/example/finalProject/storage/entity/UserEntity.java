@@ -46,6 +46,7 @@ public class UserEntity {
 
     @PrePersist
     protected void onCreate() {
+
         dt_create = Instant.now().toEpochMilli();
         dt_update = dt_create;
         if(role == null) {role = UserRole.USER;}

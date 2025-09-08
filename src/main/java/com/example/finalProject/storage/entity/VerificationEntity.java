@@ -27,4 +27,9 @@ public class VerificationEntity {
 
     @Column(nullable = false)
     private long createdAt = Instant.now().toEpochMilli();
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = Instant.now().toEpochMilli();
+      }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class PageOfUser<T>{
     private int number;
     private int size;

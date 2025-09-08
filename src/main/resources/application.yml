@@ -12,10 +12,7 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
+
 server:
   port: 8080
 
