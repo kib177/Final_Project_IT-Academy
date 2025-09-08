@@ -19,20 +19,14 @@ import java.util.*;
 @RequiredArgsConstructor
 public class UserServiceImpl implements IUserService {
     private final UserRepository userRepository;
+    private final BaseUserMapper baseUserMapper;
     //private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public boolean create(UserCreate userCreate) {
 
-        userRepository.save(
-                UserEntity.builder()
-                        .mail(userCreate.getMail())
-                        .fio(userCreate.getFio())
-                        .role(userCreate.getRole())
-                        .status(userCreate.getStatus())
-                        .password(userCreate.getPassword())
-                        .build()
-        );
+        UserEntity userEntity = baseUserMapper.fromCreateDto(userCreate);
+        userRepository.save(userEntity);
         return true;
     }
 
@@ -40,31 +34,16 @@ public class UserServiceImpl implements IUserService {
     public Optional<User> getById(UUID uuid) {
         UserEntity userEntity = userRepository.getByUuid(uuid)
                 .orElseThrow(() -> new CabinetException("User not found" + uuid));
-        return Optional.ofNullable(User.builder()
-                .uuid(userEntity.getUuid())
-                .dt_create(userEntity.getDt_create())
-                .dt_update(userEntity.getDt_update())
-                .mail(userEntity.getMail())
-                .fio(userEntity.getFio())
-                .role(userEntity.getRole())
-                .status(userEntity.getStatus())
-                .build());
+        return Optional.ofNullable(baseUserMapper.toDto(userEntity));
     }
 
     @Override
     public PageOfUser<Object> getUsersPage(Pageable pageable) {
         Page<UserEntity> entityPage = userRepository.findAll(pageable);
-        List<Object> content = new ArrayList<>();
-        for (UserEntity entity : entityPage.getContent()) {
-            content.add(User.builder()
-                    .uuid(entity.getUuid())
-                    .dt_create(entity.getDt_create())
-                    .dt_update(entity.getDt_update())
-                    .mail(entity.getMail())
-                    .fio(entity.getFio())
-                    .role(entity.getRole())
-                    .status(entity.getStatus())
-                    .build());
+        List<Object> content = entityPage.getContent();
+                .stream()
+                .map(baseUserMapper::toDto)
+                .collect(Collectors.toList());
         }
         return PageOfUser.builder()
                 .number(entityPage.getNumber())
