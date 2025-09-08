@@ -5,7 +5,6 @@ import com.example.finalProject.dto.UserCreate;
 import com.example.finalProject.dto.UserRegistration;
 import com.example.finalProject.storage.entity.UserEntity;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {

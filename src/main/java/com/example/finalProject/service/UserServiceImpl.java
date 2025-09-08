@@ -6,6 +6,7 @@ import com.example.finalProject.dto.UserCreate;
 import com.example.finalProject.service.api.IUserService;
 import com.example.finalProject.service.api.exception.CabinetException;
 import com.example.finalProject.storage.entity.VerificationEntity;
+import com.example.finalProject.storage.mapper.PageMapper;
 import com.example.finalProject.storage.mapper.UserMapper;
 import com.example.finalProject.storage.entity.UserEntity;
 import com.example.finalProject.storage.repository.UserRepository;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements IUserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PageMapper pageMapper;
     private final VerificationCodeRepository verificationCodeRepository;
     //private final PasswordEncoder passwordEncoder;
 
@@ -52,20 +54,6 @@ public class UserServiceImpl implements IUserService {
     @Override
     public PageOfUser<Object> getUsersPage(Pageable pageable) {
         Page<UserEntity> entityPage = userRepository.findAll(pageable);
-        List<Object> content = entityPage.getContent()
-                .stream()
-                .map(userMapper::toDto)
-                .collect(Collectors.toList());
-
-        return PageOfUser.builder()
-                .number(entityPage.getNumber())
-                .size(entityPage.getSize())
-                .totalPages(entityPage.getTotalPages())
-                .totalElements(entityPage.getTotalElements())
-                .first(entityPage.isFirst())
-                .numberOfElements(entityPage.getNumberOfElements())
-                .last(entityPage.isLast())
-                .content(content)
-                .build();
+        return pageMapper.toPageOfUser(entityPage, userMapper);
     }
 }

@@ -1,7 +1,5 @@
 package com.example.finalProject.storage.entity;
 
-import com.example.finalProject.dto.enums.UserRole;
-import com.example.finalProject.dto.enums.UserStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
