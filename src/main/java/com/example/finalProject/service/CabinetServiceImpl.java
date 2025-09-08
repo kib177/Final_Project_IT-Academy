@@ -24,27 +24,27 @@ public class CabinetServiceImpl implements ICabinetService {
     private final VerificationCodeRepository verificationCodeRepository;
     //private final PasswordEncoder passwordEncoder;
 
+    public String sendCode(String mail){
+        
+    }
+    
     @Transactional
     public boolean registration(UserRegistration userRegistration) {
 
         if (userRepository.existsByMail(userRegistration.getMail())) {
             throw new CabinetException("Email already exists" + userRegistration.getMail());
         }
-
-        UserEntity userEntity = UserEntity.builder()
-                .mail(userRegistration.getMail())
-                .fio(userRegistration.getFio())
-                .password(userRegistration.getPassword())
-                .build();
+        
+        UserEntity userEntity = BaseUserMapper.fromRegistrationDto(userRegistration);
         userRepository.save(userEntity);
-
+       
         String code = UUID.randomUUID().toString().substring(0, 6);
         VerificationEntity verifyCode = VerificationEntity.builder()
-                .mail(userRegistration.getMail())
+                .mail(userRegistraion.getMail())
                 .code(code)
                 .build();
         verificationCodeRepository.save(verifyCode);
-
+        
         System.out.println("Verification code for " + userRegistration.getMail() + ": " + code);
         return true;
     }
@@ -84,14 +84,6 @@ public class CabinetServiceImpl implements ICabinetService {
     public Optional<User> getById(UUID uuid) {
         UserEntity userEntity = userRepository.getByUuid(uuid)
                 .orElseThrow(() -> new CabinetException("User not found" + uuid));
-        return Optional.ofNullable(User.builder()
-                .uuid(userEntity.getUuid())
-                .dt_create(userEntity.getDt_create())
-                .dt_update(userEntity.getDt_update())
-                .mail(userEntity.getMail())
-                .fio(userEntity.getFio())
-                .role(userEntity.getRole())
-                .status(userEntity.getStatus())
-                .build());
+        return Optional.ofNullable(BaseUserMapper.toDto(userEntity));
     }
 }
