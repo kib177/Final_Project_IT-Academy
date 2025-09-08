@@ -5,9 +5,11 @@ import com.example.finalProject.dto.User;
 import com.example.finalProject.dto.UserCreate;
 import com.example.finalProject.service.api.IUserService;
 import com.example.finalProject.service.api.exception.CabinetException;
+import com.example.finalProject.storage.entity.VerificationEntity;
 import com.example.finalProject.storage.mapper.UserMapper;
 import com.example.finalProject.storage.entity.UserEntity;
 import com.example.finalProject.storage.repository.UserRepository;
+import com.example.finalProject.storage.repository.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements IUserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final VerificationCodeRepository verificationCodeRepository;
     //private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -29,6 +32,13 @@ public class UserServiceImpl implements IUserService {
 
         UserEntity userEntity = userMapper.fromCreateDto(userCreate);
         userRepository.save(userEntity);
+
+        String code = UUID.randomUUID().toString().substring(0, 6);
+        VerificationEntity verifyCode = VerificationEntity.builder()
+                .mail(userCreate.getMail())
+                .code(code)
+                .build();
+        verificationCodeRepository.save(verifyCode);
         return true;
     }
 
