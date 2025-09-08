@@ -6,6 +6,7 @@ import com.example.finalProject.dto.UserRegistration;
 import com.example.finalProject.dto.enums.UserStatus;
 import com.example.finalProject.service.api.ICabinetService;
 import com.example.finalProject.service.api.exception.CabinetException;
+import com.example.finalProject.storage.mapper.UserMapper;
 import com.example.finalProject.storage.entity.UserEntity;
 import com.example.finalProject.storage.entity.VerificationEntity;
 import com.example.finalProject.storage.repository.UserRepository;
@@ -22,13 +23,9 @@ import java.util.UUID;
 public class CabinetServiceImpl implements ICabinetService {
     private final UserRepository userRepository;
     private final VerificationCodeRepository verificationCodeRepository;
-    private final BaseUserMapper baseUserMapper;
+    private final UserMapper userMapper;
     //private final PasswordEncoder passwordEncoder;
 
-    public String sendCode(String mail){
-        
-    }
-    
     @Transactional
     public boolean registration(UserRegistration userRegistration) {
 
@@ -36,12 +33,12 @@ public class CabinetServiceImpl implements ICabinetService {
             throw new CabinetException("Email already exists" + userRegistration.getMail());
         }
         
-        UserEntity userEntity = baseUserMapper.fromRegistrationDto(userRegistration);
+        UserEntity userEntity = userMapper.fromRegistrationDto(userRegistration);
         userRepository.save(userEntity);
        
         String code = UUID.randomUUID().toString().substring(0, 6);
         VerificationEntity verifyCode = VerificationEntity.builder()
-                .mail(userRegistraion.getMail())
+                .mail(userRegistration.getMail())
                 .code(code)
                 .build();
         verificationCodeRepository.save(verifyCode);
@@ -57,7 +54,7 @@ public class CabinetServiceImpl implements ICabinetService {
         if (verifyCode.isPresent()) {
             UserEntity userEntity = userRepository.findByMail(mail)
                     .orElseThrow(() -> new CabinetException("User not found" + mail));
-            user.setStatus(UserStatus.ACTIVATED);
+            userEntity.setStatus(UserStatus.ACTIVATED);
             userRepository.save(userEntity);
             verificationCodeRepository.deleteByMail(mail);
             return true;
@@ -85,6 +82,6 @@ public class CabinetServiceImpl implements ICabinetService {
     public Optional<User> getById(UUID uuid) {
         UserEntity userEntity = userRepository.getByUuid(uuid)
                 .orElseThrow(() -> new CabinetException("User not found" + uuid));
-        return Optional.ofNullable(baseUserMapper.toDto(userEntity));
+        return Optional.ofNullable(userMapper.toDto(userEntity));
     }
 }
