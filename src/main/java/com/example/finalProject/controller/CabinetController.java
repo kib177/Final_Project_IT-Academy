@@ -36,7 +36,7 @@ public class CabinetController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserLogin userLogin) {
+    public ResponseEntity<String> login(@Valid @RequestBody UserLogin userLogin) {
         try {
             String result = cabinetService.login(userLogin);
             return ResponseEntity.ok(result);
