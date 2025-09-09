@@ -8,6 +8,8 @@ import java.util.UUID;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserCreate{
     private UUID uuid;
     private long dt_create;
