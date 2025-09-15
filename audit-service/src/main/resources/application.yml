@@ -1,23 +1,22 @@
 server:
-  port: 8083
+  port: 8081
 
 spring:
   application:
-    name: user-service
+    name: audit-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/test
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/audit
     username: postgres
     password: 1998177
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
+    show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-
-user-service:
-  url: http://localhost:8081
+        format_sql: true
 
 feign:
   client:
@@ -27,6 +26,25 @@ feign:
         readTimeout: 5000
         loggerLevel: basic
 
-jwt:
-  secret: mySecretKey
-  expiration: 86400000
+user-service:
+  url: http://localhost:8080
+
+logging:
+  level:
+    com.example.audit: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+pagination:
+  default-page: 0
+  default-size: 20
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+  endpoint:
+    health:
+      show-details: always

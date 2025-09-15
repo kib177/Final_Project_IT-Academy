@@ -1,6 +1,7 @@
 package by.finalproject.itacademy.userservice.service.mapper;
 
-import by.finalproject.itacademy.common.dto.PageDTO;
+import by.finalproject.itacademy.userservice.model.dto.PageOfUser;
+import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.entity.UserEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,9 +21,9 @@ public interface PageMapper {
     @Mapping(target = "numberOfElements", source = "page.numberOfElements")
     @Mapping(target = "last", source = "page.last")
     @Mapping(target = "content", expression = "java(mapContent(page.getContent(), contentMapper))")
-    PageDTO<Object> toPageOfUser(Page<UserEntity> page, UserMapper userMapper);
+    PageOfUser toPageOfUser(Page<UserEntity> page, UserMapper contentMapper);
 
-    default List<Object> mapContent(List<UserEntity> entities, UserMapper mapper) {
+    default List<User> mapContent(List<UserEntity> entities, UserMapper mapper) {
         return entities.stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());

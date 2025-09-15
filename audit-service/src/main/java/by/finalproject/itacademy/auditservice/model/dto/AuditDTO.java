@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -16,7 +17,7 @@ import java.util.UUID;
 public class AuditDTO {
     private UUID uuid;
     @JsonProperty("dt_create")
-    private Long dtCreate;
+    private Instant dtCreate;
     private UserDTO user;
     private String text;
     private String type;

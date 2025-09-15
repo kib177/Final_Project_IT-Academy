@@ -1,5 +1,6 @@
 package by.finalproject.itacademy.personalfinancetools;
 
+import by.finalproject.itacademy.userservice.UserServiceApplication;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

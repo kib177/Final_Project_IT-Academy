@@ -1,6 +1,7 @@
 package by.finalproject.itacademy.userservice.controller;
 
 import by.finalproject.itacademy.common.dto.PageDTO;
+import by.finalproject.itacademy.userservice.model.dto.PageOfUser;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserCreate;
 import by.finalproject.itacademy.userservice.service.api.IUserService;
@@ -29,7 +30,7 @@ public class UserController {
 
     @GetMapping
     //@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PageDTO<Object>> getUsers(Pageable pageable) {
+    public ResponseEntity<PageOfUser> getUsers(Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersPage(pageable));
     }
 

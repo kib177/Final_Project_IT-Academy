@@ -1,7 +1,7 @@
 package by.finalproject.itacademy.userservice.service.api;
 
 
-import by.finalproject.itacademy.common.dto.PageDTO;
+import by.finalproject.itacademy.userservice.model.dto.PageOfUser;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserCreate;
 import org.springframework.data.domain.Pageable;
@@ -12,5 +12,5 @@ import java.util.UUID;
 public interface IUserService {
     boolean create(UserCreate userCreate);
     Optional<User> getById(UUID uuid);
-    PageDTO<Object> getUsersPage(Pageable pageable);
+    PageOfUser getUsersPage(Pageable pageable);
 }

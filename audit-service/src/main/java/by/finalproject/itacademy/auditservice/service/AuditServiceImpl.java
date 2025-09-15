@@ -2,6 +2,7 @@ package by.finalproject.itacademy.auditservice.service;
 
 import by.finalproject.itacademy.auditservice.feign.UserServiceClient;
 import by.finalproject.itacademy.auditservice.model.dto.AuditDTO;
+import by.finalproject.itacademy.auditservice.model.dto.PageOfAudit;
 import by.finalproject.itacademy.auditservice.model.dto.UserDTO;
 import by.finalproject.itacademy.auditservice.model.entity.AuditEntity;
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
@@ -16,8 +17,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.UUID;
+
+import static java.time.Instant.now;
 
 @Service
 @RequiredArgsConstructor
@@ -27,11 +29,11 @@ public class AuditServiceImpl implements IAuditService {
 
     @Transactional(readOnly = true)
     @Override
-    public PageDTO<AuditDTO> getPage(int page, int size) {
+    public PageOfAudit getPage(int page, int size) {
         Page<AuditEntity> auditPage = auditRepository.findAll(
                 PageRequest.of(page, size, Sort.by("dtCreate").descending()));
 
-        return convertToPageDTO(auditPage);
+        return convertToPageOfAudit(auditPage);
     }
 
     @Transactional(readOnly = true)
@@ -48,7 +50,7 @@ public class AuditServiceImpl implements IAuditService {
         Page<AuditEntity> auditPage = auditRepository.findByType(
                 type, PageRequest.of(page, size, Sort.by("dtCreate").descending()));
 
-        return convertToPageDTO(auditPage);
+        return convertToPageOfAudit(auditPage);
     }
 
     @Transactional
@@ -59,7 +61,7 @@ public class AuditServiceImpl implements IAuditService {
         audit.setText(text);
         audit.setType(type);
         audit.setId(id);
-        audit.setDtCreate(Instant.now().getEpochSecond());
+        audit.setDtCreate(now());
 
         auditRepository.save(audit);
     }
@@ -87,16 +89,16 @@ public class AuditServiceImpl implements IAuditService {
         return dto;
     }
 
-    private PageDTO<AuditDTO> convertToPageDTO(Page<AuditEntity> page) {
-        PageDTO<AuditDTO> pageDTO = new PageDTO<>();
-        pageDTO.setNumber(page.getNumber());
-        pageDTO.setSize(page.getSize());
-        pageDTO.setTotalPages(page.getTotalPages());
-        pageDTO.setTotalElements(page.getTotalElements());
-        pageDTO.setFirst(page.isFirst());
-        pageDTO.setNumberOfElements(page.getNumberOfElements());
-        pageDTO.setLast(page.isLast());
-        pageDTO.setContent(page.map(this::convertToDTO).getContent());
-        return pageDTO;
+    private PageOfAudit convertToPageOfAudit(Page<AuditEntity> page) {
+        PageOfAudit pageOfAudit = new PageOfAudit();
+        pageOfAudit.setNumber(page.getNumber());
+        pageOfAudit.setSize(page.getSize());
+        pageOfAudit.setTotalPages(page.getTotalPages());
+        pageOfAudit.setTotalElements(page.getTotalElements());
+        pageOfAudit.setFirst(page.isFirst());
+        pageOfAudit.setNumberOfElements(page.getNumberOfElements());
+        pageOfAudit.setLast(page.isLast());
+        pageOfAudit.setContent(page.map(this::convertToDTO).getContent());
+        return pageOfAudit;
     }
 }

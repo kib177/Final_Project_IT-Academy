@@ -1,6 +1,9 @@
+server:
+  port: 8080
+
 spring:
   application:
-   name: finalProject
+   name: user-service
 
   datasource:
     url: jdbc:postgresql://localhost:5432/test
@@ -13,7 +16,10 @@ spring:
       ddl-auto: update
     show-sql: true
 
-server:
-  port: 8081
-
-
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: basic

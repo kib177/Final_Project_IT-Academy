@@ -1,6 +1,6 @@
 package by.finalproject.itacademy.userservice.service;
 
-import by.finalproject.itacademy.common.dto.PageDTO;
+import by.finalproject.itacademy.userservice.model.dto.PageOfUser;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserCreate;
 import by.finalproject.itacademy.userservice.service.api.IUserService;
@@ -51,7 +51,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public PageDTO<Object> getUsersPage(Pageable pageable) {
+    public PageOfUser getUsersPage(Pageable pageable) {
         Page<UserEntity> entityPage = userRepository.findAll(pageable);
         return pageMapper.toPageOfUser(entityPage, userMapper);
     }
