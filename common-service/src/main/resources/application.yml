@@ -1,1 +1,2 @@
-spring.application.name=common-service
+server:
+  port: 8082

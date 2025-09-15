@@ -1,16 +1,16 @@
 package by.finalproject.itacademy.userservice.service;
 
 import by.finalproject.itacademy.common.dto.PageDTO;
-import by.finalproject.itacademy.userservice.dto.User;
-import by.finalproject.itacademy.userservice.dto.UserCreate;
+import by.finalproject.itacademy.userservice.model.dto.User;
+import by.finalproject.itacademy.userservice.model.dto.UserCreate;
 import by.finalproject.itacademy.userservice.service.api.IUserService;
 import by.finalproject.itacademy.userservice.service.api.exception.CabinetException;
-import by.finalproject.itacademy.userservice.storage.entity.UserEntity;
-import by.finalproject.itacademy.userservice.storage.entity.VerificationEntity;
-import by.finalproject.itacademy.userservice.storage.mapper.PageMapper;
-import by.finalproject.itacademy.userservice.storage.mapper.UserMapper;
-import by.finalproject.itacademy.userservice.storage.repository.UserRepository;
-import by.finalproject.itacademy.userservice.storage.repository.VerificationCodeRepository;
+import by.finalproject.itacademy.userservice.model.entity.UserEntity;
+import by.finalproject.itacademy.userservice.model.entity.VerificationEntity;
+import by.finalproject.itacademy.userservice.service.mapper.PageMapper;
+import by.finalproject.itacademy.userservice.service.mapper.UserMapper;
+import by.finalproject.itacademy.userservice.repository.UserRepository;
+import by.finalproject.itacademy.userservice.repository.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

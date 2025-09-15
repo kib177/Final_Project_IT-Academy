@@ -1,7 +1,7 @@
 package by.finalproject.itacademy.accountservice.repository;
 
-import by.finalproject.itacademy.accountservice.dto.entity.AccountEntity;
-import by.finalproject.itacademy.accountservice.dto.enums.AccountType;
+import by.finalproject.itacademy.accountservice.model.entity.AccountEntity;
+import by.finalproject.itacademy.accountservice.model.enums.AccountType;
 import feign.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Page;

@@ -1,18 +1,18 @@
 package by.finalproject.itacademy.userservice.service;
 
 
-import by.finalproject.itacademy.userservice.dto.User;
-import by.finalproject.itacademy.userservice.dto.UserLogin;
-import by.finalproject.itacademy.userservice.dto.UserRegistration;
-import by.finalproject.itacademy.userservice.dto.enums.UserStatus;
+import by.finalproject.itacademy.userservice.model.dto.User;
+import by.finalproject.itacademy.userservice.model.dto.UserLogin;
+import by.finalproject.itacademy.userservice.model.dto.UserRegistration;
+import by.finalproject.itacademy.userservice.model.enums.UserStatus;
 import by.finalproject.itacademy.userservice.service.api.ICabinetService;
 
 import by.finalproject.itacademy.userservice.service.api.exception.CabinetException;
-import by.finalproject.itacademy.userservice.storage.entity.UserEntity;
-import by.finalproject.itacademy.userservice.storage.entity.VerificationEntity;
-import by.finalproject.itacademy.userservice.storage.mapper.UserMapper;
-import by.finalproject.itacademy.userservice.storage.repository.UserRepository;
-import by.finalproject.itacademy.userservice.storage.repository.VerificationCodeRepository;
+import by.finalproject.itacademy.userservice.model.entity.UserEntity;
+import by.finalproject.itacademy.userservice.model.entity.VerificationEntity;
+import by.finalproject.itacademy.userservice.service.mapper.UserMapper;
+import by.finalproject.itacademy.userservice.repository.UserRepository;
+import by.finalproject.itacademy.userservice.repository.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

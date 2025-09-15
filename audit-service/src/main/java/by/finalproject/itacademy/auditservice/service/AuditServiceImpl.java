@@ -1,8 +1,14 @@
 package by.finalproject.itacademy.auditservice.service;
 
-import by.finalproject.itacademy.auditservice.client.UserServiceClient;
-import by.finalproject.itacademy.auditservice.model.EssenceTypeEnum;
+import by.finalproject.itacademy.auditservice.feign.UserServiceClient;
+import by.finalproject.itacademy.auditservice.model.dto.AuditDTO;
+import by.finalproject.itacademy.auditservice.model.dto.UserDTO;
+import by.finalproject.itacademy.auditservice.model.entity.AuditEntity;
+import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
+import by.finalproject.itacademy.auditservice.repository.AuditRepository;
 import by.finalproject.itacademy.auditservice.service.api.IAuditService;
+import by.finalproject.itacademy.common.dto.PageDTO;
+import by.finalproject.itacademy.userservice.model.dto.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +27,7 @@ public class AuditServiceImpl implements IAuditService {
 
     @Transactional(readOnly = true)
     @Override
-    public PageDTO<AuditResponseDTO> getPage(int page, int size) {
+    public PageDTO<AuditDTO> getPage(int page, int size) {
         Page<AuditEntity> auditPage = auditRepository.findAll(
                 PageRequest.of(page, size, Sort.by("dtCreate").descending()));
 
@@ -30,7 +36,7 @@ public class AuditServiceImpl implements IAuditService {
 
     @Transactional(readOnly = true)
     @Override
-    public AuditResponseDTO get(UUID uuid) {
+    public AuditDTO get(UUID uuid) {
         AuditEntity audit = auditRepository.findById(uuid)
                 .orElseThrow(() -> new RuntimeException("Audit record not found"));
         return convertToDTO(audit);
@@ -38,7 +44,7 @@ public class AuditServiceImpl implements IAuditService {
 
     @Transactional(readOnly = true)
     @Override
-    public PageDTO<AuditResponseDTO> getByType(EssenceTypeEnum type, int page, int size) {
+    public PageDTO<AuditDTO> getByType(EssenceTypeEnum type, int page, int size) {
         Page<AuditEntity> auditPage = auditRepository.findByType(
                 type, PageRequest.of(page, size, Sort.by("dtCreate").descending()));
 
@@ -58,28 +64,31 @@ public class AuditServiceImpl implements IAuditService {
         auditRepository.save(audit);
     }
 
-    private AuditResponseDTO convertToDTO(AuditEntity audit) {
-        AuditResponseDTO dto = new AuditResponseDTO();
+    private AuditDTO convertToDTO(AuditEntity audit) {
+        AuditDTO dto = new AuditDTO();
         dto.setUuid(audit.getUuid());
         dto.setDtCreate(audit.getDtCreate());
 
-        // Get user info via Feign client
         try {
-            UserResponseDTO user = userServiceClient.getUser(audit.getUserUuid());
-            dto.setUser(user);
+            User user = userServiceClient.getUser(audit.getUserUuid());
+            UserDTO userDto = new UserDTO();
+            userDto.setUuid(user.getUuid());
+            userDto.setMail(user.getMail());
+            userDto.setFio(user.getFio());
+            userDto.setRole(user.getRole().name());
+            dto.setUser(userDto);
         } catch (Exception e) {
-            // Log error but don't fail the request
             dto.setUser(null);
         }
 
         dto.setText(audit.getText());
-        dto.setType(audit.getType());
+        dto.setType(audit.getType().name());
         dto.setId(audit.getId());
         return dto;
     }
 
-    private PageDTO<AuditResponseDTO> convertToPageDTO(Page<AuditEnt    ity> page) {
-        PageDTO<AuditResponseDTO> pageDTO = new PageDTO<>();
+    private PageDTO<AuditDTO> convertToPageDTO(Page<AuditEntity> page) {
+        PageDTO<AuditDTO> pageDTO = new PageDTO<>();
         pageDTO.setNumber(page.getNumber());
         pageDTO.setSize(page.getSize());
         pageDTO.setTotalPages(page.getTotalPages());

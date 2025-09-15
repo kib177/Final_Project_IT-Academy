@@ -1,7 +1,7 @@
 package by.finalproject.itacademy.accountservice.repository;
 
 
-import by.finalproject.itacademy.accountservice.dto.entity.OperationEntity;
+import by.finalproject.itacademy.accountservice.model.entity.OperationEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

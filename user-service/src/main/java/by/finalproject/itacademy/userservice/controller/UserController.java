@@ -1,10 +1,9 @@
 package by.finalproject.itacademy.userservice.controller;
 
 import by.finalproject.itacademy.common.dto.PageDTO;
-import by.finalproject.itacademy.userservice.dto.User;
-import by.finalproject.itacademy.userservice.dto.UserCreate;
+import by.finalproject.itacademy.userservice.model.dto.User;
+import by.finalproject.itacademy.userservice.model.dto.UserCreate;
 import by.finalproject.itacademy.userservice.service.api.IUserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

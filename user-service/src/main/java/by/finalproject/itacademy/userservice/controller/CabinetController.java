@@ -1,9 +1,9 @@
 package by.finalproject.itacademy.userservice.controller;
 
 
-import by.finalproject.itacademy.userservice.dto.User;
-import by.finalproject.itacademy.userservice.dto.UserLogin;
-import by.finalproject.itacademy.userservice.dto.UserRegistration;
+import by.finalproject.itacademy.userservice.model.dto.User;
+import by.finalproject.itacademy.userservice.model.dto.UserLogin;
+import by.finalproject.itacademy.userservice.model.dto.UserRegistration;
 import by.finalproject.itacademy.userservice.service.api.ICabinetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

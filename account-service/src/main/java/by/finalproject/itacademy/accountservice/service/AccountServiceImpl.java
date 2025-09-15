@@ -1,12 +1,12 @@
 package by.finalproject.itacademy.accountservice.service;
 
-import by.finalproject.itacademy.accountservice.client.AuditServiceClient;
-import by.finalproject.itacademy.accountservice.dto.entity.AccountEntity;
-import by.finalproject.itacademy.accountservice.dto.entity.OperationEntity;
+import by.finalproject.itacademy.accountservice.feign.AuditServiceClient;
+import by.finalproject.itacademy.accountservice.model.entity.AccountEntity;
+import by.finalproject.itacademy.accountservice.model.entity.OperationEntity;
 import by.finalproject.itacademy.accountservice.repository.AccountRepository;
 import by.finalproject.itacademy.accountservice.repository.OperationRepository;
 import by.finalproject.itacademy.accountservice.service.api.IAccountService;
-import by.finalproject.itacademy.auditservice.model.EssenceTypeEnum;
+import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

@@ -1,8 +1,8 @@
 package by.finalproject.itacademy.userservice.service.api;
 
-import by.finalproject.itacademy.userservice.dto.User;
-import by.finalproject.itacademy.userservice.dto.UserLogin;
-import by.finalproject.itacademy.userservice.dto.UserRegistration;
+import by.finalproject.itacademy.userservice.model.dto.User;
+import by.finalproject.itacademy.userservice.model.dto.UserLogin;
+import by.finalproject.itacademy.userservice.model.dto.UserRegistration;
 
 import java.util.Optional;
 import java.util.UUID;
