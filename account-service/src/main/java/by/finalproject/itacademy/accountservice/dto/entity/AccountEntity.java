@@ -1,9 +1,12 @@
 package by.finalproject.itacademy.accountservice.dto.entity;
 
-import com.finance.account.dto.enums.AccountType;
+import by.finalproject.itacademy.userservice.storage.entity.UserEntity;
+import by.finalproject.itacademy.accountservice.dto.enums.AccountType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -11,6 +14,8 @@ import java.util.UUID;
 @Entity
 @Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "accounts")
 public class AccountEntity {
     @Id
