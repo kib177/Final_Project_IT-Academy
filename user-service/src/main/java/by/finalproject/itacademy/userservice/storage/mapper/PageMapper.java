@@ -1,8 +1,7 @@
-package com.example.finalProject.storage.mapper;
+package by.finalproject.itacademy.userservice.storage.mapper;
 
-import com.example.finalProject.dto.PageOfUser;
-import com.example.finalProject.dto.User;
-import com.example.finalProject.storage.entity.UserEntity;
+import by.finalproject.itacademy.common.dto.PageDTO;
+import by.finalproject.itacademy.userservice.storage.entity.UserEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.data.domain.Page;
@@ -21,7 +20,7 @@ public interface PageMapper {
     @Mapping(target = "numberOfElements", source = "page.numberOfElements")
     @Mapping(target = "last", source = "page.last")
     @Mapping(target = "content", expression = "java(mapContent(page.getContent(), contentMapper))")
-    PageOfUser<Object> toPageOfUser(Page<UserEntity> page, UserMapper contentMapper);
+    PageDTO<Object> toPageOfUser(Page<UserEntity> page, UserMapper contentMapper);
 
     default List<Object> mapContent(List<UserEntity> entities, UserMapper mapper) {
         return entities.stream()

@@ -1,4 +1,4 @@
-package by.finalproject.itacademy.common.feign;
+package by.finalproject.itacademy.common.config;
 
 import feign.RequestInterceptor;
 import org.springframework.context.annotation.Bean;

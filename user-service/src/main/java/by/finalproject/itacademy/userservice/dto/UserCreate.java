@@ -1,7 +1,8 @@
-package com.example.finalProject.dto;
+package by.finalproject.itacademy.userservice.dto;
 
-import com.example.finalProject.dto.enums.UserRole;
-import com.example.finalProject.dto.enums.UserStatus;
+
+import by.finalproject.itacademy.userservice.dto.enums.UserRole;
+import by.finalproject.itacademy.userservice.dto.enums.UserStatus;
 import lombok.*;
 
 import java.util.UUID;

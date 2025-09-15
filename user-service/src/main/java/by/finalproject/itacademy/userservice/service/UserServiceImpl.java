@@ -1,16 +1,16 @@
-package com.example.finalProject.service;
+package by.finalproject.itacademy.userservice.service;
 
-import com.example.finalProject.dto.PageOfUser;
-import com.example.finalProject.dto.User;
-import com.example.finalProject.dto.UserCreate;
-import com.example.finalProject.service.api.IUserService;
-import com.example.finalProject.service.api.exception.CabinetException;
-import com.example.finalProject.storage.entity.VerificationEntity;
-import com.example.finalProject.storage.mapper.PageMapper;
-import com.example.finalProject.storage.mapper.UserMapper;
-import com.example.finalProject.storage.entity.UserEntity;
-import com.example.finalProject.storage.repository.UserRepository;
-import com.example.finalProject.storage.repository.VerificationCodeRepository;
+import by.finalproject.itacademy.common.dto.PageDTO;
+import by.finalproject.itacademy.userservice.dto.User;
+import by.finalproject.itacademy.userservice.dto.UserCreate;
+import by.finalproject.itacademy.userservice.service.api.IUserService;
+import by.finalproject.itacademy.userservice.service.api.exception.CabinetException;
+import by.finalproject.itacademy.userservice.storage.entity.UserEntity;
+import by.finalproject.itacademy.userservice.storage.entity.VerificationEntity;
+import by.finalproject.itacademy.userservice.storage.mapper.PageMapper;
+import by.finalproject.itacademy.userservice.storage.mapper.UserMapper;
+import by.finalproject.itacademy.userservice.storage.repository.UserRepository;
+import by.finalproject.itacademy.userservice.storage.repository.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,7 +52,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public PageOfUser<Object> getUsersPage(Pageable pageable) {
+    public PageDTO<Object> getUsersPage(Pageable pageable) {
         Page<UserEntity> entityPage = userRepository.findAll(pageable);
         return pageMapper.toPageOfUser(entityPage, userMapper);
     }

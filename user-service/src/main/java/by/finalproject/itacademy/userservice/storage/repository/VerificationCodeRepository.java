@@ -1,6 +1,6 @@
-package com.example.finalProject.storage.repository;
+package by.finalproject.itacademy.userservice.storage.repository;
 
-import com.example.finalProject.storage.entity.VerificationEntity;
+import by.finalproject.itacademy.userservice.storage.entity.VerificationEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

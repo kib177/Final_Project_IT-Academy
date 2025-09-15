@@ -1,11 +1,17 @@
 package by.finalproject.itacademy.common.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
-public class Page<T> {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PageDTO<T> {
         private int number;
         private int size;
         private int totalPages;

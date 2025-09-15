@@ -1,9 +1,9 @@
-package com.example.finalProject.controller;
+package by.finalproject.itacademy.userservice.controller;
 
-import com.example.finalProject.dto.PageOfUser;
-import com.example.finalProject.dto.User;
-import com.example.finalProject.dto.UserCreate;
-import com.example.finalProject.service.api.IUserService;
+import by.finalproject.itacademy.common.dto.PageDTO;
+import by.finalproject.itacademy.userservice.dto.User;
+import by.finalproject.itacademy.userservice.dto.UserCreate;
+import by.finalproject.itacademy.userservice.service.api.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,7 +30,7 @@ public class UserController {
 
     @GetMapping
     //@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PageOfUser<Object>> getUsers(Pageable pageable) {
+    public ResponseEntity<PageDTO<Object>> getUsers(Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersPage(pageable));
     }
 

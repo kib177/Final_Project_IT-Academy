@@ -1,4 +1,4 @@
-package com.example.finalProject.service.api.exception;
+package by.finalproject.itacademy.userservice.service.api.exception;
 
 public class CabinetException extends RuntimeException {
 

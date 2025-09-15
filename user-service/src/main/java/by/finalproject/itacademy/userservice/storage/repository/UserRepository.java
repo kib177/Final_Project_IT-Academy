@@ -1,6 +1,7 @@
-package com.example.finalProject.storage.repository;
+package by.finalproject.itacademy.userservice.storage.repository;
 
-import com.example.finalProject.storage.entity.UserEntity;
+
+import by.finalproject.itacademy.userservice.storage.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

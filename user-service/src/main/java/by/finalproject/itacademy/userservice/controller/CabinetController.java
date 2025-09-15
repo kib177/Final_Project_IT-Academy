@@ -1,9 +1,10 @@
-package com.example.finalProject.controller;
+package by.finalproject.itacademy.userservice.controller;
 
-import com.example.finalProject.dto.User;
-import com.example.finalProject.dto.UserLogin;
-import com.example.finalProject.dto.UserRegistration;
-import com.example.finalProject.service.api.ICabinetService;
+
+import by.finalproject.itacademy.userservice.dto.User;
+import by.finalproject.itacademy.userservice.dto.UserLogin;
+import by.finalproject.itacademy.userservice.dto.UserRegistration;
+import by.finalproject.itacademy.userservice.service.api.ICabinetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

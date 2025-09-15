@@ -1,4 +1,4 @@
-package com.example.finalProject.dto.enums;
+package by.finalproject.itacademy.userservice.dto.enums;
 
 public enum UserRole {
     ADMIN,

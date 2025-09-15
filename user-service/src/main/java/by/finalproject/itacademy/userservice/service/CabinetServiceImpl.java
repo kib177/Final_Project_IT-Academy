@@ -1,16 +1,18 @@
-package com.example.finalProject.service;
+package by.finalproject.itacademy.userservice.service;
 
-import com.example.finalProject.dto.User;
-import com.example.finalProject.dto.UserLogin;
-import com.example.finalProject.dto.UserRegistration;
-import com.example.finalProject.dto.enums.UserStatus;
-import com.example.finalProject.service.api.ICabinetService;
-import com.example.finalProject.service.api.exception.CabinetException;
-import com.example.finalProject.storage.mapper.UserMapper;
-import com.example.finalProject.storage.entity.UserEntity;
-import com.example.finalProject.storage.entity.VerificationEntity;
-import com.example.finalProject.storage.repository.UserRepository;
-import com.example.finalProject.storage.repository.VerificationCodeRepository;
+
+import by.finalproject.itacademy.userservice.dto.User;
+import by.finalproject.itacademy.userservice.dto.UserLogin;
+import by.finalproject.itacademy.userservice.dto.UserRegistration;
+import by.finalproject.itacademy.userservice.dto.enums.UserStatus;
+import by.finalproject.itacademy.userservice.service.api.ICabinetService;
+
+import by.finalproject.itacademy.userservice.service.api.exception.CabinetException;
+import by.finalproject.itacademy.userservice.storage.entity.UserEntity;
+import by.finalproject.itacademy.userservice.storage.entity.VerificationEntity;
+import by.finalproject.itacademy.userservice.storage.mapper.UserMapper;
+import by.finalproject.itacademy.userservice.storage.repository.UserRepository;
+import by.finalproject.itacademy.userservice.storage.repository.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

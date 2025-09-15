@@ -1,4 +1,4 @@
-package com.example.finalProject.storage.entity;
+package by.finalproject.itacademy.userservice.storage.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;

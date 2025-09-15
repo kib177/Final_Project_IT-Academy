@@ -1,7 +1,8 @@
-package com.example.finalProject.storage.entity;
+package by.finalproject.itacademy.userservice.storage.entity;
 
-import com.example.finalProject.dto.enums.UserRole;
-import com.example.finalProject.dto.enums.UserStatus;
+
+import by.finalproject.itacademy.userservice.dto.enums.UserRole;
+import by.finalproject.itacademy.userservice.dto.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.validator.constraints.Email;
@@ -51,10 +52,6 @@ public class UserEntity {
         dt_update = dt_create;
         if(role == null) {role = UserRole.USER;}
         if(status == null) {status = UserStatus.WAITING_ACTIVATION;}
-
-        /*if (this.password != null && !this.password.startsWith("$2a$")) {
-            this.password = new BCryptPasswordEncoder().encode(this.password);
-        }*/
     }
 
     @PreUpdate

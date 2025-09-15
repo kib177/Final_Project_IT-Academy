@@ -1,9 +1,10 @@
-package com.example.finalProject.storage.mapper;
+package by.finalproject.itacademy.userservice.storage.mapper;
 
-import com.example.finalProject.dto.User;
-import com.example.finalProject.dto.UserCreate;
-import com.example.finalProject.dto.UserRegistration;
-import com.example.finalProject.storage.entity.UserEntity;
+
+import by.finalproject.itacademy.userservice.dto.User;
+import by.finalproject.itacademy.userservice.dto.UserCreate;
+import by.finalproject.itacademy.userservice.dto.UserRegistration;
+import by.finalproject.itacademy.userservice.storage.entity.UserEntity;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
