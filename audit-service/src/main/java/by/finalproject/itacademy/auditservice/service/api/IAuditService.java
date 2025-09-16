@@ -2,7 +2,7 @@ package by.finalproject.itacademy.auditservice.service.api;
 
 import by.finalproject.itacademy.auditservice.model.dto.AuditDTO;
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
-import by.finalproject.itacademy.common.dto.PageDTO;
+import by.finalproject.itacademy.common.model.dto.PageDTO;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;

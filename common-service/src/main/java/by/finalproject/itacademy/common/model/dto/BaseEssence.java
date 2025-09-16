@@ -1,4 +1,4 @@
-package by.finalproject.itacademy.common.dto;
+package by.finalproject.itacademy.common.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

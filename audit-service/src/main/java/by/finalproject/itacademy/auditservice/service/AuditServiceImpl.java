@@ -8,7 +8,7 @@ import by.finalproject.itacademy.auditservice.model.entity.AuditEntity;
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.auditservice.repository.AuditRepository;
 import by.finalproject.itacademy.auditservice.service.api.IAuditService;
-import by.finalproject.itacademy.common.dto.PageDTO;
+import by.finalproject.itacademy.common.model.dto.PageDTO;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

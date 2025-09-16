@@ -1,6 +1,7 @@
 package by.finalproject.itacademy.auditservice.model.entity;
 
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
+import by.finalproject.itacademy.userservice.model.dto.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,8 +25,9 @@ public class AuditEntity {
     @Column(name = "dt_create")
     private Instant dtCreate;
 
-    @Column(name = "user_uuid")
-    private UUID userUuid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "")
+    private User user;
 
     @Column(name = "text")
     private String text;

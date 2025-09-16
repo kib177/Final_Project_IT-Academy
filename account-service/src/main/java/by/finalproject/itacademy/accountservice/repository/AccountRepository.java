@@ -1,7 +1,7 @@
 package by.finalproject.itacademy.accountservice.repository;
 
 import by.finalproject.itacademy.accountservice.model.entity.AccountEntity;
-import by.finalproject.itacademy.accountservice.model.enums.AccountType;
+import by.finalproject.itacademy.accountservice.model.enums.AccountTypeEnum;
 import feign.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Page;
@@ -16,7 +16,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, UUID> {
 
     @Query("SELECT a FROM AccountEntity a WHERE a.uuid = :userUuid AND a.type = :type")
     Page<AccountEntity> findByUserUuidAndType(@Param("userUuid") UUID userUuid,
-                                              @Param("type") AccountType type,
+                                              @Param("type") AccountTypeEnum type,
                                               Pageable pageable);
 
     @Modifying

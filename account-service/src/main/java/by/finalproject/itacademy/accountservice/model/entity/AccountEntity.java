@@ -1,7 +1,7 @@
 package by.finalproject.itacademy.accountservice.model.entity;
 
-import by.finalproject.itacademy.userservice.model.entity.UserEntity;
-import by.finalproject.itacademy.accountservice.model.enums.AccountType;
+import by.finalproject.itacademy.accountservice.model.enums.AccountTypeEnum;
+import by.finalproject.itacademy.common.model.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,26 +18,18 @@ import java.util.UUID;
 @NoArgsConstructor
 @Table(name = "accounts")
 public class AccountEntity {
-    @Id
-    @GeneratedValue(generator = "UUID")
-    private UUID uuid;
 
-    private Long dtCreate;
-    private Long dtUpdate;
+    @EmbeddedId
+    private BaseEntity baseEntity;
 
     private String title;
     private String description;
     private BigDecimal balance;
 
     @Enumerated(EnumType.STRING)
-    private AccountType type;
+    private AccountTypeEnum type;
 
-    @ManyToOne
-    @JoinColumn(name = "currency_id")
-    private CurrencyEntity currency;
+    private UUID currency;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
 }
 

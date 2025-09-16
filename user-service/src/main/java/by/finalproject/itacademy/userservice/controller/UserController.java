@@ -1,6 +1,5 @@
 package by.finalproject.itacademy.userservice.controller;
 
-import by.finalproject.itacademy.common.dto.PageDTO;
 import by.finalproject.itacademy.userservice.model.dto.PageOfUser;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserCreate;
