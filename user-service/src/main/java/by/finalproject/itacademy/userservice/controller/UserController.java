@@ -29,7 +29,7 @@ public class UserController {
 
     @GetMapping
     //@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PageOfUser> getUsers(Pageable pageable) {
+    public ResponseEntity<PageOfUser> getPageOfUsers(Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersPage(pageable));
     }
 
