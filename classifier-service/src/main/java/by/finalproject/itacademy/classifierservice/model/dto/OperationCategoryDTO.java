@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -13,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class OperationCategoryDTO {
     private UUID uuid;
-    private long dtCreate;
-    private long dtUpdate;
+    private Instant dtCreate;
+    private Instant dtUpdate;
     private String title;
 }
