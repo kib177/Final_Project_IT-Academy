@@ -4,6 +4,7 @@ import by.finalproject.itacademy.userservice.model.dto.PageOfUser;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserCreate;
 import by.finalproject.itacademy.userservice.service.api.IUserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +21,12 @@ import java.util.UUID;
 public class UserController {
     private final IUserService userService;
 
-    /*@PostMapping
+    @PostMapping
     //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> createUser(@Valid @RequestBody UserCreate userCreate) {
         userService.create(userCreate);
         return ResponseEntity.status(HttpStatus.CREATED).body("Registration successful. Check email for verification.");
-    }*/
+    }
 
     @GetMapping
     //@PreAuthorize("hasRole('ADMIN')")
@@ -40,12 +41,12 @@ public class UserController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
 
-    @PostMapping
+    /*@PostMapping
     //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> createUser(@RequestBody List<UserCreate> userCreate) {
         for(UserCreate userCreate1 : userCreate) {
             userService.create(userCreate1);
         }
         return ResponseEntity.status(HttpStatus.CREATED).body("Registration successful. Check email for verification.");
-    }
+    }*/
 }

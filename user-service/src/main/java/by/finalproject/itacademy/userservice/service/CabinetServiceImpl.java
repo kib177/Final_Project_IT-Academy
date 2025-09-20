@@ -7,6 +7,7 @@ import by.finalproject.itacademy.userservice.model.dto.UserRegistration;
 import by.finalproject.itacademy.userservice.model.enums.UserStatus;
 import by.finalproject.itacademy.userservice.service.api.ICabinetService;
 
+import by.finalproject.itacademy.userservice.service.api.IVerificationCodeService;
 import by.finalproject.itacademy.userservice.service.api.exception.CabinetException;
 import by.finalproject.itacademy.userservice.model.entity.UserEntity;
 import by.finalproject.itacademy.userservice.model.entity.VerificationEntity;
@@ -17,8 +18,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+
+import static java.time.Instant.now;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +32,7 @@ public class CabinetServiceImpl implements ICabinetService {
     private final UserRepository userRepository;
     private final VerificationCodeRepository verificationCodeRepository;
     private final UserMapper userMapper;
+    private final IVerificationCodeService verificationCodeService;
     //private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -36,16 +43,14 @@ public class CabinetServiceImpl implements ICabinetService {
         }
         
         UserEntity userEntity = userMapper.fromRegistrationDto(userRegistration);
-        userRepository.save(userEntity);
-       
-        String code = UUID.randomUUID().toString().substring(0, 6);
-        VerificationEntity verifyCode = VerificationEntity.builder()
-                .mail(userRegistration.getMail())
-                .code(code)
-                .build();
-        verificationCodeRepository.save(verifyCode);
-        
-        System.out.println("Verification code for " + userRegistration.getMail() + ": " + code);
+        if(userEntity != null) {
+            userEntity.setDtCreate(Timestamp.from(now()));
+            userEntity.setDtUpdate(
+                    userEntity.getDtCreate());
+            userRepository.save(userEntity);
+        }
+        verificationCodeService.generateCode(userRegistration.getMail());
+
         return true;
     }
 

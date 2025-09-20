@@ -1,24 +1,29 @@
 package by.finalproject.itacademy.userservice.service;
 
+import by.finalproject.itacademy.userservice.model.entity.VerificationEntity;
+import by.finalproject.itacademy.userservice.repository.VerificationCodeRepository;
 import by.finalproject.itacademy.userservice.service.api.IVerificationCodeService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.Random;
+
+import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class VerificationCodeServiceImpl implements IVerificationCodeService {
-    private final Map<String, String> codes = new ConcurrentHashMap<>();
-    private final Random random = new Random();
+    private final VerificationCodeRepository verificationCodeRepository;
 
     @Override
-    public String generateCode(String mail) {
-        String code = String.format("%06d", random.nextInt(999999));
-        codes.put(mail, code);
-        return code;
+    public void generateCode(String uMail) {
+        String code = UUID.randomUUID().toString().substring(0, 6);
+        VerificationEntity verifyCode = VerificationEntity.builder()
+                .mail(uMail)
+                .code(code)
+                .build();
+        verificationCodeRepository.save(verifyCode);
     }
 
-    @Override
+    /*@Override
     public boolean validateCode(String mail, String code) {
         return codes.getOrDefault(mail, "").equals(code);
     }
@@ -26,5 +31,5 @@ public class VerificationCodeServiceImpl implements IVerificationCodeService {
     @Override
     public void deleteCode(String mail) {
         codes.remove(mail);
-    }
+    }*/
 }

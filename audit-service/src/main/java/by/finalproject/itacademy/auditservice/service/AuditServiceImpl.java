@@ -1,104 +1,68 @@
 package by.finalproject.itacademy.auditservice.service;
 
-import by.finalproject.itacademy.auditservice.feign.UserServiceClient;
+import by.finalproject.itacademy.auditservice.feign.TestFeign;
 import by.finalproject.itacademy.auditservice.model.dto.AuditDTO;
 import by.finalproject.itacademy.auditservice.model.dto.PageOfAudit;
-import by.finalproject.itacademy.auditservice.model.dto.UserDTO;
 import by.finalproject.itacademy.auditservice.model.entity.AuditEntity;
-import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.auditservice.repository.AuditRepository;
 import by.finalproject.itacademy.auditservice.service.api.IAuditService;
-import by.finalproject.itacademy.common.model.dto.PageDTO;
-import by.finalproject.itacademy.userservice.model.dto.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
-
-import static java.time.Instant.now;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class AuditServiceImpl implements IAuditService {
     private final AuditRepository auditRepository;
-    private final UserServiceClient userServiceClient;
+    private final TestFeign tesst;
 
     @Transactional(readOnly = true)
     @Override
-    public PageOfAudit getPage(int page, int size) {
-        Page<AuditEntity> auditPage = auditRepository.findAll(
-                PageRequest.of(page, size, Sort.by("dtCreate").descending()));
+    public PageOfAudit getAuditPage(Pageable pageable, UUID uuid) {
+        Page<AuditEntity> auditPage = auditRepository.findAll(pageable);
 
-        return convertToPageOfAudit(auditPage);
+        List<AuditDTO> content = auditPage.getContent().stream()
+                .map(audit -> convertToResponse(audit, uuid))
+                .collect(Collectors.toList());
+
+        PageOfAudit response = new PageOfAudit();
+        response.setNumber(auditPage.getNumber());
+        response.setSize(auditPage.getSize());
+        response.setTotalPages(auditPage.getTotalPages());
+        response.setTotalElements(auditPage.getTotalElements());
+        response.setFirst(auditPage.isFirst());
+        response.setNumberOfElements(auditPage.getNumberOfElements());
+        response.setLast(auditPage.isLast());
+        response.setContent(content);
+
+        return response;
     }
 
+    @Override
     @Transactional(readOnly = true)
-    @Override
-    public AuditDTO get(UUID uuid) {
-        AuditEntity audit = auditRepository.findById(uuid)
-                .orElseThrow(() -> new RuntimeException("Audit record not found"));
-        return convertToDTO(audit);
+    public AuditDTO getAuditById(UUID uuid) {
+        AuditEntity audit = tesst.getUser(uuid)
+                .orElseThrow(() -> new RuntimeException("хуила " + String.valueOf(uuid)));
+
+        return convertToResponse(audit, uuid);
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public PageDTO<AuditDTO> getByType(EssenceTypeEnum type, int page, int size) {
-        Page<AuditEntity> auditPage = auditRepository.findByType(
-                type, PageRequest.of(page, size, Sort.by("dtCreate").descending()));
+    private AuditDTO convertToResponse(AuditEntity audit, UUID uuid) {
+        AuditDTO response = new AuditDTO();
+        response.setUuid(audit.getUuid());
+        response.setDtCreate(audit.getDtCreate());
+        response.setText(audit.getText());
+        response.setType(audit.getType().toString());
+        response.setId(audit.getEssenceId());
 
-        return convertToPageOfAudit(auditPage);
-    }
+        response.setUser();
 
-    @Transactional
-    @Override
-    public void createAuditRecord(UUID userUuid, String text, EssenceTypeEnum type, String id) {
-        AuditEntity audit = new AuditEntity();
-        audit.setUserUuid(userUuid);
-        audit.setText(text);
-        audit.setType(type);
-        audit.setId(id);
-        audit.setDtCreate(now());
-
-        auditRepository.save(audit);
-    }
-
-    private AuditDTO convertToDTO(AuditEntity audit) {
-        AuditDTO dto = new AuditDTO();
-        dto.setUuid(audit.getUuid());
-        dto.setDtCreate(audit.getDtCreate());
-
-        try {
-            User user = userServiceClient.getUser(audit.getUserUuid());
-            UserDTO userDto = new UserDTO();
-            userDto.setUuid(user.getUuid());
-            userDto.setMail(user.getMail());
-            userDto.setFio(user.getFio());
-            userDto.setRole(user.getRole().name());
-            dto.setUser(userDto);
-        } catch (Exception e) {
-            dto.setUser(null);
-        }
-
-        dto.setText(audit.getText());
-        dto.setType(audit.getType().name());
-        dto.setId(audit.getId());
-        return dto;
-    }
-
-    private PageOfAudit convertToPageOfAudit(Page<AuditEntity> page) {
-        PageOfAudit pageOfAudit = new PageOfAudit();
-        pageOfAudit.setNumber(page.getNumber());
-        pageOfAudit.setSize(page.getSize());
-        pageOfAudit.setTotalPages(page.getTotalPages());
-        pageOfAudit.setTotalElements(page.getTotalElements());
-        pageOfAudit.setFirst(page.isFirst());
-        pageOfAudit.setNumberOfElements(page.getNumberOfElements());
-        pageOfAudit.setLast(page.isLast());
-        pageOfAudit.setContent(page.map(this::convertToDTO).getContent());
-        return pageOfAudit;
+        return response;
     }
 }

@@ -112,17 +112,11 @@
             <version>4.3.0</version>
         </dependency>
         <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-core</artifactId>
-            <version>13.6</version>
-        </dependency>
-        <dependency>
             <groupId>by.finalProject.ITAcademy</groupId>
-            <artifactId>user-service</artifactId>
+            <artifactId>common-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
-
     </dependencies>
 
     <build>

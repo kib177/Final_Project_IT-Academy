@@ -7,6 +7,8 @@ import by.finalproject.itacademy.classifierservice.model.entity.OperationCategor
 import by.finalproject.itacademy.classifierservice.repository.CurrencyRepository;
 import by.finalproject.itacademy.classifierservice.repository.OperationCategoryRepository;
 import by.finalproject.itacademy.classifierservice.service.api.IClassifierService;
+import by.finalproject.itacademy.classifierservice.service.mapper.CurrencyMapper;
+import by.finalproject.itacademy.classifierservice.service.mapper.OperationCategoryMapper;
 import by.finalproject.itacademy.common.model.dto.PageDTO;
 import by.finalproject.itacademy.common.model.entity.BaseEntity;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.time.Instant.now;
 
@@ -24,32 +28,31 @@ import static java.time.Instant.now;
 public class ClassifierService implements IClassifierService {
     private final CurrencyRepository currencyRepository;
     private final OperationCategoryRepository operationCategoryRepository;
+    private final CurrencyMapper currencyMapper;
+    private final OperationCategoryMapper operationCategoryMapper;
 
     @Override
     public void addNewCurrency(CurrencyDTO currency) {
 
-        CurrencyEntity currencyEntity = CurrencyEntity.builder()
-                .baseEntity(BaseEntity.builder()
-                        .dtCreate(now())
-                        .dtUpdate(now()).build())
-                .description(currency.getDescription())
-                .title(currency.getTitle())
-                .build();
+        CurrencyEntity currencyEntity = currencyMapper.toEntity(currency);
+        if (currencyEntity.getBaseEntity() != null) {
+            currencyEntity.getBaseEntity().setDtCreate(now());
+            currencyEntity.getBaseEntity().setDtUpdate(now());
+        }
         currencyRepository.save(currencyEntity);
     }
 
     @Override
     public void addNewOperationCategory(OperationCategoryDTO operationCategory) {
 
-        OperationCategoryEntity operationCategoryEntity = OperationCategoryEntity.builder()
-                .baseEntity(BaseEntity.builder()
-                        .dtCreate(now())
-                        .dtUpdate(now())
-                        .build())
-                .title(operationCategory.getTitle())
-                .build();
+        OperationCategoryEntity operationCategoryEntity = operationCategoryMapper.toEntity(operationCategory);
+        if (operationCategoryEntity.getBaseEntity() != null) {
+            operationCategoryEntity.getBaseEntity().setDtCreate(now());
+            operationCategoryEntity.getBaseEntity().setDtUpdate(now());
+        }
         operationCategoryRepository.save(operationCategoryEntity);
     }
+
 
     @Override
     public PageDTO<Object> getPageOfCurrency(Pageable pageable) {
@@ -83,12 +86,7 @@ public class ClassifierService implements IClassifierService {
         List<Object> content = new ArrayList<>();
         for (OperationCategoryEntity operationCategoryEntity : currencyPage.getContent()) {
             content.add(
-                    OperationCategoryDTO.builder()
-                            .uuid(operationCategoryEntity.getBaseEntity().getUuid())
-                            .dtCreate(operationCategoryEntity.getBaseEntity().getDtCreate())
-                            .dtUpdate(operationCategoryEntity.getBaseEntity().getDtUpdate())
-                            .title(operationCategoryEntity.getTitle())
-                            .build()
+                    operationCategoryMapper.toDTO(operationCategoryEntity)
             );
         }
         return PageDTO.builder()

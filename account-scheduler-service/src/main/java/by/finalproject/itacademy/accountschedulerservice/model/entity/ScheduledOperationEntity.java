@@ -1,15 +1,15 @@
 package by.finalproject.itacademy.accountschedulerservice.model.entity;
 
-
 import by.finalproject.itacademy.accountschedulerservice.model.dto.Operation;
 import by.finalproject.itacademy.accountschedulerservice.model.dto.Schedule;
-import by.finalproject.itacademy.common.model.entity.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.sql.Timestamp;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -18,16 +18,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "scheduler")
 public class ScheduledOperationEntity {
+    @Id
+    @GeneratedValue
+    private UUID uuid;
 
-  @EmbeddedId
-  private BaseEntity baseEntity;
+    private Timestamp dtCreate;
+    private Timestamp dtUpdate;
 
-  @NotBlank
+    @Embedded
+    private Schedule schedule;
 
-  private Schedule schedule;
-
-  @NotBlank
-  private Operation operation;
-
+    @Embedded
+    private Operation operation;
 }
+
+
 

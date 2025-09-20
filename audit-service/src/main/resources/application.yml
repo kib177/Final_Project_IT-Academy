@@ -25,26 +25,3 @@ feign:
         connectTimeout: 5000
         readTimeout: 5000
         loggerLevel: basic
-
-user-service:
-  url: http://localhost:8080
-
-logging:
-  level:
-    com.example.audit: DEBUG
-    org.springframework.security: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-
-pagination:
-  default-page: 0
-  default-size: 20
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health, info, metrics
-  endpoint:
-    health:
-      show-details: always

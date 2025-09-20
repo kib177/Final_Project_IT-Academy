@@ -9,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -23,12 +25,12 @@ public class BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID uuid;
 
-    @CreationTimestamp
-    @Column(name = "dt_create", updatable = false)
-    private Instant dtCreate;
 
-    @UpdateTimestamp
+    @Column(name = "dt_create", updatable = false)
+    private Timestamp dtCreate;
+
+
     @Column(name = "dt_update")
-    private Instant dtUpdate;
+    private Timestamp dtUpdate;
 
 }

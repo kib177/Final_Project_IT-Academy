@@ -1,19 +1,56 @@
 package by.finalproject.itacademy.auditservice.feign;
 
-import by.finalproject.itacademy.common.config.FeignConfig;
-import by.finalproject.itacademy.userservice.model.dto.PageOfUser;
-import by.finalproject.itacademy.userservice.model.dto.User;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.data.domain.Pageable;
+/*import by.finalproject.itacademy.auditservice.model.dto.UserDTO;
+import by.finalproject.itacademy.userservice.model.entity.UserEntity;
+import by.finalproject.itacademy.userservice.model.enums.UserRole;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.UUID;
 
-@FeignClient(name = "user-service", url = "${user-service.url}", configuration = FeignConfig.class)
-public interface UserServiceClient {
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class UserServiceClient {
 
-    @GetMapping("/{uuid}")
-    public ResponseEntity<User> getUser(@PathVariable UUID uuid);
-}
+    private final RestTemplate restTemplate;
+
+    @Value("${user.service.url:http://user-service:8080}")
+    private String userServiceUrl;
+
+    @Value("${user.service.endpoint:/api/v1/users/{uuid}}")
+    private String userEndpoint;
+
+    public UserDTO getUserById(UUID userUuid, String authToken) {
+        String url = UriComponentsBuilder.fromHttpUrl(userServiceUrl)
+                .path(userEndpoint)
+                .buildAndExpand(userUuid.toString())
+                .toUriString();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + authToken);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<UserEntity> response = restTemplate.getForEntity(url, UserEntity.class);
+
+        return createFallbackUser(response.getBody() != null ? response.getBody() : null);
+    }
+
+    private UserDTO createFallbackUser(UserEntity userEntity) {
+        UserDTO user = new UserDTO();
+        user.setUuid(userEntity.getUuid());
+        user.setFio(userEntity.getFio());
+        user.setMail(userEntity.getMail());
+        user.setRole(userEntity.getRole().toString());
+        return user;
+    }
+}*/

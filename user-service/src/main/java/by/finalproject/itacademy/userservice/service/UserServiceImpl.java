@@ -4,9 +4,9 @@ import by.finalproject.itacademy.userservice.model.dto.PageOfUser;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserCreate;
 import by.finalproject.itacademy.userservice.service.api.IUserService;
+import by.finalproject.itacademy.userservice.service.api.IVerificationCodeService;
 import by.finalproject.itacademy.userservice.service.api.exception.CabinetException;
 import by.finalproject.itacademy.userservice.model.entity.UserEntity;
-import by.finalproject.itacademy.userservice.model.entity.VerificationEntity;
 import by.finalproject.itacademy.userservice.service.mapper.PageMapper;
 import by.finalproject.itacademy.userservice.service.mapper.UserMapper;
 import by.finalproject.itacademy.userservice.repository.UserRepository;
@@ -17,11 +17,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
+
+import static java.time.Instant.now;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements IUserService {
+    private final IVerificationCodeService verificationCodeService;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PageMapper pageMapper;
@@ -32,14 +37,13 @@ public class UserServiceImpl implements IUserService {
     public boolean create(UserCreate userCreate) {
 
         UserEntity userEntity = userMapper.fromCreateDto(userCreate);
-        userRepository.save(userEntity);
-
-        String code = UUID.randomUUID().toString().substring(0, 6);
-        VerificationEntity verifyCode = VerificationEntity.builder()
-                .mail(userCreate.getMail())
-                .code(code)
-                .build();
-        verificationCodeRepository.save(verifyCode);
+        if(userEntity != null) {
+            userEntity.setDtCreate(Timestamp.from(now()));
+            userEntity.setDtUpdate(
+                    userEntity.getDtCreate());
+            userRepository.save(userEntity);
+        }
+        verificationCodeService.generateCode(userCreate.getMail());
         return true;
     }
 

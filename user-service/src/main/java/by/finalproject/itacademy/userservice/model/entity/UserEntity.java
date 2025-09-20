@@ -1,17 +1,13 @@
 package by.finalproject.itacademy.userservice.model.entity;
 
-
-import by.finalproject.itacademy.common.model.entity.BaseEntity;
 import by.finalproject.itacademy.userservice.model.enums.UserRole;
 import by.finalproject.itacademy.userservice.model.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.validator.constraints.Email;
 
-import java.time.Instant;
+import java.sql.Timestamp;
 import java.util.UUID;
-
-import static java.time.Instant.now;
 
 @Data
 @NoArgsConstructor
@@ -20,9 +16,16 @@ import static java.time.Instant.now;
 @Builder
 @Table(name = "users")
 public class UserEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID uuid;
 
-    @EmbeddedId
-    private BaseEntity baseEntity;
+    @Column(name = "dt_create", updatable = false, nullable = false)
+    private Timestamp dtCreate;
+
+    @Column(name = "dt_update", nullable = false)
+    private Timestamp dtUpdate;
+
     @Email
     @Column(name = "mail", nullable = false, unique = true)
     private String mail;
@@ -44,18 +47,11 @@ public class UserEntity {
     @PrePersist
     protected void onCreate() {
 
-        dtCreate = now();
-        dtUpdate = dtCreate;
         if (role == null) {
             role = UserRole.USER;
         }
         if (status == null) {
             status = UserStatus.WAITING_ACTIVATION;
         }
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        dtUpdate = now();
     }
 }
