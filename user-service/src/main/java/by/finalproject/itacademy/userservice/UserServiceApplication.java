@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.stereotype.Component;
 
 @SpringBootApplication
-
+@EnableFeignClients(basePackages = "by.finalproject.itacademy.userservice.config")
 public class UserServiceApplication {
 
 	public static void main(String[] args) {

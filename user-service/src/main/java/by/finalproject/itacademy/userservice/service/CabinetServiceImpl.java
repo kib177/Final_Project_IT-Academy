@@ -1,6 +1,7 @@
 package by.finalproject.itacademy.userservice.service;
 
 
+import by.finalproject.itacademy.userservice.config.AuditServiceClient;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserLogin;
 import by.finalproject.itacademy.userservice.model.dto.UserRegistration;
@@ -33,6 +34,7 @@ public class CabinetServiceImpl implements ICabinetService {
     private final VerificationCodeRepository verificationCodeRepository;
     private final UserMapper userMapper;
     private final IVerificationCodeService verificationCodeService;
+    private final AuditServiceClient auditClient;
     //private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -44,7 +46,7 @@ public class CabinetServiceImpl implements ICabinetService {
         
         UserEntity userEntity = userMapper.fromRegistrationDto(userRegistration);
         if(userEntity != null) {
-            userEntity.setDtCreate(Timestamp.from(now()));
+            userEntity.setDtCreate(LocalDateTime.now());
             userEntity.setDtUpdate(
                     userEntity.getDtCreate());
             userRepository.save(userEntity);
@@ -77,7 +79,7 @@ public class CabinetServiceImpl implements ICabinetService {
         if (!userLogin.getPassword().equals(userEntity.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
-
+        auditClient.logAction(userEntity.getUuid());
         /*if (!userEntity.getStatus().toString().equals("ACTIVATED")) {
             throw new RuntimeException("Account not activated");
         }*/

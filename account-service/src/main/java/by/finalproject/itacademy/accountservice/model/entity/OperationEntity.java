@@ -8,8 +8,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -19,13 +22,17 @@ import java.time.Instant;
 @Table(name = "operations")
 public class OperationEntity {
 
-    @EmbeddedId
-    private BaseEntity baseEntity;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID uuid;
 
-    @Column(nullable = false)
-    private Instant date;
+    @CreationTimestamp
+    @Column(name = "dt_create", updatable = false, nullable = false)
+    private LocalDateTime dtCreate;
 
-    private String description;
+    @CreationTimestamp
+    @Column(name = "dt_update", nullable = false)
+    private LocalDateTime dtUpdate;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)

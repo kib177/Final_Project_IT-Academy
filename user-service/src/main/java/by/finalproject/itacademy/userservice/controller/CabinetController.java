@@ -1,6 +1,7 @@
 package by.finalproject.itacademy.userservice.controller;
 
 
+import by.finalproject.itacademy.common.config.JwtUser;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserLogin;
 import by.finalproject.itacademy.userservice.model.dto.UserRegistration;
@@ -9,6 +10,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -52,5 +55,9 @@ public class CabinetController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
 
+    /*private JwtUser getCurrentJwtUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (JwtUser) authentication.getPrincipal();
+    }*/
 
 }

@@ -4,9 +4,10 @@ import by.finalproject.itacademy.userservice.model.enums.UserRole;
 import by.finalproject.itacademy.userservice.model.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Email;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -20,11 +21,13 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID uuid;
 
+    @CreationTimestamp
     @Column(name = "dt_create", updatable = false, nullable = false)
-    private Timestamp dtCreate;
+    private LocalDateTime dtCreate;
 
+    @CreationTimestamp
     @Column(name = "dt_update", nullable = false)
-    private Timestamp dtUpdate;
+    private LocalDateTime dtUpdate;
 
     @Email
     @Column(name = "mail", nullable = false, unique = true)

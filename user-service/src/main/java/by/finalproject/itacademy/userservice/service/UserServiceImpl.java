@@ -38,7 +38,7 @@ public class UserServiceImpl implements IUserService {
 
         UserEntity userEntity = userMapper.fromCreateDto(userCreate);
         if(userEntity != null) {
-            userEntity.setDtCreate(Timestamp.from(now()));
+            userEntity.setDtCreate(LocalDateTime.now());
             userEntity.setDtUpdate(
                     userEntity.getDtCreate());
             userRepository.save(userEntity);

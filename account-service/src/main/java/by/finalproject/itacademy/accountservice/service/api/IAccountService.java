@@ -1,5 +1,8 @@
 package by.finalproject.itacademy.accountservice.service.api;
 
+import by.finalproject.itacademy.accountservice.model.dto.AccountDTO;
+import by.finalproject.itacademy.accountservice.model.dto.OperationDTO;
+import by.finalproject.itacademy.common.model.dto.PageDTO;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;

@@ -1,15 +1,19 @@
 package by.finalproject.itacademy.auditservice.controller;
 
 import by.finalproject.itacademy.auditservice.model.dto.AuditDTO;
-import by.finalproject.itacademy.auditservice.model.dto.PageOfAudit;
+import by.finalproject.itacademy.auditservice.model.dto.AuditLogRequest;
+import by.finalproject.itacademy.auditservice.model.entity.AuditEntity;
+import by.finalproject.itacademy.auditservice.repository.AuditRepository;
 import by.finalproject.itacademy.auditservice.service.api.IAuditService;
 
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -17,22 +21,26 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuditController {
     private final IAuditService auditService;
+    private final AuditRepository auditRepository;
+
+
+    @PostMapping("/log")
+    public void logAction(@RequestBody UUID uuid) {
+        auditService.createLogAction(uuid);
+        ResponseEntity.status(201).build();
+    }
 
     @GetMapping
     //@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PageOfAudit> getAuditPage(Pageable pageable,
-            @RequestHeader UUID uuid) {
+    public ResponseEntity<Page<AuditEntity>> getAuditPage(Pageable pageable) {
 
-        PageOfAudit result = (PageOfAudit) auditService.getAuditPage(pageable, uuid);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(auditService.getAuditRecords(pageable));
     }
 
     @GetMapping("/{uuid}")
     //@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AuditDTO> getAuditById(
+    public ResponseEntity<Optional<AuditEntity>> getAuditById(
             @PathVariable UUID uuid) {
-
-        AuditDTO result = auditService.getAuditById(uuid);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(auditService.getAuditRecord(uuid));
     }
 }

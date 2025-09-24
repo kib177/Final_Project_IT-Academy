@@ -17,7 +17,7 @@ public class User {
     private long dt_update;
     private String mail;
     private String fio;
-    private UserRole role;
+    private String role;
     private UserStatus status;
 
 }

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -26,31 +27,23 @@ import java.util.UUID;
 public class AccountServiceImpl implements IAccountService {
     private final AccountRepository accountRepository;
     private final OperationRepository operationRepository;
-    private final AuditServiceClient auditServiceClient;
 
     @Transactional
     @Override
     public void createAccount(AccountDTO dto) {
         UUID userUuid = getCurrentUserUuid();
+        LocalDateTime now = LocalDateTime.now();
 
-        AccountEntity account = new AccountEntity();
-        account.setTitle(dto.getTitle());
-        account.setDescription(dto.getDescription());
-        account.setBalance(dto.getBalance());
-        account.setType(dto.getType());
-        account.setCurrency(dto.getCurrency());
-        account.setUserUuid(userUuid);
-        account.setDtCreate(Instant.now().getEpochSecond());
-        account.setDtUpdate(Instant.now().getEpochSecond());
-
-        accountRepository.save(account);
-
-        auditServiceClient.createAuditRecord(
-                userUuid,
-                "Created account: " + dto.getTitle(),
-                EssenceTypeEnum.ACCOUNT,
-                account.getUuid().toString()
-        );
+        accountRepository.save(AccountEntity.builder()
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .balance(dto.getBalance())
+                .type(dto.getType())
+                .currency(dto.getCurrency())
+                .uuid(userUuid)
+                .dtCreate(now)
+                .dtUpdate(now)
+                .build());
     }
 
     @Transactional(readOnly = true)
@@ -72,7 +65,7 @@ public class AccountServiceImpl implements IAccountService {
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         // Verify the account belongs to the current user
-        if (!account.getUserUuid().equals(userUuid)) {
+        if (!account.getUuid().equals(userUuid)) {
             throw new RuntimeException("Access denied");
         }
 
@@ -111,7 +104,7 @@ public class AccountServiceImpl implements IAccountService {
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         // Verify the account belongs to the current user
-        if (!account.getUserUuid().equals(userUuid)) {
+        if (!account.getUuid().equals(userUuid)) {
             throw new RuntimeException("Access denied");
         }
 
