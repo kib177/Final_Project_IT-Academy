@@ -1,3 +1,4 @@
+/*
 package by.finalproject.itacademy.auditservice.feign;
 
 
@@ -20,3 +21,4 @@ public interface UserServiceClient extends auditApi {
     UserDTO getUser(@PathVariable UUID uuid);
 }
 
+*/

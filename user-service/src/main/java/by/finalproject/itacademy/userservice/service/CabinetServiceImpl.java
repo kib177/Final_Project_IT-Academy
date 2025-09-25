@@ -79,7 +79,7 @@ public class CabinetServiceImpl implements ICabinetService {
         if (!userLogin.getPassword().equals(userEntity.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
-        auditClient.logAction(userEntity.getUuid());
+        //auditClient.logAction(userEntity.getUuid());
         /*if (!userEntity.getStatus().toString().equals("ACTIVATED")) {
             throw new RuntimeException("Account not activated");
         }*/

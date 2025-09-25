@@ -1,5 +1,6 @@
 package by.finalproject.itacademy.auditservice.controller;
 
+import by.finalproject.itacademy.auditservice.intercepter.AuditService;
 import by.finalproject.itacademy.auditservice.model.dto.AuditDTO;
 import by.finalproject.itacademy.auditservice.model.dto.AuditLogRequest;
 import by.finalproject.itacademy.auditservice.model.entity.AuditEntity;
@@ -20,15 +21,15 @@ import java.util.UUID;
 @RequestMapping("/api/v1/audit")
 @RequiredArgsConstructor
 public class AuditController {
-    private final IAuditService auditService;
+    private final AuditService auditService;
     private final AuditRepository auditRepository;
 
 
-    @PostMapping("/log")
+   /* @PostMapping("/log")
     public void logAction(@RequestBody UUID uuid) {
         auditService.createLogAction(uuid);
         ResponseEntity.status(201).build();
-    }
+    }*/
 
     @GetMapping
     //@PreAuthorize("hasRole('ADMIN')")

@@ -1,3 +1,4 @@
+/*
 package by.finalproject.itacademy.auditservice.service;
 
 import by.finalproject.itacademy.auditservice.feign.UserServiceClient;
@@ -27,9 +28,11 @@ public class AuditServiceImpl implements IAuditService  {
     @Autowired
     private UserServiceClient userServiceClient;
 
-    /*@Override
+    */
+/*@Override
     public void createLogAction(AuditLogRequest request) {
-    }*/
+    }*//*
+
 
 
     @Transactional
@@ -48,11 +51,6 @@ public class AuditServiceImpl implements IAuditService  {
     }
 
     @Override
-    public AuditEntity convertToEntity(AuditDTO auditData) {
-        return null;
-    }
-
-    @Override
     public Page<AuditEntity> getAuditRecords(Pageable pageable) {
         return auditRepository.findAll(pageable);
     }
@@ -62,3 +60,4 @@ public class AuditServiceImpl implements IAuditService  {
         return auditRepository.findById(uuid);
     }
 }
+*/
