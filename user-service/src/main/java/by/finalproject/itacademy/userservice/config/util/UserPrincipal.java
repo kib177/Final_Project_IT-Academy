@@ -1,3 +1,4 @@
+/*
 package by.finalproject.itacademy.userservice.config;
 
 import by.finalproject.itacademy.userservice.model.entity.UserEntity;
@@ -11,19 +12,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-// UserPrincipal.java
 public class UserPrincipal implements UserDetails {
     private UUID uuid;
     private String mail;
-    private String password;
+    private String fio;
     private UserRole role;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrincipal(UUID uuid, String mail, String password, UserRole role,
+    public UserPrincipal(UUID uuid, String mail, String fio, UserRole role,
                          Collection<? extends GrantedAuthority> authorities) {
         this.uuid = uuid;
         this.mail = mail;
-        this.password = password;
+        this.fio = fio;
         this.role = role;
         this.authorities = authorities;
     }
@@ -46,7 +46,7 @@ public class UserPrincipal implements UserDetails {
     public UserRole getRole() { return role; }
 
     @Override public String getUsername() { return mail; }
-    @Override public String getPassword() { return password; }
+    @Override public String getPassword() { return fio; }
     @Override public Collection<? extends GrantedAuthority> getAuthorities() { return authorities; }
 
     @Override public boolean isAccountNonExpired() { return true; }
@@ -54,3 +54,4 @@ public class UserPrincipal implements UserDetails {
     @Override public boolean isCredentialsNonExpired() { return true; }
     @Override public boolean isEnabled() { return true; }
 }
+*/

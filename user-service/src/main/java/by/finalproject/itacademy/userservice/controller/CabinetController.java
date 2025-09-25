@@ -1,7 +1,7 @@
 package by.finalproject.itacademy.userservice.controller;
 
 
-import by.finalproject.itacademy.common.config.JwtUser;
+import by.finalproject.itacademy.common.jwt.JwtUser;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserLogin;
 import by.finalproject.itacademy.userservice.model.dto.UserRegistration;
@@ -10,8 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,13 +23,13 @@ public class CabinetController {
     private final ICabinetService cabinetService;
 
     @PostMapping("/registration")
-    public ResponseEntity<String> registration(@Valid @RequestBody UserRegistration userRegistration) {
+    public ResponseEntity<?> registration(@Valid @RequestBody UserRegistration userRegistration) {
         cabinetService.registration(userRegistration);
         return ResponseEntity.status(HttpStatus.CREATED).body("Registration successful. Check email for verification.");
     }
 
     @GetMapping("/verification")
-    public ResponseEntity<String> verification(@RequestParam String code, @RequestParam String mail) {
+    public ResponseEntity<?> verification(@RequestParam String code, @RequestParam String mail) {
         boolean isVerified = cabinetService.verifyUser(mail, code);
         if (isVerified) {
             return ResponseEntity.ok("Account verified successfully");
@@ -40,7 +39,7 @@ public class CabinetController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody UserLogin userLogin) {
+    public ResponseEntity<?> login(@Valid @RequestBody UserLogin userLogin) {
         try {
             String result = cabinetService.login(userLogin);
             return ResponseEntity.ok(result);
@@ -50,7 +49,8 @@ public class CabinetController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<User> aboutSelf(UUID uuid) {
+    public ResponseEntity<User> aboutSelf(@AuthenticationPrincipal JwtUser jwtUser) {
+        UUID uuid = jwtUser.userId();
         return ResponseEntity.status(HttpStatus.OK).body(cabinetService.getById(uuid)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }

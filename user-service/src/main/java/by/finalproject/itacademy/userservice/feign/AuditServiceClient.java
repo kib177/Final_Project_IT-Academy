@@ -1,7 +1,6 @@
-package by.finalproject.itacademy.userservice.config;
+package by.finalproject.itacademy.userservice.feign;
 
 
-import by.finalproject.itacademy.userservice.model.dto.AuditLogRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

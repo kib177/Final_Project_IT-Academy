@@ -1,8 +1,9 @@
+/*
 package by.finalproject.itacademy.common;
 
 
-import by.finalproject.itacademy.common.config.JwtTokenUtil;
-import by.finalproject.itacademy.common.config.JwtUser;
+import by.finalproject.itacademy.common.jwt.JwtTokenUtil;
+import by.finalproject.itacademy.common.jwt.JwtUser;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,3 +59,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role));
     }
 }
+*/

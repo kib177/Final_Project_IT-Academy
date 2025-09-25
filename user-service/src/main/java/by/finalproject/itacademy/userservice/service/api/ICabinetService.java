@@ -10,6 +10,7 @@ import java.util.UUID;
 public interface ICabinetService {
     boolean registration(UserRegistration userRegistration);
     String login(UserLogin userLogin);
-    Optional<User> getById(UUID uuid);
     boolean verifyUser(String mail, String code);
+
+    Optional<User> getById(UUID uuid);
 }

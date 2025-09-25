@@ -1,7 +1,8 @@
 package by.finalproject.itacademy.userservice.service;
 
 
-import by.finalproject.itacademy.userservice.config.AuditServiceClient;
+import by.finalproject.itacademy.common.jwt.JwtTokenUtil;
+import by.finalproject.itacademy.userservice.feign.AuditServiceClient;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserLogin;
 import by.finalproject.itacademy.userservice.model.dto.UserRegistration;
@@ -19,8 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,6 +34,7 @@ public class CabinetServiceImpl implements ICabinetService {
     private final UserMapper userMapper;
     private final IVerificationCodeService verificationCodeService;
     private final AuditServiceClient auditClient;
+    private final JwtTokenUtil jwtTokenUtil;
     //private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -79,12 +79,14 @@ public class CabinetServiceImpl implements ICabinetService {
         if (!userLogin.getPassword().equals(userEntity.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
+
         auditClient.logAction(userEntity.getUuid());
         /*if (!userEntity.getStatus().toString().equals("ACTIVATED")) {
             throw new RuntimeException("Account not activated");
         }*/
 
-        return "Login successful for user: " + userEntity.getFio();
+        return "Login successful for user: " + jwtTokenUtil.generateToken(userEntity.getUuid(),
+                userEntity.getMail(), userEntity.getFio(), String.valueOf(userEntity.getRole()));
     }
 
     @Override
