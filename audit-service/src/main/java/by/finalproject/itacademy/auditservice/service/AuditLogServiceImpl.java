@@ -1,6 +1,7 @@
 package by.finalproject.itacademy.auditservice.service;
 
 import by.finalproject.itacademy.auditservice.feign.UserServiceClient;
+import by.finalproject.itacademy.auditservice.model.dto.UserDTO;
 import by.finalproject.itacademy.auditservice.model.entity.AuditEntity;
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.auditservice.repository.AuditRepository;
@@ -25,15 +26,15 @@ public class AuditLogServiceImpl implements IAuditLogService {
 
     @Transactional
     @Override
-    public void createLogAction(UUID uuid) {
+    public void createLogAction(UserDTO userDTO) {
         AuditEntity audit = new AuditEntity();
         audit.setDtCreate(LocalDateTime.now());
 
-        audit.setUserUuid(String.valueOf(uuid));
+        audit.setUser(userDTO);
 
         audit.setText("request.getText()");
         audit.setType(EssenceTypeEnum.USER);
-        audit.setEssenceId(uuid.toString());
+        audit.setEssenceId(userDTO.getUuidUser().toString());
 
         auditRepository.save(audit);
     }

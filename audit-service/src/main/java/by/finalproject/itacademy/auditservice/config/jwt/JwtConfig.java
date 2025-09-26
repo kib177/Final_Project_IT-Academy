@@ -1,5 +1,6 @@
 package by.finalproject.itacademy.auditservice.config.jwt;
 
+import by.finalproject.itacademy.common.jwt.JwtAuthenticationFilter;
 import by.finalproject.itacademy.common.jwt.JwtTokenUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,10 @@ public class JwtConfig {
     @Bean
     public JwtTokenUtil jwtTokenUtil() {
         return new JwtTokenUtil();
+    }
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter();
     }
 }
 

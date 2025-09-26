@@ -1,10 +1,10 @@
 package by.finalproject.itacademy.auditservice.model.entity;
 
+import by.finalproject.itacademy.auditservice.model.dto.UserDTO;
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -24,8 +24,9 @@ public class AuditEntity {
     @Column(name = "dt_create", nullable = false)
     private LocalDateTime dtCreate;
 
+    @Embedded
     @Column(nullable = false)
-    private String userUuid;
+    private UserDTO user;
 
     @Column(nullable = false, length = 500)
     private String text;
@@ -43,7 +44,7 @@ public class AuditEntity {
         AuditEntity entity = (AuditEntity) o;
         return Objects.equals(uuid, entity.uuid)
                 && Objects.equals(dtCreate, entity.dtCreate)
-                && Objects.equals(userUuid, entity.userUuid)
+                && Objects.equals(user, entity.user)
                 && Objects.equals(text, entity.text)
                 && type == entity.type
                 && Objects.equals(essenceId, entity.essenceId);
@@ -51,7 +52,7 @@ public class AuditEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(uuid, dtCreate, userUuid, text, type, essenceId);
+        return Objects.hash(uuid, dtCreate, user, text, type, essenceId);
     }
 
     @Override
@@ -59,7 +60,7 @@ public class AuditEntity {
         return "AuditEntity{" +
                 "uuid=" + uuid +
                 ", dtCreate=" + dtCreate +
-                ", userUuid='" + userUuid + '\'' +
+                ", userUuid='" + user + '\'' +
                 ", text='" + text + '\'' +
                 ", essenceId='" + essenceId + '\'' +
                 '}';

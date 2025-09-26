@@ -1,8 +1,6 @@
-package by.finalproject.itacademy.userservice.filter;
+package by.finalproject.itacademy.common.jwt;
 
 
-import by.finalproject.itacademy.common.jwt.JwtTokenUtil;
-import by.finalproject.itacademy.common.jwt.JwtUser;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,6 +31,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
+
+        String path = request.getServletPath();
+
+        // Разрешаем доступ к endpoint'у /audit/log без аутентификации
+        if ("/api/v1/audit/log".equals(path)) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         try {
             String token = extractToken(request);

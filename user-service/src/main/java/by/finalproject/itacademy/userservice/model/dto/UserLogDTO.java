@@ -1,4 +1,4 @@
-package by.finalproject.itacademy.auditservice.model.dto;
+package by.finalproject.itacademy.userservice.model.dto;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Embeddable
-public class UserDTO {
+public class UserLogDTO {
     private UUID uuidUser;
     private String mail;
     private String fio;

@@ -4,6 +4,7 @@ package by.finalproject.itacademy.userservice.service;
 import by.finalproject.itacademy.common.jwt.JwtTokenUtil;
 import by.finalproject.itacademy.userservice.feign.AuditServiceClient;
 import by.finalproject.itacademy.userservice.model.dto.User;
+import by.finalproject.itacademy.userservice.model.dto.UserLogDTO;
 import by.finalproject.itacademy.userservice.model.dto.UserLogin;
 import by.finalproject.itacademy.userservice.model.dto.UserRegistration;
 import by.finalproject.itacademy.userservice.model.enums.UserStatus;
@@ -80,7 +81,12 @@ public class CabinetServiceImpl implements ICabinetService {
             throw new RuntimeException("Invalid password");
         }
 
-        auditClient.logAction(userEntity.getUuid());
+        auditClient.logAction(UserLogDTO.builder()
+                        .uuidUser(userEntity.getUuid())
+                        .mail(userEntity.getMail())
+                        .fio(userEntity.getFio())
+                        .role(userEntity.getRole().toString())
+                .build());
         /*if (!userEntity.getStatus().toString().equals("ACTIVATED")) {
             throw new RuntimeException("Account not activated");
         }*/

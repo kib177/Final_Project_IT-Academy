@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Component
 public class JwtTokenUtil {
-    private SecretKey secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    private final SecretKey secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     @Value("${jwt.expiration:3600000}")
     private Long expiration;

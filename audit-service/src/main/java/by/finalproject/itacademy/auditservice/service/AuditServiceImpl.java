@@ -42,14 +42,10 @@ public class AuditServiceImpl implements IAuditService  {
     @Override
     public PageOfAudit getAuditPage(Pageable pageable) {
         Page<AuditEntity> auditPage;
-        List<AuditDTO> content;
+        List<AuditEntity> content;
         try {
              auditPage = auditRepository.findAll(pageable);
-           content = new ArrayList<>();
-            for (AuditEntity audit : auditPage.getContent()) {
-                AuditDTO auditDTO = convertToResponse(audit);
-                content.add(auditDTO);
-            }
+            content = new ArrayList<>(auditPage.getContent());
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
@@ -76,14 +72,14 @@ public class AuditServiceImpl implements IAuditService  {
         return convertToResponse(audit, uuid);
     }*/
 
-    private AuditDTO convertToResponse(AuditEntity audit) {
+   /* private AuditEntity convertToResponse(AuditEntity audit) {
         AuditDTO response = new AuditDTO();
         response.setUuid(audit.getUuid());
         response.setDtCreate(audit.getDtCreate());
         response.setText(audit.getText());
         response.setType(audit.getType());
         response.setId(audit.getEssenceId());
-        response.setUserUuid(audit.getUserUuid());
+        response.setUser(audit.getUserUuid());
         return response;
-    }
+    }*/
 }

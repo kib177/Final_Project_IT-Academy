@@ -3,6 +3,7 @@ package by.finalproject.itacademy.auditservice.controller;
 import by.finalproject.itacademy.auditservice.model.dto.AuditDTO;
 import by.finalproject.itacademy.auditservice.model.dto.AuditLogRequest;
 import by.finalproject.itacademy.auditservice.model.dto.PageOfAudit;
+import by.finalproject.itacademy.auditservice.model.dto.UserDTO;
 import by.finalproject.itacademy.auditservice.model.entity.AuditEntity;
 import by.finalproject.itacademy.auditservice.repository.AuditRepository;
 import by.finalproject.itacademy.auditservice.service.api.IAuditLogService;
@@ -28,8 +29,9 @@ public class AuditController {
 
 
     @PostMapping("/log")
-    public void logAction(@RequestBody UUID uuid) {
-        auditLogService.createLogAction(uuid);
+    public void logAction(@RequestBody UserDTO userDTO) {
+
+        auditLogService.createLogAction(userDTO);
         ResponseEntity.status(201).build();
     }
 
