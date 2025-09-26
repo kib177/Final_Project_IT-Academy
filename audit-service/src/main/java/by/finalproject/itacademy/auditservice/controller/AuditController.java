@@ -15,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -26,11 +28,14 @@ import java.util.UUID;
 public class AuditController {
     private final IAuditService auditService;
     private final IAuditLogService auditLogService;
+    private final AuditRepository auditRepository;
+    private Authentication authentication;
 
 
     @PostMapping("/log")
     public void logAction(@RequestBody UserDTO userDTO) {
-
+    userDTO.setFio(String.valueOf(SecurityContextHolder.getContext().getAuthentication()
+            .getName()));
         auditLogService.createLogAction(userDTO);
         ResponseEntity.status(201).build();
     }
