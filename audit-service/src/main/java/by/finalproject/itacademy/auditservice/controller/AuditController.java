@@ -34,8 +34,7 @@ public class AuditController {
 
     @PostMapping("/log")
     public void logAction(@RequestBody UserDTO userDTO) {
-    userDTO.setFio(String.valueOf(SecurityContextHolder.getContext().getAuthentication()
-            .getName()));
+    userDTO.setFio(String.valueOf(SecurityContextHolder.getContext().getAuthentication()));
         auditLogService.createLogAction(userDTO);
         ResponseEntity.status(201).build();
     }

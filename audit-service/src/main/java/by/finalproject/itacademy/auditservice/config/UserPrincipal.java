@@ -1,8 +1,6 @@
-/*
-package by.finalproject.itacademy.userservice.config;
+package by.finalproject.itacademy.auditservice.config;
 
-import by.finalproject.itacademy.userservice.model.entity.UserEntity;
-import by.finalproject.itacademy.userservice.model.enums.UserRole;
+import by.finalproject.itacademy.auditservice.model.dto.UserDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,10 +14,10 @@ public class UserPrincipal implements UserDetails {
     private UUID uuid;
     private String mail;
     private String fio;
-    private UserRole role;
+    private String role;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrincipal(UUID uuid, String mail, String fio, UserRole role,
+    public UserPrincipal(UUID uuid, String mail, String fio, String role,
                          Collection<? extends GrantedAuthority> authorities) {
         this.uuid = uuid;
         this.mail = mail;
@@ -28,22 +26,22 @@ public class UserPrincipal implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static UserPrincipal create(UserEntity user) {
+    public static UserPrincipal create(UserDTO user) {
         List<GrantedAuthority> authorities = Collections.singletonList(
-                new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+                new SimpleGrantedAuthority("ROLE_" + user.getRole())
         );
 
         return new UserPrincipal(
-                user.getUuid(),
+                user.getUuidUser(),
                 user.getMail(),
-                user.getPassword(),
+                user.getFio(),
                 user.getRole(),
                 authorities
         );
     }
 
     public UUID getUuid() { return uuid; }
-    public UserRole getRole() { return role; }
+    public String getRole() { return role; }
 
     @Override public String getUsername() { return mail; }
     @Override public String getPassword() { return fio; }
@@ -54,4 +52,3 @@ public class UserPrincipal implements UserDetails {
     @Override public boolean isCredentialsNonExpired() { return true; }
     @Override public boolean isEnabled() { return true; }
 }
-*/
