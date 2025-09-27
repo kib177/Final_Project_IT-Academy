@@ -1,7 +1,7 @@
 package by.finalproject.itacademy.userservice.config;
 
 
-import by.finalproject.itacademy.common.JwtAuthenticationFilter;
+import by.finalproject.itacademy.common.config.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -27,9 +27,8 @@ public class UserSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/v1/user/**").permitAll()
-                        .requestMatchers("/api/v1/cabinet/**").permitAll()
-                        .anyRequest().authenticated()
+
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

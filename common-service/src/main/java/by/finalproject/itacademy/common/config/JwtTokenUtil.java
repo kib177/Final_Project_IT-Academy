@@ -2,6 +2,7 @@ package by.finalproject.itacademy.common.config;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -10,10 +11,10 @@ import java.util.Date;
 import java.util.UUID;
 
 @Component
+@RequiredArgsConstructor
 public class JwtTokenUtil {
 
-    @Value("${jwt.secret}")
-    private SecretKey secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    private final SecretKey secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     @Value("${jwt.expiration}")
     private Long expiration;

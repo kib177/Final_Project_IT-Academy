@@ -1,6 +1,7 @@
 package by.finalproject.itacademy.userservice.service;
 
 
+import by.finalproject.itacademy.common.config.JwtTokenUtil;
 import by.finalproject.itacademy.userservice.config.AuditServiceClient;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserLogin;
@@ -34,6 +35,7 @@ public class CabinetServiceImpl implements ICabinetService {
     private final VerificationCodeRepository verificationCodeRepository;
     private final UserMapper userMapper;
     private final IVerificationCodeService verificationCodeService;
+    private final JwtTokenUtil jwtTokenUtil;
     private final AuditServiceClient auditClient;
     //private final PasswordEncoder passwordEncoder;
 
@@ -86,7 +88,9 @@ public class CabinetServiceImpl implements ICabinetService {
             throw new RuntimeException("Account not activated");
         }*/
 
-        return "Login successful for user: " + userEntity.getFio();
+        return "Login successful for user: " + jwtTokenUtil.generateToken(userEntity.getUuid(),
+                userEntity.getMail(),
+                userEntity.getRole().name());
     }
 
     @Override

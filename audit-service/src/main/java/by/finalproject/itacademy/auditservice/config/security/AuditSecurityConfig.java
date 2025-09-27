@@ -1,6 +1,6 @@
 package by.finalproject.itacademy.auditservice.config.security;
 
-import by.finalproject.itacademy.common.JwtAuthenticationFilter;
+import by.finalproject.itacademy.common.config.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +24,8 @@ public class AuditSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/v1/audit/**").permitAll()
-                        .anyRequest().authenticated()
+
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
