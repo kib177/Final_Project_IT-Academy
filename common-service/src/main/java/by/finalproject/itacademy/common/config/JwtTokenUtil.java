@@ -1,9 +1,11 @@
 package by.finalproject.itacademy.common.config;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.UUID;
 
@@ -11,7 +13,7 @@ import java.util.UUID;
 public class JwtTokenUtil {
 
     @Value("${jwt.secret}")
-    private String secret;
+    private SecretKey secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     @Value("${jwt.expiration}")
     private Long expiration;
@@ -23,7 +25,7 @@ public class JwtTokenUtil {
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS512, secret)
+                .signWith(secret)
                 .compact();
     }
 
