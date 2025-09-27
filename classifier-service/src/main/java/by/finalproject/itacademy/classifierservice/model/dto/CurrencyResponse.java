@@ -12,9 +12,10 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class OperationCategoryDTO {
+public class CurrencyResponse {
     private UUID uuid;
     private LocalDateTime dtCreate;
     private LocalDateTime dtUpdate;
     private String title;
+    private String description;
 }

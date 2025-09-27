@@ -11,6 +11,6 @@ public interface ICabinetService {
     boolean registration(UserRegistration userRegistration);
     String login(UserLogin userLogin);
     boolean verifyUser(String mail, String code);
-
-    Optional<User> getById(UUID uuid);
+    Optional<User> getAboutSelf();
+    UUID getCurrentUserUuid();
 }

@@ -16,7 +16,7 @@ import java.util.UUID;
 public class AuditDTO {
     private UUID uuid;
     private LocalDateTime dtCreate;
-    private String userUuid;
+    private UserDTO user;
     private String text;
     private EssenceTypeEnum type;
     private String id;

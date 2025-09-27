@@ -1,0 +1,26 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: classifier-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/classifier
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: 1998177
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: basic
+

@@ -31,7 +31,6 @@ public class AccountServiceImpl implements IAccountService {
     @Transactional
     @Override
     public void createAccount(AccountDTO dto) {
-        UUID userUuid = getCurrentUserUuid();
         LocalDateTime now = LocalDateTime.now();
 
         accountRepository.save(AccountEntity.builder()
@@ -40,7 +39,6 @@ public class AccountServiceImpl implements IAccountService {
                 .balance(dto.getBalance())
                 .type(dto.getType())
                 .currency(dto.getCurrency())
-                .uuid(userUuid)
                 .dtCreate(now)
                 .dtUpdate(now)
                 .build());
@@ -59,8 +57,6 @@ public class AccountServiceImpl implements IAccountService {
     @Transactional
     @Override
     public void createOperation(UUID accountUuid, OperationDTO dto) {
-        UUID userUuid = getCurrentUserUuid();
-
         AccountEntity account = accountRepository.findById(accountUuid)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 

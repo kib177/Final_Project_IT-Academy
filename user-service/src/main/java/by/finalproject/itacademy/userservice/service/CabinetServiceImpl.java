@@ -2,6 +2,7 @@ package by.finalproject.itacademy.userservice.service;
 
 
 import by.finalproject.itacademy.common.jwt.JwtTokenUtil;
+import by.finalproject.itacademy.common.jwt.JwtUser;
 import by.finalproject.itacademy.userservice.feign.AuditServiceClient;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserLogDTO;
@@ -17,7 +18,10 @@ import by.finalproject.itacademy.userservice.model.entity.VerificationEntity;
 import by.finalproject.itacademy.userservice.service.mapper.UserMapper;
 import by.finalproject.itacademy.userservice.repository.UserRepository;
 import by.finalproject.itacademy.userservice.repository.VerificationCodeRepository;
+import io.jsonwebtoken.Jwt;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -87,18 +91,21 @@ public class CabinetServiceImpl implements ICabinetService {
                         .fio(userEntity.getFio())
                         .role(userEntity.getRole().toString())
                 .build());
-        /*if (!userEntity.getStatus().toString().equals("ACTIVATED")) {
-            throw new RuntimeException("Account not activated");
-        }*/
 
         return "Login successful for user: " + jwtTokenUtil.generateToken(userEntity.getUuid(),
                 userEntity.getMail(), userEntity.getFio(), String.valueOf(userEntity.getRole()));
     }
 
     @Override
-    public Optional<User> getById(UUID uuid) {
-        UserEntity userEntity = userRepository.getByUuid(uuid)
-                .orElseThrow(() -> new CabinetException("User not found" + uuid));
+    public Optional<User> getAboutSelf() {
+        UserEntity userEntity = userRepository.getByUuid(getCurrentUserUuid())
+                .orElseThrow(() -> new CabinetException("User not found"));
         return Optional.ofNullable(userMapper.toDto(userEntity));
+    }
+
+    @Override
+    public UUID getCurrentUserUuid() {
+        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return jwtUser.userId();
     }
 }

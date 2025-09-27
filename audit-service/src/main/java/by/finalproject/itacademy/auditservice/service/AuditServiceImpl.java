@@ -1,6 +1,5 @@
 package by.finalproject.itacademy.auditservice.service;
 
-import by.finalproject.itacademy.auditservice.feign.UserServiceClient;
 import by.finalproject.itacademy.auditservice.model.dto.AuditDTO;
 import by.finalproject.itacademy.auditservice.model.dto.PageOfAudit;
 import by.finalproject.itacademy.auditservice.model.entity.AuditEntity;
@@ -14,9 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -25,13 +22,9 @@ public class AuditServiceImpl implements IAuditService  {
     @Autowired
     private AuditRepository auditRepository;
 
-    @Autowired
-    private UserServiceClient userServiceClient;
-
     /*@Override
     public void createLogAction(AuditLogRequest request) {
     }*/
-
 
     @Override
     public AuditEntity convertToEntity(AuditDTO auditData) {
@@ -41,14 +34,8 @@ public class AuditServiceImpl implements IAuditService  {
     @Transactional(readOnly = true)
     @Override
     public PageOfAudit getAuditPage(Pageable pageable) {
-        Page<AuditEntity> auditPage;
-        List<AuditEntity> content;
-        try {
-             auditPage = auditRepository.findAll(pageable);
-            content = new ArrayList<>(auditPage.getContent());
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
+        Page<AuditEntity> auditPage = auditRepository.findAll(pageable);
+        List<AuditEntity> content = new ArrayList<>(auditPage.getContent());
 
         PageOfAudit response = new PageOfAudit();
         response.setNumber(auditPage.getNumber());
@@ -63,23 +50,22 @@ public class AuditServiceImpl implements IAuditService  {
         return response;
     }
 
-
-   /* @Override
-    @Transactional(readOnly = true)
-    public AuditDTO getAuditById(UUID uuid) {
-        AuditEntity audit = userServiceClient.getUser(uuid)
+   @Transactional(readOnly = true)
+   @Override
+   public AuditDTO getAuditById(UUID uuid) {
+        AuditEntity auditEntity = auditRepository.findAuditEntityByUuid(uuid)
                 .orElseThrow(() -> new RuntimeException("хуила " + String.valueOf(uuid)));
-        return convertToResponse(audit, uuid);
-    }*/
+        return convertToResponse(auditEntity);
+    }
 
-   /* private AuditEntity convertToResponse(AuditEntity audit) {
+    private AuditDTO convertToResponse(AuditEntity audit) {
         AuditDTO response = new AuditDTO();
         response.setUuid(audit.getUuid());
         response.setDtCreate(audit.getDtCreate());
         response.setText(audit.getText());
         response.setType(audit.getType());
         response.setId(audit.getEssenceId());
-        response.setUser(audit.getUserUuid());
+        response.setUser(audit.getUser());
         return response;
-    }*/
+    }
 }

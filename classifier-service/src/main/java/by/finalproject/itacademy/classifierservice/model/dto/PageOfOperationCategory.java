@@ -5,8 +5,5 @@ import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class PageOfOperationCategory extends PageDTO<OperationCategoryDTO> {
 }

@@ -49,9 +49,8 @@ public class CabinetController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<User> aboutSelf(@AuthenticationPrincipal JwtUser jwtUser) {
-        UUID uuid = jwtUser.userId();
-        return ResponseEntity.status(HttpStatus.OK).body(cabinetService.getById(uuid)
+    public ResponseEntity<User> aboutSelf() {
+        return ResponseEntity.status(HttpStatus.OK).body(cabinetService.getAboutSelf()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
 
