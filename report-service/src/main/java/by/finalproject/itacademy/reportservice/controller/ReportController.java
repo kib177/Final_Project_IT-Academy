@@ -28,12 +28,12 @@ public class ReportController {
     }
 
     @GetMapping("/{uuid}/export")
-    public PageOfReport getPageOfReport(UUID uuid) {
+    public PageOfReport getPageOfReport(@PathVariable UUID uuid) {
 
     }
 
-    @HEAD("/{uuid}/export")
-    public PageOfReport getPageOfReport(UUID uuid) {
+    @RequestMapping(path = "/{uuid}/export", method = RequestMethod.HEAD)
+    public PageOfReport getPageOfReport(@PathVariable UUID uuid) {
 
     }
 

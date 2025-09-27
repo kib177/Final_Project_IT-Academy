@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -15,18 +16,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OperationDTO {
-    @NotNull
-    private Long date;
-
+    private UUID uuid;
+    private LocalDateTime dtCreate;
+    private LocalDateTime dtUpdate;
+    private LocalDateTime date;
     private String description;
-
-    @NotNull
     private UUID category;
-
-    @NotNull
-    @DecimalMin("0.01")
     private BigDecimal value;
-
-    @NotNull
     private UUID currency;
 }

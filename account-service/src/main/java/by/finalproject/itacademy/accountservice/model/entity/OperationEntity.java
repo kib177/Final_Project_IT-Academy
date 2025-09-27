@@ -39,6 +39,12 @@ public class OperationEntity {
     private OperationCategoryEntity category;
 
     @Column(nullable = false)
+    private String description;
+
+    @Column(nullable = false)
+    private LocalDateTime date;
+
+    @Column(nullable = false)
     private Double value;
 
     @ManyToOne

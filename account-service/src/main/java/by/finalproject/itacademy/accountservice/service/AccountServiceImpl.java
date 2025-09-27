@@ -1,25 +1,24 @@
 package by.finalproject.itacademy.accountservice.service;
 
-import by.finalproject.itacademy.accountservice.feign.AuditServiceClient;
 import by.finalproject.itacademy.accountservice.model.dto.AccountDTO;
-import by.finalproject.itacademy.accountservice.model.dto.OperationDTO;
+import by.finalproject.itacademy.accountservice.model.dto.AccountRequest;
+import by.finalproject.itacademy.accountservice.model.dto.PageOfAccount;
 import by.finalproject.itacademy.accountservice.model.entity.AccountEntity;
-import by.finalproject.itacademy.accountservice.model.entity.OperationEntity;
 import by.finalproject.itacademy.accountservice.repository.AccountRepository;
 import by.finalproject.itacademy.accountservice.repository.OperationRepository;
 import by.finalproject.itacademy.accountservice.service.api.IAccountService;
-import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
-import by.finalproject.itacademy.common.model.dto.PageDTO;
+import by.finalproject.itacademy.common.jwt.JwtUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -30,143 +29,91 @@ public class AccountServiceImpl implements IAccountService {
 
     @Transactional
     @Override
-    public void createAccount(AccountDTO dto) {
-        LocalDateTime now = LocalDateTime.now();
+    public void save(AccountRequest account) {
+        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UUID currencyUuid;
+        if(isValidUuid(account.getCurrency())) {
+            currencyUuid = classifierServiceClient.getCurrency(UUID.fromString(account.getCurrency())).getUuid();
+        }
+        else {
+            currencyUuid = classifierServiceClient.getCurrency(account.getCurrency()).getUuid();
+        }
 
-        accountRepository.save(AccountEntity.builder()
-                .title(dto.getTitle())
-                .description(dto.getDescription())
-                .balance(dto.getBalance())
-                .type(dto.getType())
-                .currency(dto.getCurrency())
-                .dtCreate(now)
-                .dtUpdate(now)
-                .build());
+        AccountEntity accountEntity = AccountEntity.builder()
+                .dtCreate(LocalDateTime.now())
+                .dtUpdate(LocalDateTime.now())
+                .title(account.getTitle())
+                .description(account.getDescription())
+                .balance(account.getBalance())
+                .type(account.getType())
+                .balance(account.getBalance())
+                .currency(currencyUuid)
+                .userId(jwtUser.userId())
+                .build();
+        accountRepository.save(accountEntity);
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public PageDTO<AccountDTO> getUserAccounts(int page, int size) {
-        UUID userUuid = getCurrentUserUuid();
-        Page<AccountEntity> accountPage = accountRepository.findByUserUuid(
-                userUuid, PageRequest.of(page, size, Sort.by("dtCreate").descending()));
-
-        return convertToPageDTO(accountPage);
+    public AccountDTO getAccount(UUID uuid) {
+        AccountEntity entity = accountRepository.getById(uuid);
+        return AccountDTO.builder()
+                .uuid(entity.getUuid())
+                .dtCreate(entity.getDtCreate())
+                .dtUpdate(entity.getDtUpdate())
+                .title(entity.getTitle())
+                .description(entity.getDescription())
+                .balance(entity.getBalance())
+                .type(entity.getType())
+                .balance(entity.getBalance())
+                .build();
     }
 
     @Transactional
     @Override
-    public void createOperation(UUID accountUuid, OperationDTO dto) {
-        AccountEntity account = accountRepository.findById(accountUuid)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
-
-        // Verify the account belongs to the current user
-        if (!account.getUuid().equals(userUuid)) {
-            throw new RuntimeException("Access denied");
+    public void update(UUID uuid, AccountDTO account, LocalDateTime dtUpdate) {
+        AccountEntity entity = accountRepository.getReferenceById(uuid);
+        if (!Objects.equals(account.getTitle(), entity.getTitle())) {
+            entity.setTitle(account.getTitle());
         }
-
-        OperationEntity operation = new OperationEntity();
-        operation.setDate(dto.getDate());
-        operation.setDescription(dto.getDescription());
-        operation.setCategory(dto.getCategory());
-        operation.setValue(dto.getValue());
-        operation.setCurrency(dto.getCurrency());
-        operation.setAccountUuid(accountUuid);
-        operation.setDtCreate(Instant.now().getEpochSecond());
-        operation.setDtUpdate(Instant.now().getEpochSecond());
-
-        operationRepository.save(operation);
-
-        // Update account balance
-        account.setBalance(account.getBalance() + dto.getValue());
-        account.setDtUpdate(Instant.now().getEpochSecond());
-        accountRepository.save(account);
-
-        // Log audit event
-        auditServiceClient.createAuditRecord(
-                userUuid,
-                "Created operation: " + dto.getDescription() + " for account: " + account.getTitle(),
-                EssenceTypeEnum.OPERATION,
-                operation.getUuid().toString()
-        );
+        if (!Objects.equals(account.getDescription(), entity.getDescription())) {
+            entity.setDescription(account.getDescription());
+        }
+        if (!Objects.equals(account.getBalance(), entity.getBalance())) {
+            entity.setBalance(account.getBalance());
+        }
+        if (account.getType() != entity.getType()) {
+            entity.setType(account.getType());
+        }
+        entity.setDtUpdate(dtUpdate);
+        accountRepository.save(entity);
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public PageDTO<OperationDTO> getAccountOperations(UUID accountUuid, int page, int size) {
-        UUID userUuid = getCurrentUserUuid();
-
-        AccountEntity account = accountRepository.findById(accountUuid)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
-
-        // Verify the account belongs to the current user
-        if (!account.getUuid().equals(userUuid)) {
-            throw new RuntimeException("Access denied");
+    public PageOfAccount getPage(UUID userUuid, int page, int size) {
+        Page<AccountEntity> accountPage = accountRepository.findByAll(userUuid, PageRequest.of(page, size));
+        List<AccountDTO> content = new ArrayList<>();
+        for (AccountEntity accountEntity : accountPage.getContent()) {
+            content.add(AccountDTO.builder()
+                    .uuid(accountEntity.getUuid())
+                    .dtCreate(accountEntity.getDtCreate())
+                    .dtUpdate(accountEntity.getDtUpdate())
+                    .title(accountEntity.getTitle())
+                    .description(accountEntity.getDescription())
+                    .balance(accountEntity.getBalance())
+                    .type(accountEntity.getType())
+                    .balance(accountEntity.getBalance())
+                    .build());
         }
+        return PageOfAccount.builder()
+                .number(accountPage.getNumber())
+                .size(accountPage.getSize())
+                .totalPages(accountPage.getTotalPages())
+                .totalElements(accountPage.getTotalElements())
+                .first(accountPage.isFirst())
+                .numberOfElements(accountPage.getNumberOfElements())
+                .last(accountPage.isLast())
+                .content(content)
+                .build();
 
-        Page<OperationEntity> operationPage = operationRepository.findByAccountUuid(
-                accountUuid, PageRequest.of(page, size, Sort.by("date").descending()));
-
-        return convertToOperationPageDTO(operationPage);
-    }
-
-    private UUID getCurrentUserUuid() {
-        // Extract user UUID from JWT token
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        // In a real implementation, you would extract UUID from the token or user details
-        // For this example, we'll use a simplified approach
-        return UUID.nameUUIDFromBytes(username.getBytes());
-    }
-
-    private AccountDTO convertToDTO(AccountEntity account) {
-        AccountDTO dto = new AccountDTO();
-        dto.setUuid(account.getUuid());
-        dto.setDtCreate(account.getDtCreate());
-        dto.setDtUpdate(account.getDtUpdate());
-        dto.setTitle(account.getTitle());
-        dto.setDescription(account.getDescription());
-        dto.setBalance(account.getBalance());
-        dto.setType(account.getType());
-        dto.setCurrency(account.getCurrency());
-        return dto;
-    }
-
-    private OperationDTO convertToDTO(OperationEntity operation) {
-        OperationDTO dto = new OperationDTO();
-        dto.setUuid(operation.getUuid());
-        dto.setDtCreate(operation.getDtCreate());
-        dto.setDtUpdate(operation.getDtUpdate());
-        dto.setDate(operation.getDate());
-        dto.setDescription(operation.getDescription());
-        dto.setCategory(operation.getCategory());
-        dto.setValue(operation.getValue());
-        dto.setCurrency(operation.getCurrency());
-        return dto;
-    }
-
-    private PageDTO<AccountDTO> convertToPageDTO(Page<AccountEntity> page) {
-        PageDTO<AccountDTO> pageDTO = new PageDTO<>();
-        pageDTO.setNumber(page.getNumber());
-        pageDTO.setSize(page.getSize());
-        pageDTO.setTotalPages(page.getTotalPages());
-        pageDTO.setTotalElements(page.getTotalElements());
-        pageDTO.setFirst(page.isFirst());
-        pageDTO.setNumberOfElements(page.getNumberOfElements());
-        pageDTO.setLast(page.isLast());
-        pageDTO.setContent(page.map(this::convertToDTO).getContent());
-        return pageDTO;
-    }
-
-    private PageDTO<OperationDTO> convertToOperationPageDTO(Page<OperationEntity> page) {
-        PageDTO<OperationDTO> pageDTO = new PageDTO<>();
-        pageDTO.setNumber(page.getNumber());
-        pageDTO.setSize(page.getSize());
-        pageDTO.setTotalPages(page.getTotalPages());
-        pageDTO.setTotalElements(page.getTotalElements());
-        pageDTO.setFirst(page.isFirst());
-        pageDTO.setNumberOfElements(page.getNumberOfElements());
-        pageDTO.setLast(page.isLast());
-        pageDTO.setContent(page.map(this::convertToDTO).getContent());
-        return pageDTO;
     }
 }

@@ -13,6 +13,8 @@ import java.util.UUID;
 
 public interface AccountRepository extends JpaRepository<AccountEntity, UUID> {
     Page<AccountEntity> findByUserUuid(UUID userUuid, Pageable pageable);
+    Page<AccountEntity> findByAll(Pageable pageable);
+
 
     @Query("SELECT a FROM AccountEntity a WHERE a.uuid = :userUuid AND a.type = :type")
     Page<AccountEntity> findByUserUuidAndType(@Param("userUuid") UUID userUuid,

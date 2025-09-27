@@ -39,6 +39,7 @@ public class AccountEntity {
 
     @Enumerated(EnumType.STRING)
     private AccountTypeEnum type;
+    private UUID userId;
 
     private UUID currency;
 

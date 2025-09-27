@@ -24,9 +24,9 @@ public class UserSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
+        http    .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
                                 "/api/v1/cabinet/registration",
@@ -34,10 +34,9 @@ public class UserSecurityConfig {
                                 "/api/v1/cabinet/login"
                         ).permitAll()
                         .requestMatchers("/api/v1/users/").hasRole("ADMIN")
-                        .requestMatchers("/api/v1/cabinet/me").permitAll()
+                        .requestMatchers("/api/v1/cabinet/me").authenticated()
                         .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                );
 
         return http.build();
     }
