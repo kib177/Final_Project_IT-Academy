@@ -1,7 +1,7 @@
 package by.finalproject.itacademy.userservice.config;
 
 
-import by.finalproject.itacademy.userservice.filter.JwtAuthenticationFilter;
+import by.finalproject.itacademy.common.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

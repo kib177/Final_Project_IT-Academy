@@ -1,9 +1,6 @@
 package by.finalproject.itacademy.auditservice.config.security;
 
-
-
-
-import by.finalproject.itacademy.auditservice.filter.JwtAuthenticationFilter;
+import by.finalproject.itacademy.common.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
