@@ -3,9 +3,7 @@ package by.finalproject.itacademy.userservice.service;
 
 import by.finalproject.itacademy.common.jwt.JwtTokenUtil;
 import by.finalproject.itacademy.common.jwt.JwtUser;
-import by.finalproject.itacademy.userservice.feign.AuditServiceClient;
 import by.finalproject.itacademy.userservice.model.dto.User;
-import by.finalproject.itacademy.userservice.model.dto.UserLogDTO;
 import by.finalproject.itacademy.userservice.model.dto.UserLogin;
 import by.finalproject.itacademy.userservice.model.dto.UserRegistration;
 import by.finalproject.itacademy.userservice.model.enums.UserStatus;
@@ -18,18 +16,14 @@ import by.finalproject.itacademy.userservice.model.entity.VerificationEntity;
 import by.finalproject.itacademy.userservice.service.mapper.UserMapper;
 import by.finalproject.itacademy.userservice.repository.UserRepository;
 import by.finalproject.itacademy.userservice.repository.VerificationCodeRepository;
-import io.jsonwebtoken.Jwt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
-
-import static java.time.Instant.now;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +32,6 @@ public class CabinetServiceImpl implements ICabinetService {
     private final VerificationCodeRepository verificationCodeRepository;
     private final UserMapper userMapper;
     private final IVerificationCodeService verificationCodeService;
-    private final AuditServiceClient auditClient;
     private final JwtTokenUtil jwtTokenUtil;
     //private final PasswordEncoder passwordEncoder;
 
@@ -62,7 +55,7 @@ public class CabinetServiceImpl implements ICabinetService {
     }
 
     @Transactional
-    public boolean verifyUser(String mail, String code) {
+    public void verifyUser(String mail, String code) {
         Optional<VerificationEntity> verifyCode = verificationCodeRepository.findByMailAndCode(mail, code);
 
         if (verifyCode.isPresent()) {
@@ -71,9 +64,8 @@ public class CabinetServiceImpl implements ICabinetService {
             userEntity.setStatus(UserStatus.ACTIVATED);
             userRepository.save(userEntity);
             verificationCodeRepository.deleteByMail(mail);
-            return true;
+
         }
-        return false;
     }
 
     @Override
@@ -85,25 +77,18 @@ public class CabinetServiceImpl implements ICabinetService {
             throw new RuntimeException("Invalid password");
         }
 
-        auditClient.logAction(UserLogDTO.builder()
-                        .uuidUser(userEntity.getUuid())
-                        .mail(userEntity.getMail())
-                        .fio(userEntity.getFio())
-                        .role(userEntity.getRole().toString())
-                .build());
-
         return "Login successful for user: " + jwtTokenUtil.generateToken(userEntity.getUuid(),
                 userEntity.getMail(), userEntity.getFio(), String.valueOf(userEntity.getRole()));
     }
 
     @Override
-    public Optional<User> getAboutSelf() {
+    public User getAboutSelf() {
         UserEntity userEntity = userRepository.getByUuid(getCurrentUserUuid())
                 .orElseThrow(() -> new CabinetException("User not found"));
-        return Optional.ofNullable(userMapper.toDto(userEntity));
+        return userMapper.toDto(userEntity);
     }
 
-    @Override
+
     public UUID getCurrentUserUuid() {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return jwtUser.userId();

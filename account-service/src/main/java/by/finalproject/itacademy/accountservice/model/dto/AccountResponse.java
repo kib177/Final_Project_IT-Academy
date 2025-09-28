@@ -1,8 +1,6 @@
 package by.finalproject.itacademy.accountservice.model.dto;
 
 import by.finalproject.itacademy.accountservice.model.enums.AccountTypeEnum;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +15,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountDTO {
+public class AccountResponse {
     private UUID uuid;
     private LocalDateTime dtCreate;
     private LocalDateTime dtUpdate;

@@ -35,7 +35,7 @@ public class ClassifierController {
     }
 
     @PostMapping("/operation/category")
-    public ResponseEntity<?> addCategoryOperation(@Valid @RequestBody OperationCategoryDTO category) {
+    public ResponseEntity<?> addCategoryOperation(@Valid @RequestBody OperationCategoryResponse category) {
         classifierService.addNewOperationCategory(category);
         return  ResponseEntity.status(HttpStatus.CREATED).build();
     }

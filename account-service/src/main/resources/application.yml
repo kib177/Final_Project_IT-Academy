@@ -5,13 +5,13 @@ spring:
   application:
     name: account-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/account_db
+    url: jdbc:postgresql://localhost:5432/account
     username: postgres
-    password: password
+    password: 1998177
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
@@ -31,6 +31,8 @@ user-service:
   url: http://localhost:8080
 audit-service:
   url: http://localhost:8081
+classifier-service:
+  url: http://localhost:8083
 
 logging:
   level:
@@ -38,27 +40,3 @@ logging:
     org.springframework.security: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-
-currency:
-  default: USD
-  supported:
-    - USD
-    - EUR
-    - GBP
-    - JPY
-    - CNY
-
-account:
-  types:
-    - CASH
-    - BANK_ACCOUNT
-    - BANK_DEPOSIT
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health, info, metrics
-  endpoint:
-    health:
-      show-details: always

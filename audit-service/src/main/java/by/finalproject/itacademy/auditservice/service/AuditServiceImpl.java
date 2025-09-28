@@ -3,7 +3,7 @@ package by.finalproject.itacademy.auditservice.service;
 import by.finalproject.itacademy.auditservice.model.dto.AuditDTO;
 import by.finalproject.itacademy.auditservice.model.dto.PageOfAudit;
 import by.finalproject.itacademy.auditservice.model.entity.AuditEntity;
-import by.finalproject.itacademy.auditservice.repository.AuditRepository;
+import by.finalproject.itacademy.auditservice.model.repository.AuditRepository;
 import by.finalproject.itacademy.auditservice.service.api.IAuditService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

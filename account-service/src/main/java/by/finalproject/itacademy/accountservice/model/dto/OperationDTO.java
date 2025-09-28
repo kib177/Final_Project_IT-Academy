@@ -19,9 +19,10 @@ public class OperationDTO {
     private UUID uuid;
     private LocalDateTime dtCreate;
     private LocalDateTime dtUpdate;
-    private LocalDateTime date;
-    private String description;
     private UUID category;
+    private String description;
+    private LocalDateTime date;
     private BigDecimal value;
     private UUID currency;
+    private UUID account;
 }

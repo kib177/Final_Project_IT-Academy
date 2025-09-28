@@ -5,5 +5,5 @@ import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class PageOfOperationCategory extends PageDTO<OperationCategoryDTO> {
+public class PageOfOperationCategory extends PageDTO<OperationCategoryResponse> {
 }

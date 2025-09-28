@@ -14,10 +14,10 @@ import by.finalproject.itacademy.userservice.repository.VerificationCodeReposito
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -31,9 +31,10 @@ public class UserServiceImpl implements IUserService {
     private final UserMapper userMapper;
     private final PageMapper pageMapper;
     private final VerificationCodeRepository verificationCodeRepository;
-    //private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
+    @Override
     public boolean create(UserCreate userCreate) {
 
         UserEntity userEntity = userMapper.fromCreateDto(userCreate);
@@ -48,15 +49,34 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public Optional<User> getById(UUID uuid) {
+    public User getById(UUID uuid) {
         UserEntity userEntity = userRepository.getByUuid(uuid)
                 .orElseThrow(() -> new CabinetException("User not found" + uuid));
-        return Optional.ofNullable(userMapper.toDto(userEntity));
+        return userMapper.toDto(userEntity);
     }
 
     @Override
     public PageOfUser getUsersPage(Pageable pageable) {
         Page<UserEntity> entityPage = userRepository.findAll(pageable);
         return pageMapper.toPageOfUser(entityPage, userMapper);
+    }
+
+    @Transactional
+    @Override
+    public void updateUser(UUID uuid, Long dtUpdate, UserCreate userCreate) {
+        UserEntity userEntity = userRepository.getByUuid(uuid)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+
+        if (!userEntity.getDtUpdate().equals(dtUpdate)) {
+            throw new RuntimeException("Конфликт версий данных");
+        }
+
+        userEntity.setFio(userCreate.getFio());
+        userEntity.setMail(userCreate.getMail());
+        if (userCreate.getPassword() != null) {
+            userEntity.setPassword(passwordEncoder.encode(userCreate.getPassword()));
+        }
+
+       userRepository.save(userEntity);
     }
 }

@@ -1,7 +1,5 @@
 package by.finalproject.itacademy.userservice.controller;
 
-
-import by.finalproject.itacademy.common.jwt.JwtUser;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserLogin;
 import by.finalproject.itacademy.userservice.model.dto.UserRegistration;
@@ -10,11 +8,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/cabinet")
@@ -25,38 +20,23 @@ public class CabinetController {
     @PostMapping("/registration")
     public ResponseEntity<?> registration(@Valid @RequestBody UserRegistration userRegistration) {
         cabinetService.registration(userRegistration);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Registration successful. Check email for verification.");
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/verification")
     public ResponseEntity<?> verification(@RequestParam String code, @RequestParam String mail) {
-        boolean isVerified = cabinetService.verifyUser(mail, code);
-        if (isVerified) {
-            return ResponseEntity.ok("Account verified successfully");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid verification code");
-        }
+        cabinetService.verifyUser(mail, code);
+            return ResponseEntity.ok().build();
     }
-
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody UserLogin userLogin) {
-        try {
+    public ResponseEntity<String> login(@Valid @RequestBody UserLogin userLogin) {
             String result = cabinetService.login(userLogin);
             return ResponseEntity.ok(result);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
     }
 
     @GetMapping("/me")
     public ResponseEntity<User> aboutSelf() {
-        return ResponseEntity.status(HttpStatus.OK).body(cabinetService.getAboutSelf()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
+        User user = cabinetService.getAboutSelf();
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
-
-    /*private JwtUser getCurrentJwtUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (JwtUser) authentication.getPrincipal();
-    }*/
-
 }

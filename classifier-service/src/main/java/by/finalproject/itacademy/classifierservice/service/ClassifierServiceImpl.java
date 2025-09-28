@@ -37,7 +37,7 @@ public class ClassifierServiceImpl implements IClassifierService {
     }
 
     @Override
-    public void addNewOperationCategory(OperationCategoryDTO operationCategory) {
+    public void addNewOperationCategory(OperationCategoryResponse operationCategory) {
         OperationCategoryEntity operationCategoryEntity = operationCategoryMapper.toEntity(operationCategory);
             operationCategoryEntity.setDtCreate(LocalDateTime.now());
             operationCategoryEntity.setDtUpdate(operationCategoryEntity.getDtCreate());

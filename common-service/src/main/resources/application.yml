@@ -11,6 +11,10 @@ spring:
     username: postgres
     password: 1998177
 
+logging:
+  level:
+    com.example.interceptor: DEBUG
+
   jpa:
     hibernate:
       ddl-auto: update

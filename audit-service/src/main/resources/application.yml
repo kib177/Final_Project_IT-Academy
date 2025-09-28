@@ -18,11 +18,6 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
-
-jwt:
-  secret: "mySecretKeyForJWTGeneration12345"
-  expiration: 3600000
-
 feign:
   client:
     config:

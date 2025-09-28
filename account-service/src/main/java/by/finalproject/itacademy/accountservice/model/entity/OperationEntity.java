@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -34,9 +35,8 @@ public class OperationEntity {
     @Column(name = "dt_update", nullable = false)
     private LocalDateTime dtUpdate;
 
-    @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
-    private OperationCategoryEntity category;
+    private UUID category;
 
     @Column(nullable = false)
     private String description;
@@ -45,13 +45,11 @@ public class OperationEntity {
     private LocalDateTime date;
 
     @Column(nullable = false)
-    private Double value;
+    private BigDecimal value;
 
-    @ManyToOne
     @JoinColumn(name = "currency_id", nullable = false)
-    private CurrencyEntity currency;
+    private UUID currency;
 
-    @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
-    private AccountEntity account;
+    private UUID account;
 }

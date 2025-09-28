@@ -16,6 +16,9 @@ public class StructuredErrorResponse {
     private List<FieldError> errors;
 
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
     public static class FieldError {
         private String field;
         private String message;

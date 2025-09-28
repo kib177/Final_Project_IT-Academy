@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface IClassifierService {
     void addNewCurrency(CurrencyRequest currency);
-    void addNewOperationCategory(OperationCategoryDTO operationCategory);
+    void addNewOperationCategory(OperationCategoryResponse operationCategory);
     PageOfOperationCategory getPageOfOperationCategory(Pageable pageable);
     PageDTO<Object> getPageOfCurrency(Pageable pageable);
 }

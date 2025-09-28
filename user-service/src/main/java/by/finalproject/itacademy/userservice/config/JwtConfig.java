@@ -11,8 +11,10 @@ public class JwtConfig {
     public JwtTokenUtil jwtTokenUtil() {
         return new JwtTokenUtil();
     }
+
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter();
     }
+
 }

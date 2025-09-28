@@ -1,15 +1,17 @@
 package by.finalproject.itacademy.accountservice.controller;
 
-import by.finalproject.itacademy.accountservice.model.dto.AccountDTO;
-import by.finalproject.itacademy.accountservice.model.entity.AccountEntity;
-import by.finalproject.itacademy.accountservice.service.AccountServiceImpl;
+import by.finalproject.itacademy.accountservice.model.dto.AccountResponse;
+import by.finalproject.itacademy.accountservice.model.dto.AccountRequest;
+import by.finalproject.itacademy.accountservice.model.dto.PageOfAccount;
 import by.finalproject.itacademy.accountservice.service.api.IAccountService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.login.AccountNotFoundException;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -20,27 +22,29 @@ public class AccountController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> createAccount(@RequestBody AccountDTO dto) {
-        return ResponseEntity.ok(accountService.createAccount(dto));
+    public ResponseEntity<?> createAccount(@RequestBody AccountRequest dto) {
+        accountService.createAccount(dto);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping
-    public Page<AccountEntity> getAccounts(
+    public ResponseEntity<PageOfAccount> getAccounts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return accountService.getUserAccounts(page, size);
+        return ResponseEntity.ok().body(accountService.getUserAccounts(PageRequest.of(page, size)));
     }
 
     @GetMapping("/{uuid}")
-    public AccountEntity getAccount(@PathVariable UUID uuid) {
-        return accountService.get(uuid);
+    public ResponseEntity<AccountResponse> getAccount(@PathVariable UUID uuid) throws AccountNotFoundException {
+        return ResponseEntity.ok().body(accountService.getAccount(uuid));
     }
 
     @PutMapping("/{uuid}/dt_update/{dt_update}")
-    public AccountEntity updateAccount(
+    public ResponseEntity<?> updateAccount(
             @PathVariable UUID uuid,
-            @PathVariable("dt_update") Long dtUpdate,
-            @RequestBody AccountDTO dto) {
-        return accountService.update(uuid, dtUpdate, dto);
+            @PathVariable("dt_update") LocalDateTime dtUpdate,
+            @RequestBody AccountRequest dto) throws AccountNotFoundException {
+        accountService.updateAccount(uuid, dtUpdate, dto);
+        return ResponseEntity.ok().build();
     }
 }

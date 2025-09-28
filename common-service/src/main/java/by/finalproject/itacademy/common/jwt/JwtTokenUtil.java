@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Component
 public class JwtTokenUtil {
-    private final SecretKey secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    //private final SecretKey secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     @Value("${jwt.expiration:3600000}")
     private Long expiration;
@@ -24,13 +24,13 @@ public class JwtTokenUtil {
                 .claim("fio", fio)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(secret)
+                .signWith(SignatureAlgorithm.HS256,"mySuperSecretKeyThatIsVeryLongAndHardToGuess12345!")
                 .compact();
     }
 
     public JwtUser extractUser(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secret)
+                .setSigningKey("mySuperSecretKeyThatIsVeryLongAndHardToGuess12345!")
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -46,7 +46,7 @@ public class JwtTokenUtil {
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(secret)
+                    .setSigningKey("mySuperSecretKeyThatIsVeryLongAndHardToGuess12345!")
                     .build()
                     .parseClaimsJws(token);
             return true;
@@ -57,7 +57,7 @@ public class JwtTokenUtil {
 
     public Date getExpirationDate(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(secret)
+                .setSigningKey("mySuperSecretKeyThatIsVeryLongAndHardToGuess12345!")
                 .build()
                 .parseClaimsJws(token)
                 .getBody()

@@ -14,12 +14,4 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     Optional<UserEntity> findByMail(String mail);
     boolean existsByMail(String mail);
     Optional<UserEntity> getByUuid(UUID uuid);
-
-    Optional<User> findByUuid(UUID uuid);
-
-    /* Для выборки метода findAll по ролям, чтобы получать более точную статистику
-    @EntityGraph(attributePaths = {"role"})
-    @Query("SELECT u FROM UserEntity u WHERE u.role = 'USER'")
-    PageOfUser<UserEntity> findAll(Pageable pageable)
-    */
 }

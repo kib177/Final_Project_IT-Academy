@@ -1,4 +1,4 @@
-package by.finalproject.itacademy.auditservice.repository;
+package by.finalproject.itacademy.auditservice.model.repository;
 
 import by.finalproject.itacademy.auditservice.model.entity.AuditEntity;
 import org.springframework.data.domain.Page;

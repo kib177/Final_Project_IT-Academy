@@ -1,16 +1,17 @@
 package by.finalproject.itacademy.accountservice.controller;
 
-import by.finalproject.itacademy.accountservice.model.dto.OperationDTO;
-import by.finalproject.itacademy.accountservice.model.entity.OperationEntity;
+import by.finalproject.itacademy.accountservice.model.dto.OperationRequest;
+import by.finalproject.itacademy.accountservice.model.dto.PageOfOperation;
 import by.finalproject.itacademy.accountservice.service.api.IOperationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.login.AccountNotFoundException;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -20,43 +21,56 @@ public class OperationController {
     private final IOperationService operationService;
 
     @PostMapping
-    public ResponseEntity<OperationDTO> createOperation(
+    public ResponseEntity<?> createOperation(
             @PathVariable UUID accountUuid,
-            @RequestBody OperationDTO operation) {
-        // Установка счета для операции
-        OperationDTO createdOperation = operationService.createOperation(operation);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdOperation);
+            @RequestBody OperationRequest operation) {
+        try {
+            operationService.createOperation(accountUuid, operation);
+        } catch (AccountNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping
-    public ResponseEntity<Page<OperationDTO>> getOperations(
+    public ResponseEntity<PageOfOperation> getOperations(
             @PathVariable UUID accountUuid,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<OperationDTO> operations = operationService.getOperationsByAccount(accountUuid, pageable);
+        PageOfOperation operations = null;
+        try {
+            operations = operationService.getAccountOperations(accountUuid, PageRequest.of(page, size));
+        } catch (AccountNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.ok(operations);
     }
 
     @PutMapping("/{operationUuid}/dt_update/{dt_update}")
-    public ResponseEntity<OperationDTO> updateOperation(
+    public ResponseEntity<?> updateOperation(
             @PathVariable UUID accountUuid,
             @PathVariable UUID operationUuid,
-            @PathVariable("dt_update") Long dtUpdate,
-            @RequestBody OperationDTO operation) {
-        // Проверка версии (dtUpdate) должна быть реализована
-        operation.setUuid(operationUuid);
-        OperationDTO updatedOperation = operationService.updateOperation(operation);
-        return ResponseEntity.ok(updatedOperation);
+            @PathVariable("dt_update") LocalDateTime dtUpdate,
+            @RequestBody OperationRequest operation) {
+
+        try {
+            operationService.updateOperation(accountUuid, operationUuid, dtUpdate,operation);
+        } catch (AccountNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{operationUuid}/dt_update/{dt_update}")
     public ResponseEntity<Void> deleteOperation(
             @PathVariable UUID accountUuid,
             @PathVariable UUID operationUuid,
-            @PathVariable("dt_update") Long dtUpdate) {
-        // Проверка версии (dtUpdate) должна быть реализована
-        operationService.deleteOperation(operationUuid);
+            @PathVariable("dt_update") LocalDateTime dtUpdate) {
+        try {
+            operationService.deleteOperation(accountUuid, operationUuid, dtUpdate);
+        } catch (AccountNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.ok().build();
     }
 }

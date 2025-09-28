@@ -16,7 +16,6 @@ import java.util.UUID;
 public class AccountRequest {
     private String title;
     private String description;
-    private BigDecimal balance;
     private AccountTypeEnum type;
     private UUID currency;
 }
