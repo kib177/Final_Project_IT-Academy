@@ -43,18 +43,18 @@ public class OperationServiceImpl implements IOperationService {
     @Override
     public void createOperation(UUID accountUuid, OperationRequest operationRequest)
             throws AccountNotFoundException {
-        log.info("Создание операции для счета: {} пользователя: {}", accountUuid, getCurrentUserUuid());
+        log.info("Создание операции для счета: {} пользователя: {}", accountUuid, getCurrentUserUuid().userId());
 
         if (!accountService.accountExists(accountUuid)) {
             throw new AccountNotFoundException("Счет не найден");
         }
 
-        if (!classifierCerviceClient.getSpecificCurrency("Bearer " + SecurityContextHolder.getContext(), operationRequest.getCurrency())) {
+        if (!classifierCerviceClient.getSpecificCurrency(operationRequest.getCurrency())) {
             throw new ValidationException("Указанная валюта не существует");
         }
 
         if (operationRequest.getCategory() != null
-                && !classifierCerviceClient.getSpecificCategory("Bearer " + SecurityContextHolder.getContext(), operationRequest.getCategory())) {
+                && !classifierCerviceClient.getSpecificCategory(operationRequest.getCategory())) {
             throw new ValidationException("Указанная категория не существует");
         }
 
@@ -68,22 +68,24 @@ public class OperationServiceImpl implements IOperationService {
 
         OperationEntity savedOperation = operationRepository.save(operation);
 
-        accountService.updateBalance(accountUuid, operationRequest.getValue(), getCurrentUserUuid());
+        accountService.updateBalance(accountUuid, operationRequest.getValue(), getCurrentUserUuid().userId());
 
-        auditServiceClient.logEvent("Bearer " + SecurityContextHolder.getContext(),
+        auditServiceClient.logEvent(
                 AuditEventRequest.builder()
-                .userUuid(getCurrentUserUuid())
-                .userInfo("Создана операция: " + operationRequest.getDescription() + " на сумму: " + operationRequest.getValue())
-                .essenceId(savedOperation.getUuid().toString())
-                .type(EssenceTypeEnum.OPERATION)
-                .build());
+                        .jwtUser(getCurrentUserUuid())
+                        .userInfo("Создана операция: " + operationRequest.getDescription()
+                                + " на сумму: " + operationRequest.getValue())
+                        .essenceId(savedOperation.getUuid())
+                        .type(EssenceTypeEnum.OPERATION)
+                        .build());
 
         log.info("Операция успешно создана: {}", savedOperation.getUuid());
     }
 
     @Override
-    public PageOfOperation getAccountOperations(UUID accountUuid, Pageable pageable) throws AccountNotFoundException {
-        log.debug("Получение операций по счету: {} пользователя: {}", accountUuid, getCurrentUserUuid());
+    public PageOfOperation getAccountOperations(UUID accountUuid, Pageable pageable)
+            throws AccountNotFoundException {
+        log.debug("Получение операций по счету: {} пользователя: {}", accountUuid, getCurrentUserUuid().userId());
 
         if (!accountService.accountExists(accountUuid)) {
             throw new AccountNotFoundException("Счет не найден");
@@ -111,7 +113,7 @@ public class OperationServiceImpl implements IOperationService {
             throw new DataVersionException("Конфликт версий данных. Операция была изменена другим пользователем");
         }
 
-        accountService.updateBalance(accountUuid, existingOperation.getValue().negate(), getCurrentUserUuid());
+        accountService.updateBalance(accountUuid, existingOperation.getValue().negate(), getCurrentUserUuid().userId());
 
         existingOperation.setDate(operationRequest.getDate());
         existingOperation.setDescription(operationRequest.getDescription());
@@ -121,23 +123,24 @@ public class OperationServiceImpl implements IOperationService {
 
         OperationEntity updatedOperation = operationRepository.save(existingOperation);
 
-        accountService.updateBalance(accountUuid, operationRequest.getValue(), getCurrentUserUuid());
+        accountService.updateBalance(accountUuid, operationRequest.getValue(), getCurrentUserUuid().userId());
 
-        auditServiceClient.logEvent("Bearer " + SecurityContextHolder.getContext(),
+        auditServiceClient.logEvent(
                 AuditEventRequest.builder()
-                .userUuid(getCurrentUserUuid())
-                .userInfo( "Обновлена операция: " + operationRequest.getDescription())
-                .essenceId(updatedOperation.getUuid().toString())
-                .type(EssenceTypeEnum.OPERATION)
-                .build());
+                        .jwtUser(getCurrentUserUuid())
+                        .userInfo("Обновлена операция: " + operationRequest.getDescription())
+                        .essenceId(updatedOperation.getUuid())
+                        .type(EssenceTypeEnum.OPERATION)
+                        .build());
     }
 
     @Transactional
     @Override
-    public void deleteOperation(UUID accountUuid, UUID operationUuid, LocalDateTime dtUpdate) throws AccountNotFoundException {
+    public void deleteOperation(UUID accountUuid, UUID operationUuid, LocalDateTime dtUpdate)
+            throws AccountNotFoundException {
         log.info("Удаление операции: {} счета: {}", operationUuid, accountUuid);
 
-        if (!accountService.accountExists(accountUuid)){
+        if (!accountService.accountExists(accountUuid)) {
             throw new AccountNotFoundException("Счет не найден");
         }
 
@@ -148,23 +151,22 @@ public class OperationServiceImpl implements IOperationService {
             throw new DataVersionException("Конфликт версий данных. Операция была изменена другим пользователем");
         }
 
-        accountService.updateBalance(accountUuid, operation.getValue().negate(), getCurrentUserUuid());
+        accountService.updateBalance(accountUuid, operation.getValue().negate(), getCurrentUserUuid().userId());
 
         operationRepository.delete(operation);
 
-        auditServiceClient.logEvent("Bearer " + SecurityContextHolder.getContext(),
+        auditServiceClient.logEvent(
                 AuditEventRequest.builder()
-                        .userUuid(getCurrentUserUuid())
-                        .userInfo( "Удалена операция: " + operation.getDescription())
-                        .essenceId(operationUuid.toString())
+                        .jwtUser(getCurrentUserUuid())
+                        .userInfo("Удалена операция: " + operation.getDescription())
+                        .essenceId(operationUuid)
                         .type(EssenceTypeEnum.OPERATION)
                         .build());
 
         log.info("Операция успешно удалена: {}", operationUuid);
     }
 
-    public UUID getCurrentUserUuid() {
-        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return jwtUser.userId();
+    public JwtUser getCurrentUserUuid() {
+        return (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

@@ -14,7 +14,6 @@ import by.finalproject.itacademy.accountservice.service.mapper.AccountPageMapper
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.common.exception.DataVersionException;
 import by.finalproject.itacademy.common.exception.InsufficientFundsException;
-import by.finalproject.itacademy.common.jwt.JwtTokenUtil;
 import by.finalproject.itacademy.common.jwt.JwtUser;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
@@ -41,18 +40,13 @@ public class AccountServiceImpl implements IAccountService {
     private final ClassifierCerviceClient classifierCerviceClient;
     private final AccountMapper accountMapper;
     private final AccountPageMapper pageMapper;
-    private final JwtTokenUtil jwtTokenUtil;
-    private String jwt;
 
     @Transactional
     @Override
     public void createAccount(AccountRequest accountRequest) {
-        jwt = getJwtToken();
-        log.info("Создание счета для пользователя: {}", getCurrentUserUuid());
+        log.info("Создание счета для пользователя: {}", getCurrentUser());
 
-        if (!classifierCerviceClient.getSpecificCurrency(
-                "Bearer " + jwt,
-                accountRequest.getCurrency())) {
+        if (!classifierCerviceClient.getSpecificCurrency(accountRequest.getCurrency())) {
             throw new ValidationException("Указанная валюта не существует");
         }
 
@@ -63,25 +57,25 @@ public class AccountServiceImpl implements IAccountService {
                 .description(accountRequest.getDescription())
                 .type(accountRequest.getType())
                 .currency(accountRequest.getCurrency())
-                .userUuid(getCurrentUserUuid())
+                .userUuid(getCurrentUser().userId())
                 .balance(BigDecimal.ZERO)
                 .build());
 
-
-        auditServiceClient.logEvent("Bearer " + jwt, AuditEventRequest.builder()
-                        .userUuid(getCurrentUserUuid())
+        auditServiceClient.logEvent(
+                AuditEventRequest.builder()
+                        .jwtUser(getCurrentUser())
                         .userInfo("Создан новый счет: " + accountRequest.getTitle())
-                        .essenceId(savedAccount.getUuid().toString())
-                .type(EssenceTypeEnum.ACCOUNT)
-                .build());
+                        .essenceId(savedAccount.getUuid())
+                        .type(EssenceTypeEnum.ACCOUNT)
+                        .build());
 
         log.info("Счет успешно создан: {}", savedAccount.getUuid());
     }
 
-
     @Override
-    public void updateAccount(UUID uuid, LocalDateTime dtUpdate, AccountRequest accountRequest) throws AccountNotFoundException {
-        log.info("Обновление счета: {} пользователя: {}", uuid, getCurrentUserUuid());
+    public void updateAccount(UUID uuid, LocalDateTime dtUpdate, AccountRequest accountRequest)
+            throws AccountNotFoundException {
+        log.info("Обновление счета: {} пользователя: {}", uuid, getCurrentUser().userId());
 
         AccountEntity existingAccount = accountRepository.findByUuid(uuid)
                 .orElseThrow(() -> new AccountNotFoundException("Счет не найден"));
@@ -90,36 +84,34 @@ public class AccountServiceImpl implements IAccountService {
             throw new DataVersionException("Конфликт версий данных. Счет был изменен другим пользователем");
         }
 
-        if (!classifierCerviceClient.getSpecificCurrency(
-                "Bearer " + SecurityContextHolder.getContext(), accountRequest.getCurrency())) {
+        if (!classifierCerviceClient.getSpecificCurrency(accountRequest.getCurrency())) {
             throw new ValidationException("Указанная валюта не существует");
         }
 
         AccountEntity updatedAccount = accountRepository.save(accountMapper.toEntity(accountRequest));
 
-        // Аудит
-        auditServiceClient.logEvent("Bearer " + SecurityContextHolder.getContext(),
+        auditServiceClient.logEvent(
                 AuditEventRequest.builder()
-                .userUuid(getCurrentUserUuid())
-                .userInfo("Создан новый счет: " + accountRequest.getTitle())
-                .essenceId(updatedAccount.getUuid().toString())
-                .type(EssenceTypeEnum.ACCOUNT)
-                .build());
+                        .jwtUser(getCurrentUser())
+                        .userInfo("Создан новый счет: " + accountRequest.getTitle())
+                        .essenceId(updatedAccount.getUuid())
+                        .type(EssenceTypeEnum.ACCOUNT)
+                        .build());
 
         log.info("Счет успешно обновлен: {}", updatedAccount.getUuid());
     }
 
     @Override
     public PageOfAccount getUserAccounts(Pageable pageable) {
-        log.debug("Получение счетов пользователя: {}, страница: {}", getCurrentUserUuid(), pageable.getPageNumber());
+        log.debug("Получение счетов пользователя: {}, страница: {}", getCurrentUser().userId(), pageable.getPageNumber());
 
-        Page<AccountEntity> accountsPage = accountRepository.findByUserUuid(getCurrentUserUuid(), pageable);
+        Page<AccountEntity> accountsPage = accountRepository.findByUserUuid(getCurrentUser().userId(), pageable);
         return pageMapper.toPageOfUser(accountsPage, accountMapper);
     }
 
     @Override
     public AccountResponse getAccount(UUID uuid) throws AccountNotFoundException {
-        log.debug("Получение счета: {} пользователя: {}", uuid, getCurrentUserUuid());
+        log.debug("Получение счета: {} пользователя: {}", uuid, getCurrentUser().userId());
 
         AccountEntity account = accountRepository.findByUuid(uuid)
                 .orElseThrow(() -> new AccountNotFoundException("Счет не найден"));
@@ -150,7 +142,6 @@ public class AccountServiceImpl implements IAccountService {
         return accountRepository.existsById(accountUuid);
     }
 
-
     @Override
     public BigDecimal getAccountBalance(UUID accountUuid, UUID userUuid) throws AccountNotFoundException {
         return accountRepository.findBalanceByUuidAndUserUuid(accountUuid, userUuid)
@@ -165,14 +156,8 @@ public class AccountServiceImpl implements IAccountService {
         return accountRepository.findByUserUuidAndUuidIn(userUuid, accountUuids);
     }
 
-    public UUID getCurrentUserUuid() {
-        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return jwtUser.userId();
-    }
-
-    public String getJwtToken(){
-        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return jwtTokenUtil.generateToken(jwtUser.userId(), jwtUser.email(), jwtUser.fio(), jwtUser.role());
+    public JwtUser getCurrentUser() {
+        return (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }
 

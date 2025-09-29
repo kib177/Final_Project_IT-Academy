@@ -15,12 +15,11 @@ public class StructuredErrorResponse {
     private String logref;
     private List<FieldError> errors;
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder
-    public static class FieldError {
-        private String field;
-        private String message;
+    public void addError(FieldError error) {
+        this.errors.add(error);
+    }
+
+    public boolean checkErrors() {
+        return errors.isEmpty();
     }
 }

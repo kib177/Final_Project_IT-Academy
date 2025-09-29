@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface AuditServiceClient {
 
     @PostMapping("/api/v1/audit/log")
-    ResponseEntity<Void> logEvent(
-            @RequestHeader("Authorization") String bearerToken,
-            @RequestBody AuditEventRequest request);
+    ResponseEntity<Void> logEvent(@RequestBody AuditEventRequest request);
 }
 
 

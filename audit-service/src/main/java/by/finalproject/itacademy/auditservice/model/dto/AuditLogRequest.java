@@ -1,5 +1,6 @@
 package by.finalproject.itacademy.auditservice.model.dto;
 
+import by.finalproject.itacademy.common.jwt.JwtUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class AuditLogRequest {
-    private UUID userUuid;
+    private JwtUser jwtUser;
     private String text;
     private String type;
     private String id;

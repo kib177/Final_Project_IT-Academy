@@ -16,58 +16,58 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/account/{accountUuid}/operation")
+@RequestMapping("/api/v1/account")
 public class OperationController {
     private final IOperationService operationService;
 
-    @PostMapping
+    @PostMapping("/{uuid}/operation")
     public ResponseEntity<?> createOperation(
-            @PathVariable UUID accountUuid,
+            @PathVariable UUID uuid,
             @RequestBody OperationRequest operation) {
         try {
-            operationService.createOperation(accountUuid, operation);
+            operationService.createOperation(uuid, operation);
         } catch (AccountNotFoundException e) {
             throw new RuntimeException(e);
         }
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping
+    @GetMapping("/{uuid}/operation")
     public ResponseEntity<PageOfOperation> getOperations(
-            @PathVariable UUID accountUuid,
+            @PathVariable UUID uuid,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         PageOfOperation operations = null;
         try {
-            operations = operationService.getAccountOperations(accountUuid, PageRequest.of(page, size));
+            operations = operationService.getAccountOperations(uuid, PageRequest.of(page, size));
         } catch (AccountNotFoundException e) {
             throw new RuntimeException(e);
         }
         return ResponseEntity.ok(operations);
     }
 
-    @PutMapping("/{operationUuid}/dt_update/{dt_update}")
+    @PutMapping("/{uuid}/operation/{operationUuid}/dt_update/{dt_update}")
     public ResponseEntity<?> updateOperation(
-            @PathVariable UUID accountUuid,
+            @PathVariable UUID uuid,
             @PathVariable UUID operationUuid,
             @PathVariable("dt_update") LocalDateTime dtUpdate,
             @RequestBody OperationRequest operation) {
 
         try {
-            operationService.updateOperation(accountUuid, operationUuid, dtUpdate,operation);
+            operationService.updateOperation(uuid, operationUuid, dtUpdate,operation);
         } catch (AccountNotFoundException e) {
             throw new RuntimeException(e);
         }
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{operationUuid}/dt_update/{dt_update}")
+    @DeleteMapping("/{uuid}/operation/{operationUuid}/dt_update/{dt_update}")
     public ResponseEntity<Void> deleteOperation(
-            @PathVariable UUID accountUuid,
+            @PathVariable UUID uuid,
             @PathVariable UUID operationUuid,
             @PathVariable("dt_update") LocalDateTime dtUpdate) {
         try {
-            operationService.deleteOperation(accountUuid, operationUuid, dtUpdate);
+            operationService.deleteOperation(uuid, operationUuid, dtUpdate);
         } catch (AccountNotFoundException e) {
             throw new RuntimeException(e);
         }

@@ -11,12 +11,8 @@ import java.util.UUID;
 public interface ClassifierCerviceClient {
 
     @GetMapping("/api/classifier/currency/{uuid}")
-    boolean getSpecificCurrency(
-            @RequestHeader("Authorization") String bearerToken,
-            @PathVariable UUID uuid);
+    boolean getSpecificCurrency(@PathVariable UUID uuid);
 
     @GetMapping("/api/classifier/category/{uuid}")
-    boolean getSpecificCategory(
-            @RequestHeader("Authorization") String bearerToken,
-            @PathVariable UUID uuid);
+    boolean getSpecificCategory(@PathVariable UUID uuid);
 }

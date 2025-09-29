@@ -15,15 +15,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/scheduler/operation")
 @RequiredArgsConstructor
-//@Tag(name = "Планирование операций", description = "API для управления запланированными операциями")
 public class ScheduledOperationController {
     private final IScheduledOperationService service;
 
     @PostMapping
-   /* @Operation(
-            summary = "Добавление запланированной операции по счёту",
-            security = @SecurityRequirement(name = "bearerAuth")
-    )*/
     public ResponseEntity<ScheduledOperationResponse> create(
             @RequestBody ScheduledOperationRequest request) {
 
@@ -32,10 +27,6 @@ public class ScheduledOperationController {
     }
 
     @GetMapping
-    /*@Operation(
-            summary = "Получить страницу запланированных операций по счёту",
-            security = @SecurityRequirement(name = "bearerAuth")
-    )*/
     public ResponseEntity<Page<ScheduledOperationResponse>> getAll(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "20") Integer size,
@@ -48,10 +39,6 @@ public class ScheduledOperationController {
     }
 
     @PutMapping("/{uuid}/dt_update/{dt_update}")
-    /*@Operation(
-            summary = "Редактировать информацию о запланированной операции",
-            security = @SecurityRequirement(name = "bearerAuth")
-    )*/
     public ResponseEntity<ScheduledOperationResponse> update(
             @PathVariable UUID uuid,
             @PathVariable("dt_update") Long dtUpdate,

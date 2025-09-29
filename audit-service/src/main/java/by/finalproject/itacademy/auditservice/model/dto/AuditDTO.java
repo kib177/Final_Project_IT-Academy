@@ -19,6 +19,6 @@ public class AuditDTO {
     private UserDTO user;
     private String text;
     private EssenceTypeEnum type;
-    private String id;
+    private UUID id;
 }
 

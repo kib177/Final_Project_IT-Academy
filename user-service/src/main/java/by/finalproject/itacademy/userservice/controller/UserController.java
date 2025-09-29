@@ -7,6 +7,7 @@ import by.finalproject.itacademy.userservice.model.entity.UserEntity;
 import by.finalproject.itacademy.userservice.service.api.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,7 +26,7 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> createUser(@Valid @RequestBody UserCreate userCreate) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserCreate userCreate) throws BadRequestException {
         userService.create(userCreate);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -38,8 +39,8 @@ public class UserController {
     }
 
     @GetMapping("/{uuid}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> getUser(@PathVariable UUID uuid) {
+    //@PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<User> getUser(@PathVariable UUID uuid) throws BadRequestException {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getById(uuid));
     }
 
@@ -48,7 +49,7 @@ public class UserController {
     public ResponseEntity<?> updateUser(
             @PathVariable UUID uuid,
             @PathVariable Long dt_update,
-            @RequestBody @Valid UserCreate userCreate) {
+            @RequestBody @Valid UserCreate userCreate) throws BadRequestException {
        userService.updateUser(uuid, dt_update, userCreate);
         return ResponseEntity.ok().build();
     }

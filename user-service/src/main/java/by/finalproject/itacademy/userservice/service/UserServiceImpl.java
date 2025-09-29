@@ -1,5 +1,6 @@
 package by.finalproject.itacademy.userservice.service;
 
+import by.finalproject.itacademy.common.exception.InternalServerErrorException;
 import by.finalproject.itacademy.userservice.model.dto.PageOfUser;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserCreate;
@@ -12,6 +13,9 @@ import by.finalproject.itacademy.userservice.service.mapper.UserMapper;
 import by.finalproject.itacademy.userservice.repository.UserRepository;
 import by.finalproject.itacademy.userservice.repository.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,10 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static java.time.Instant.now;
-
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements IUserService {
     private final IVerificationCodeService verificationCodeService;
     private final UserRepository userRepository;
@@ -32,51 +35,94 @@ public class UserServiceImpl implements IUserService {
     private final PageMapper pageMapper;
     private final VerificationCodeRepository verificationCodeRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ValidService validService;
 
     @Transactional
     @Override
-    public boolean create(UserCreate userCreate) {
+    public void create(UserCreate userCreate) throws BadRequestException {
+        log.info("Creating new user with email: {}", userCreate.getMail());
 
-        UserEntity userEntity = userMapper.fromCreateDto(userCreate);
-        if(userEntity != null) {
-            userEntity.setDtCreate(LocalDateTime.now());
-            userEntity.setDtUpdate(
-                    userEntity.getDtCreate());
-            userRepository.save(userEntity);
+        if (userRepository.existsByMail(userCreate.getMail())) {
+            throw new BadRequestException("Пользователь с электронной почтой " + userCreate.getMail() + " уже существует");
         }
-        verificationCodeService.generateCode(userCreate.getMail());
-        return true;
+        validService.validateUserData(userCreate);
+
+        try {
+            UserEntity userEntity = userMapper.fromCreateDto(userCreate);
+            if (userEntity != null) {
+                userEntity.setDtCreate(LocalDateTime.now());
+                userEntity.setDtUpdate(
+                        userEntity.getDtCreate());
+                userRepository.save(userEntity);
+            }
+            verificationCodeService.generateCode(userCreate.getMail());
+
+        } catch (DataAccessException e) {
+            log.error("Database error while creating user: {}", e.getMessage());
+            throw new InternalServerErrorException("Ошибка при создании пользователя в базе данных");
+        }
     }
 
     @Override
-    public User getById(UUID uuid) {
+    public User getById(UUID uuid) throws BadRequestException {
+        log.info("Getting user by UUID: {}", uuid);
+
+        if (!validService.isValidUuid(String.valueOf(uuid))) {
+            throw new BadRequestException("Некорректный формат UUID: " + uuid);
+        }
         UserEntity userEntity = userRepository.getByUuid(uuid)
-                .orElseThrow(() -> new CabinetException("User not found" + uuid));
+                    .orElseThrow(() -> new BadRequestException("User not found" + uuid));
+
         return userMapper.toDto(userEntity);
     }
 
     @Override
     public PageOfUser getUsersPage(Pageable pageable) {
-        Page<UserEntity> entityPage = userRepository.findAll(pageable);
-        return pageMapper.toPageOfUser(entityPage, userMapper);
+        log.info("Getting users page: page={}, size={}", pageable.getPageNumber(), pageable.getPageSize());
+        try {
+            Page<UserEntity> entityPage = userRepository.findAll(pageable);
+            return pageMapper.toPageOfUser(entityPage, userMapper);
+        } catch (DataAccessException e) {
+            log.error("Database error while fetching users page: {}", e.getMessage());
+            throw new InternalServerErrorException("Ошибка при получении списка пользователей");
+        }
     }
 
     @Transactional
     @Override
-    public void updateUser(UUID uuid, Long dtUpdate, UserCreate userCreate) {
-        UserEntity userEntity = userRepository.getByUuid(uuid)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+    public void updateUser(UUID uuid, Long dtUpdate, UserCreate userCreate) throws BadRequestException {
+        log.info("Updating user with UUID: {}", uuid);
 
-        if (!userEntity.getDtUpdate().equals(dtUpdate)) {
-            throw new RuntimeException("Конфликт версий данных");
+        if (!validService.isValidUuid(String.valueOf(uuid))) {
+            throw new BadRequestException("Некорректный формат UUID: " + uuid);
         }
 
+        UserEntity userEntity = userRepository.getByUuid(uuid)
+                    .orElseThrow(() -> new BadRequestException("Пользователь не найден" + uuid));
+
+        if (!userEntity.getDtUpdate().equals(dtUpdate)) {
+            throw new BadRequestException("Конфликт версий данных. Получите актуальную версию пользователя");
+        }
+
+        validService.validateUserData(userCreate);
+
+        if (!userEntity.getMail().equals(userCreate.getMail()) &&
+                userRepository.existsByMail(userCreate.getMail())) {
+            throw new BadRequestException("Пользователь с электронной почтой " + userCreate.getMail() + " уже существует");
+        }
+
+        try {
         userEntity.setFio(userCreate.getFio());
         userEntity.setMail(userCreate.getMail());
-        if (userCreate.getPassword() != null) {
+        if (userCreate.getPassword() != null && !userCreate.getPassword().isEmpty()) {
             userEntity.setPassword(passwordEncoder.encode(userCreate.getPassword()));
         }
 
-       userRepository.save(userEntity);
+        userRepository.save(userEntity);
+
+        } catch (DataAccessException e) {
+            log.error("Database error while updating user: {}", e.getMessage());
+            throw new InternalServerErrorException("Ошибка при обновлении пользователя");
+        }
     }
 }

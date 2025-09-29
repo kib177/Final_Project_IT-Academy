@@ -35,8 +35,8 @@ public class AuditEntity {
     @Column(nullable = false)
     private EssenceTypeEnum type;
 
-    @Column(nullable = false)
-    private String essenceId;
+    @Column
+    private UUID essenceId;
 
     @Override
     public boolean equals(Object o) {
