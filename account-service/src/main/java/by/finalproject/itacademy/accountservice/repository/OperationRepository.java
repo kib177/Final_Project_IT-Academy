@@ -15,5 +15,5 @@ import java.util.UUID;
 @Repository
 public interface OperationRepository extends JpaRepository<OperationEntity, UUID> {
     Page<OperationEntity> findByAccount(@Param("account") UUID account, Pageable pageable);
-    Optional<OperationEntity> findByUuidAndAccount(@Param("uuid") UUID uuid, @Param("account") UUID account);
+    OperationEntity findByUuidAndAccount(@Param("uuid") UUID uuid, @Param("account") UUID account);
 }

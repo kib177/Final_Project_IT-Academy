@@ -1,13 +1,7 @@
 package by.finalproject.itacademy.userservice.service;
 
-import by.finalproject.itacademy.common.exception.StructuredValidationException;
-import by.finalproject.itacademy.common.model.dto.FieldError;
-import by.finalproject.itacademy.common.model.dto.StructuredErrorResponse;
-import by.finalproject.itacademy.userservice.model.dto.UserCreate;
-import by.finalproject.itacademy.userservice.model.dto.UserRegistration;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service

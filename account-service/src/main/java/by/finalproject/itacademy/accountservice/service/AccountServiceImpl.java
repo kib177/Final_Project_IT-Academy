@@ -12,8 +12,6 @@ import by.finalproject.itacademy.accountservice.service.api.IAccountService;
 import by.finalproject.itacademy.accountservice.service.mapper.AccountMapper;
 import by.finalproject.itacademy.accountservice.service.mapper.AccountPageMapper;
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
-import by.finalproject.itacademy.common.exception.DataVersionException;
-import by.finalproject.itacademy.common.exception.InsufficientFundsException;
 import by.finalproject.itacademy.common.jwt.JwtUser;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
@@ -80,10 +78,6 @@ public class AccountServiceImpl implements IAccountService {
         AccountEntity existingAccount = accountRepository.findByUuid(uuid)
                 .orElseThrow(() -> new AccountNotFoundException("Счет не найден"));
 
-        if (!existingAccount.getDtUpdate().equals(dtUpdate)) {
-            throw new DataVersionException("Конфликт версий данных. Счет был изменен другим пользователем");
-        }
-
         if (!classifierCerviceClient.getSpecificCurrency(accountRequest.getCurrency())) {
             throw new ValidationException("Указанная валюта не существует");
         }
@@ -127,9 +121,6 @@ public class AccountServiceImpl implements IAccountService {
                 .orElseThrow(() -> new AccountNotFoundException("Счет не найден"));
 
         BigDecimal newBalance = account.getBalance().add(amount);
-        if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new InsufficientFundsException("Недостаточно средств на счете");
-        }
 
         account.setBalance(newBalance);
         accountRepository.save(account);

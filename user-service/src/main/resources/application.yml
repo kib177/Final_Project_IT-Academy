@@ -16,10 +16,6 @@ spring:
       ddl-auto: update
     show-sql: true
 
-jwt:
-  secret: "mySecretKeyForJWTGeneration12345"
-  expiration: 3600000
-
 feign:
   client:
     config:

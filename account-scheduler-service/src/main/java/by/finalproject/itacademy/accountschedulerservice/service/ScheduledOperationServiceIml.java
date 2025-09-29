@@ -1,13 +1,14 @@
 package by.finalproject.itacademy.accountschedulerservice.service;
 
-
+import by.finalproject.itacademy.accountschedulerservice.model.dto.PageOfScheduledOperation;
 import by.finalproject.itacademy.accountschedulerservice.model.dto.ScheduledOperationRequest;
 import by.finalproject.itacademy.accountschedulerservice.model.dto.ScheduledOperationResponse;
 import by.finalproject.itacademy.accountschedulerservice.model.entity.ScheduledOperationEntity;
 import by.finalproject.itacademy.accountschedulerservice.repository.ScheduledOperationRepository;
 import by.finalproject.itacademy.accountschedulerservice.service.api.IScheduledOperationService;
+import by.finalproject.itacademy.accountschedulerservice.service.mapper.PageMapper;
+import by.finalproject.itacademy.accountschedulerservice.service.mapper.ScheduledMapper;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,37 +24,32 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ScheduledOperationServiceIml implements IScheduledOperationService {
     private final ScheduledOperationRepository repository;
-    private final ModelMapper modelMapper;
+    private final ScheduledMapper mapper;
+    private final PageMapper pageMapper;
 
     @Override
     @Transactional
-    public ScheduledOperationResponse create(ScheduledOperationRequest request) {
-        ScheduledOperationEntity entity = modelMapper.map(request, ScheduledOperationEntity.class);
+    public void create(ScheduledOperationRequest request) {
 
-        entity.setDtCreate(Timestamp.from(Instant.now()));
-        entity.setDtUpdate(entity.getDtCreate());
-
-        ScheduledOperationEntity saved = repository.save(entity);
-        return modelMapper.map(saved, ScheduledOperationResponse.class);
+        repository.save(ScheduledOperationEntity.builder()
+                .dtCreate(Timestamp.from(Instant.now()))
+                .dtUpdate(Timestamp.from(Instant.now()))
+                .schedule(request.getSchedule())
+                .operation(request.getOperation())
+                .build());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ScheduledOperationResponse> getAll(Pageable pageable, List<UUID> accountIds) {
-        Page<ScheduledOperationEntity> page;
+    public PageOfScheduledOperation getAll(Pageable pageable, List<UUID> accountIds) {
+        Page<ScheduledOperationEntity> page = repository.findAllByUuid(pageable, accountIds);
 
-        if (accountIds != null && !accountIds.isEmpty()) {
-            page = repository.findByAccountIds(accountIds, pageable);
-        } else {
-            page = repository.findAll(pageable);
-        }
-
-        return page.map(entity -> modelMapper.map(entity, ScheduledOperationResponse.class));
+        return pageMapper.toPageOfUser(page, mapper);
     }
 
     @Override
     @Transactional
-    public ScheduledOperationResponse update(UUID uuid, Long dtUpdate, ScheduledOperationRequest request) {
+    public void update(UUID uuid, Long dtUpdate, ScheduledOperationRequest request) {
         ScheduledOperationEntity existing = repository.findById(uuid)
                 .orElseThrow(() -> new RuntimeException(String.valueOf(uuid)));
 
@@ -61,11 +57,13 @@ public class ScheduledOperationServiceIml implements IScheduledOperationService 
             throw new ConcurrentModificationException("Запись была изменена другим пользователем");
         }
 
-        modelMapper.map(request, existing);
-        existing.setDtUpdate(Timestamp.from(Instant.now()));
+        ScheduledOperationEntity updated = repository.save(ScheduledOperationEntity.builder()
+                .dtCreate(Timestamp.from(Instant.now()))
+                .dtUpdate(Timestamp.from(Instant.now()))
+                .schedule(request.getSchedule())
+                .operation(request.getOperation())
+                .build());
 
-        ScheduledOperationEntity updated = repository.save(existing);
-        return modelMapper.map(updated, ScheduledOperationResponse.class);
     }
 
     @Transactional(readOnly = true)
@@ -73,6 +71,6 @@ public class ScheduledOperationServiceIml implements IScheduledOperationService 
         ScheduledOperationEntity entity = repository.findById(uuid)
                 .orElseThrow(() -> new RuntimeException(String.valueOf(uuid)));
 
-        return modelMapper.map(entity, ScheduledOperationResponse.class);
+        return mapper.toDto(entity);
     }
 }

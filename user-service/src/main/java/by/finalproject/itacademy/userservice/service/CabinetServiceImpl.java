@@ -1,12 +1,9 @@
 package by.finalproject.itacademy.userservice.service;
 
-
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
-import by.finalproject.itacademy.common.exception.InternalServerErrorException;
-import by.finalproject.itacademy.common.exception.StructuredValidationException;
+import by.finalproject.itacademy.common.exception.*;
 import by.finalproject.itacademy.common.jwt.JwtTokenUtil;
 import by.finalproject.itacademy.common.jwt.JwtUser;
-import by.finalproject.itacademy.common.model.dto.StructuredErrorResponse;
 import by.finalproject.itacademy.userservice.feign.AuditServiceClient;
 import by.finalproject.itacademy.userservice.model.dto.AuditEventRequest;
 import by.finalproject.itacademy.userservice.model.dto.User;
@@ -16,24 +13,18 @@ import by.finalproject.itacademy.userservice.model.enums.UserStatus;
 import by.finalproject.itacademy.userservice.service.api.ICabinetService;
 
 import by.finalproject.itacademy.userservice.service.api.IVerificationCodeService;
-import by.finalproject.itacademy.userservice.service.api.exception.CabinetException;
 import by.finalproject.itacademy.userservice.model.entity.UserEntity;
-import by.finalproject.itacademy.userservice.model.entity.VerificationEntity;
 import by.finalproject.itacademy.userservice.service.mapper.UserMapper;
 import by.finalproject.itacademy.userservice.repository.UserRepository;
 import by.finalproject.itacademy.userservice.repository.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
-import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -45,22 +36,18 @@ public class CabinetServiceImpl implements ICabinetService {
     private final UserMapper userMapper;
     private final IVerificationCodeService verificationCodeService;
     private final JwtTokenUtil jwtTokenUtil;
-    private final ValidService validService;
     private final PasswordEncoder passwordEncoder;
     private final AuditServiceClient auditServiceClient;
-    //private final PasswordEncoder passwordEncoder;
 
     @Transactional
     @Override
-    public void registration(UserRegistration userRegistration)
-            throws BadRequestException {
+    public void registration(UserRegistration userRegistration) {
 
         log.info("Registering new user with email: {}", userRegistration.getMail());
 
         if (userRepository.existsByMail(userRegistration.getMail())) {
-            throw new BadRequestException("Пользователь с электронной почтой " + userRegistration.getMail() + " уже существует");
+            throw new EntityAlreadyExistsException("Пользователь с email " + userRegistration.getMail() + " уже существует");
         }
-
         try {
             userRegistration.setPassword(passwordEncoder.encode(userRegistration.getPassword()));
             UserEntity userEntity = userMapper.fromRegistrationDto(userRegistration);
@@ -71,93 +58,70 @@ public class CabinetServiceImpl implements ICabinetService {
             userRepository.save(userEntity);
 
             verificationCodeService.generateCode(userRegistration.getMail());
-
-            auditServiceClient.logEvent(
-                    AuditEventRequest.builder()
-                            .jwtUser(getCurrentUser())
-                            .userInfo("Регистрация нового пользователя")
-                            .essenceId(userEntity.getUuid())
-                            .type(EssenceTypeEnum.USER)
-                            .build());
-        } catch (DataAccessException e) {
-            log.error("Database error during user registration: {}", e.getMessage());
-            throw new InternalServerErrorException("Ошибка при регистрации пользователя");
+        } catch (Exception e) {
+            throw new UserServiceException("Ошибка при регистрации пользователя", e);
         }
     }
 
     @Transactional
-    public void verifyUser(String mail, String code) throws BadRequestException {
+    public void verifyUser(String mail, String code) {
         log.info("Verifying user with email: {}", mail);
 
-        if (code == null || code.trim().isEmpty()) {
-            throw new BadRequestException("Код верификации не может быть пустым");
-        }
-        if (mail == null || mail.trim().isEmpty()) {
-            throw new BadRequestException("Электронная почта не может быть пустой");
-        }
+        UserEntity userEntity = userRepository.findByMail(mail);
 
-        UserEntity userEntity = userRepository.findByMail(mail)
-                .orElseThrow(() -> new BadRequestException("User not found" + mail));
-        if (userEntity.getStatus() != UserStatus.WAITING_ACTIVATION) {
-            throw new BadRequestException("Пользователь уже активирован или деактивирован");
+        if (userEntity == null) {
+            throw new UserNotFoundException("Пользователь с email " + mail + " не найден");
         }
 
-        Optional<VerificationEntity> verification = verificationCodeRepository.findByMailAndCode(mail, code);
-        if (verification.isEmpty()) {
-            throw new BadRequestException("Неверный код верификации");
-        }
 
-        try {
-            userEntity.setStatus(UserStatus.ACTIVATED);
-            userRepository.save(userEntity);
-            verificationCodeRepository.deleteByMail(mail);
+        userEntity.setStatus(UserStatus.ACTIVATED);
+        userRepository.save(userEntity);
+        verificationCodeRepository.deleteByMail(mail);
 
-            log.info("User {} successfully verified", mail);
+        log.info("User {} successfully verified", mail);
 
-            auditServiceClient.logEvent(
-                    AuditEventRequest.builder()
-                            .jwtUser(getCurrentUser())
-                            .userInfo("Верификация пользователя")
-                            .essenceId(userEntity.getUuid())
-                            .type(EssenceTypeEnum.USER)
-                            .build());
-        } catch (DataAccessException e) {
-            log.error("Database error during user verification: {}", e.getMessage());
-            throw new InternalServerErrorException("Ошибка при верификации пользователя");
-        }
     }
 
     @Override
-    public String login(UserLogin userLogin) throws BadRequestException {
+    public String login(UserLogin userLogin) {
         log.info("Login attempt for email: {}", userLogin.getMail());
 
-        if (userLogin.getMail() == null || userLogin.getMail().trim().isEmpty()) {
-            throw new BadRequestException("Электронная почта не может быть пустой");
-        }
-        if (userLogin.getPassword() == null || userLogin.getPassword().isEmpty()) {
-            throw new BadRequestException("Пароль не может быть пустым");
+        UserEntity userEntity = userRepository.findByMail(userLogin.getMail());
+
+        if (userEntity == null) {
+            throw new InvalidCredentialsException("Неверный email или пароль");
         }
 
-        UserEntity userEntity = userRepository.findByMail(userLogin.getMail())
-                .orElseThrow(() -> new BadRequestException("Некорректные данные"));
-        if (!passwordEncoder.matches( userLogin.getPassword(), userEntity.getPassword())) {
-            throw new BadRequestException("Некорректные данные");
+        if (!passwordEncoder.matches(userLogin.getPassword(), userEntity.getPassword())) {
+            throw new InvalidCredentialsException("Неверный email или пароль");
         }
 
-        try {
-            return "Login successful for user: " + jwtTokenUtil.generateToken(userEntity.getUuid(),
-                    userEntity.getMail(), userEntity.getFio(), String.valueOf(userEntity.getRole()));
-        } catch (Exception e) {
-            log.error("Token generation error: {}", e.getMessage());
-            throw new InternalServerErrorException("Ошибка при генерации токена доступа");
+        if (userEntity.getStatus() == UserStatus.WAITING_ACTIVATION) {
+            throw new EntityAlreadyExistsException("Попытка входа не верифицированного пользователя");
         }
+
+        return "Login successful for user: " +
+                jwtTokenUtil
+                        .generateToken(userEntity.getUuid(),
+                                userEntity.getMail(),
+                                userEntity.getFio(),
+                                String.valueOf(userEntity.getRole()));
+
     }
 
     @Override
-    public User getAboutSelf() throws BadRequestException {
+    public User getAboutSelf() {
         log.info("Getting current user info: {}", getCurrentUserUuid());
         UserEntity userEntity = userRepository.getByUuid(getCurrentUserUuid())
-                .orElseThrow(() -> new BadRequestException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));;
+
+        auditServiceClient.logEvent(
+                AuditEventRequest.builder()
+                        .jwtUser(getCurrentUser())
+                        .userInfo("Информация о себе")
+                        .essenceId(userEntity.getUuid())
+                        .type(EssenceTypeEnum.USER)
+                        .build());
         return userMapper.toDto(userEntity);
     }
 

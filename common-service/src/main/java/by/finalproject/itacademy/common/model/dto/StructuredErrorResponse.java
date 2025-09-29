@@ -13,13 +13,6 @@ import java.util.List;
 @Builder
 public class StructuredErrorResponse {
     private String logref;
-    private List<FieldError> errors;
+    private List<ErrorResponse> errors;
 
-    public void addError(FieldError error) {
-        this.errors.add(error);
-    }
-
-    public boolean checkErrors() {
-        return errors.isEmpty();
-    }
 }

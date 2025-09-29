@@ -18,19 +18,19 @@ import org.springframework.web.server.ResponseStatusException;
 public class CabinetController {
     private final ICabinetService cabinetService;
 
-    @PostMapping(path = "/registration",produces = "application/json")
+    @PostMapping("/registration")
     public ResponseEntity<?> registration(@Valid @RequestBody UserRegistration userRegistration)
             throws BadRequestException {
         cabinetService.registration(userRegistration);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping(path = "/verification",  produces = "application/json")
+    @GetMapping( "/verification")
     public ResponseEntity<?> verification(@RequestParam String code, @RequestParam String mail) throws BadRequestException {
         cabinetService.verifyUser(mail, code);
             return ResponseEntity.ok().build();
     }
-    @PostMapping(path = "/login",  produces = "application/json")
+    @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody UserLogin userLogin) throws BadRequestException {
             String result = cabinetService.login(userLogin);
             return ResponseEntity.ok(result);

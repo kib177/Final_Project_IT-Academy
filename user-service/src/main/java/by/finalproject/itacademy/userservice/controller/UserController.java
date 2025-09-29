@@ -3,21 +3,15 @@ package by.finalproject.itacademy.userservice.controller;
 import by.finalproject.itacademy.userservice.model.dto.PageOfUser;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserCreate;
-import by.finalproject.itacademy.userservice.model.entity.UserEntity;
 import by.finalproject.itacademy.userservice.service.api.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
-import org.apache.coyote.Request;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController

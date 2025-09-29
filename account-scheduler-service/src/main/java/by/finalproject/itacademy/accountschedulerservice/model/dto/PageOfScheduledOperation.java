@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class PageOfScheduledOperation extends PageDTO<@Valid ScheduledOperationResponse> {
+public class PageOfScheduledOperation extends PageDTO<ScheduledOperationResponse> {
 
 
 }

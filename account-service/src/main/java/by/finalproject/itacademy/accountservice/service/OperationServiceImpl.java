@@ -12,8 +12,6 @@ import by.finalproject.itacademy.accountservice.service.api.IOperationService;
 import by.finalproject.itacademy.accountservice.service.mapper.OperationMapper;
 import by.finalproject.itacademy.accountservice.service.mapper.OperationPageMapper;
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
-import by.finalproject.itacademy.common.exception.DataVersionException;
-import by.finalproject.itacademy.common.exception.OperationNotFoundException;
 import by.finalproject.itacademy.common.jwt.JwtUser;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
@@ -106,13 +104,7 @@ public class OperationServiceImpl implements IOperationService {
             throw new AccountNotFoundException("Счет не найден");
         }
 
-        OperationEntity existingOperation = operationRepository.findByUuidAndAccount(operationUuid, accountUuid)
-                .orElseThrow(() -> new OperationNotFoundException("Операция не найдена"));
-
-        if (!existingOperation.getDtUpdate().equals(dtUpdate)) {
-            throw new DataVersionException("Конфликт версий данных. Операция была изменена другим пользователем");
-        }
-
+        OperationEntity existingOperation = operationRepository.findByUuidAndAccount(operationUuid, accountUuid);
         accountService.updateBalance(accountUuid, existingOperation.getValue().negate(), getCurrentUserUuid().userId());
 
         existingOperation.setDate(operationRequest.getDate());
@@ -144,13 +136,7 @@ public class OperationServiceImpl implements IOperationService {
             throw new AccountNotFoundException("Счет не найден");
         }
 
-        OperationEntity operation = operationRepository.findByUuidAndAccount(operationUuid, accountUuid)
-                .orElseThrow(() -> new OperationNotFoundException("Операция не найдена"));
-
-        if (!operation.getDtUpdate().equals(dtUpdate)) {
-            throw new DataVersionException("Конфликт версий данных. Операция была изменена другим пользователем");
-        }
-
+        OperationEntity operation = operationRepository.findByUuidAndAccount(operationUuid, accountUuid);
         accountService.updateBalance(accountUuid, operation.getValue().negate(), getCurrentUserUuid().userId());
 
         operationRepository.delete(operation);
