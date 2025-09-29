@@ -1,5 +1,7 @@
 package by.finalproject.itacademy.classifierservice.service;
 
+import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
+import by.finalproject.itacademy.classifierservice.feign.AuditServiceClient;
 import by.finalproject.itacademy.classifierservice.model.dto.*;
 import by.finalproject.itacademy.classifierservice.model.entity.CurrencyEntity;
 import by.finalproject.itacademy.classifierservice.model.entity.OperationCategoryEntity;
@@ -8,9 +10,11 @@ import by.finalproject.itacademy.classifierservice.repository.OperationCategoryR
 import by.finalproject.itacademy.classifierservice.service.api.IClassifierService;
 import by.finalproject.itacademy.classifierservice.service.mapper.CurrencyMapper;
 import by.finalproject.itacademy.classifierservice.service.mapper.OperationCategoryMapper;
+import by.finalproject.itacademy.common.jwt.JwtUser;
 import by.finalproject.itacademy.common.model.dto.PageDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 
@@ -25,6 +29,7 @@ public class ClassifierServiceImpl implements IClassifierService {
     private final OperationCategoryRepository operationCategoryRepository;
     private final CurrencyMapper currencyMapper;
     private final OperationCategoryMapper operationCategoryMapper;
+    private final AuditServiceClient auditServiceClient;
 
     @Override
     public void addNewCurrency(CurrencyRequest currency) {
@@ -34,6 +39,14 @@ public class ClassifierServiceImpl implements IClassifierService {
                 .title(currency.getTitle())
                 .description(currency.getDescription())
                 .build());
+
+
+        auditServiceClient.logEvent(AuditEventRequest.builder()
+                        .jwtUser(getCurrentUser())
+                        .userInfo("Создание валюты")
+                        .essenceId(null)
+                        .type(EssenceTypeEnum.CURRENCY)
+                        .build());
     }
 
     @Override
@@ -42,6 +55,13 @@ public class ClassifierServiceImpl implements IClassifierService {
             operationCategoryEntity.setDtCreate(LocalDateTime.now());
             operationCategoryEntity.setDtUpdate(operationCategoryEntity.getDtCreate());
         operationCategoryRepository.save(operationCategoryEntity);
+
+        auditServiceClient.logEvent(AuditEventRequest.builder()
+                .jwtUser(getCurrentUser())
+                .userInfo("Создание операции")
+                .essenceId(null)
+                .type(EssenceTypeEnum.OPERATION)
+                .build());
     }
 
     @Override
@@ -67,5 +87,9 @@ public class ClassifierServiceImpl implements IClassifierService {
     public PageOfOperationCategory getPageOfOperationCategory(Pageable pageable) {
         Page<OperationCategoryEntity> operationCategoryPage = operationCategoryRepository.findAll(pageable);
         return operationCategoryMapper.toPageOfOperationCategory(operationCategoryPage, operationCategoryMapper);
+    }
+
+    public JwtUser getCurrentUser() {
+        return (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

@@ -1,6 +1,10 @@
 package by.finalproject.itacademy.userservice.service;
 
+import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.common.exception.InternalServerErrorException;
+import by.finalproject.itacademy.common.jwt.JwtUser;
+import by.finalproject.itacademy.userservice.feign.AuditServiceClient;
+import by.finalproject.itacademy.userservice.model.dto.AuditEventRequest;
 import by.finalproject.itacademy.userservice.model.dto.PageOfUser;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserCreate;
@@ -18,6 +22,7 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +41,7 @@ public class UserServiceImpl implements IUserService {
     private final VerificationCodeRepository verificationCodeRepository;
     private final PasswordEncoder passwordEncoder;
     private final ValidService validService;
+    private final AuditServiceClient auditServiceClient;
 
     @Transactional
     @Override
@@ -45,9 +51,9 @@ public class UserServiceImpl implements IUserService {
         if (userRepository.existsByMail(userCreate.getMail())) {
             throw new BadRequestException("Пользователь с электронной почтой " + userCreate.getMail() + " уже существует");
         }
-        validService.validateUserData(userCreate);
 
         try {
+            userCreate.setPassword(passwordEncoder.encode(userCreate.getPassword()));
             UserEntity userEntity = userMapper.fromCreateDto(userCreate);
             if (userEntity != null) {
                 userEntity.setDtCreate(LocalDateTime.now());
@@ -56,7 +62,13 @@ public class UserServiceImpl implements IUserService {
                 userRepository.save(userEntity);
             }
             verificationCodeService.generateCode(userCreate.getMail());
-
+            auditServiceClient.logEvent(
+                    AuditEventRequest.builder()
+                            .jwtUser(getCurrentUser())
+                            .userInfo("Создан новый пользователь ")
+                            .essenceId(userEntity.getUuid())
+                            .type(EssenceTypeEnum.USER)
+                            .build());
         } catch (DataAccessException e) {
             log.error("Database error while creating user: {}", e.getMessage());
             throw new InternalServerErrorException("Ошибка при создании пользователя в базе данных");
@@ -104,8 +116,6 @@ public class UserServiceImpl implements IUserService {
             throw new BadRequestException("Конфликт версий данных. Получите актуальную версию пользователя");
         }
 
-        validService.validateUserData(userCreate);
-
         if (!userEntity.getMail().equals(userCreate.getMail()) &&
                 userRepository.existsByMail(userCreate.getMail())) {
             throw new BadRequestException("Пользователь с электронной почтой " + userCreate.getMail() + " уже существует");
@@ -119,10 +129,20 @@ public class UserServiceImpl implements IUserService {
         }
 
         userRepository.save(userEntity);
+            auditServiceClient.logEvent(
+                    AuditEventRequest.builder()
+                            .jwtUser(getCurrentUser())
+                            .userInfo("Изменен пользователь")
+                            .essenceId(userEntity.getUuid())
+                            .type(EssenceTypeEnum.USER)
+                            .build());
 
         } catch (DataAccessException e) {
             log.error("Database error while updating user: {}", e.getMessage());
             throw new InternalServerErrorException("Ошибка при обновлении пользователя");
         }
+    }
+    public JwtUser getCurrentUser() {
+        return (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

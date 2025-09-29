@@ -6,6 +6,7 @@ import by.finalproject.itacademy.userservice.model.dto.UserCreate;
 import by.finalproject.itacademy.userservice.model.dto.UserRegistration;
 import by.finalproject.itacademy.userservice.model.entity.UserEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {

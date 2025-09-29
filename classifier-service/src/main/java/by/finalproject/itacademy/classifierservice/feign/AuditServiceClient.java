@@ -1,6 +1,7 @@
-package by.finalproject.itacademy.userservice.feign;
+package by.finalproject.itacademy.classifierservice.feign;
 
-import by.finalproject.itacademy.userservice.model.dto.AuditEventRequest;
+
+import by.finalproject.itacademy.classifierservice.model.dto.AuditEventRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

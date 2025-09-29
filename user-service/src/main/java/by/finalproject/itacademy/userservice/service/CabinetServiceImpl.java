@@ -1,11 +1,14 @@
 package by.finalproject.itacademy.userservice.service;
 
 
+import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.common.exception.InternalServerErrorException;
 import by.finalproject.itacademy.common.exception.StructuredValidationException;
 import by.finalproject.itacademy.common.jwt.JwtTokenUtil;
 import by.finalproject.itacademy.common.jwt.JwtUser;
 import by.finalproject.itacademy.common.model.dto.StructuredErrorResponse;
+import by.finalproject.itacademy.userservice.feign.AuditServiceClient;
+import by.finalproject.itacademy.userservice.model.dto.AuditEventRequest;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserLogin;
 import by.finalproject.itacademy.userservice.model.dto.UserRegistration;
@@ -24,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +46,8 @@ public class CabinetServiceImpl implements ICabinetService {
     private final IVerificationCodeService verificationCodeService;
     private final JwtTokenUtil jwtTokenUtil;
     private final ValidService validService;
+    private final PasswordEncoder passwordEncoder;
+    private final AuditServiceClient auditServiceClient;
     //private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -55,18 +61,24 @@ public class CabinetServiceImpl implements ICabinetService {
             throw new BadRequestException("Пользователь с электронной почтой " + userRegistration.getMail() + " уже существует");
         }
 
-        validService.validateRegistrationData(userRegistration);
-
         try {
+            userRegistration.setPassword(passwordEncoder.encode(userRegistration.getPassword()));
             UserEntity userEntity = userMapper.fromRegistrationDto(userRegistration);
-            if (userEntity != null) {
-                userEntity.setDtCreate(LocalDateTime.now());
-                userEntity.setDtUpdate(
-                        userEntity.getDtCreate());
-                userRepository.save(userEntity);
-            }
+
+            userEntity.setDtCreate(LocalDateTime.now());
+            userEntity.setDtUpdate(
+                    userEntity.getDtCreate());
+            userRepository.save(userEntity);
+
             verificationCodeService.generateCode(userRegistration.getMail());
 
+            auditServiceClient.logEvent(
+                    AuditEventRequest.builder()
+                            .jwtUser(getCurrentUser())
+                            .userInfo("Регистрация нового пользователя")
+                            .essenceId(userEntity.getUuid())
+                            .type(EssenceTypeEnum.USER)
+                            .build());
         } catch (DataAccessException e) {
             log.error("Database error during user registration: {}", e.getMessage());
             throw new InternalServerErrorException("Ошибка при регистрации пользователя");
@@ -99,8 +111,16 @@ public class CabinetServiceImpl implements ICabinetService {
             userEntity.setStatus(UserStatus.ACTIVATED);
             userRepository.save(userEntity);
             verificationCodeRepository.deleteByMail(mail);
+
             log.info("User {} successfully verified", mail);
 
+            auditServiceClient.logEvent(
+                    AuditEventRequest.builder()
+                            .jwtUser(getCurrentUser())
+                            .userInfo("Верификация пользователя")
+                            .essenceId(userEntity.getUuid())
+                            .type(EssenceTypeEnum.USER)
+                            .build());
         } catch (DataAccessException e) {
             log.error("Database error during user verification: {}", e.getMessage());
             throw new InternalServerErrorException("Ошибка при верификации пользователя");
@@ -117,9 +137,10 @@ public class CabinetServiceImpl implements ICabinetService {
         if (userLogin.getPassword() == null || userLogin.getPassword().isEmpty()) {
             throw new BadRequestException("Пароль не может быть пустым");
         }
+
         UserEntity userEntity = userRepository.findByMail(userLogin.getMail())
                 .orElseThrow(() -> new BadRequestException("Некорректные данные"));
-        if (!userEntity.getPassword().equals(userLogin.getPassword())) {
+        if (!passwordEncoder.matches( userLogin.getPassword(), userEntity.getPassword())) {
             throw new BadRequestException("Некорректные данные");
         }
 
@@ -143,5 +164,9 @@ public class CabinetServiceImpl implements ICabinetService {
     public UUID getCurrentUserUuid() {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return jwtUser.userId();
+    }
+
+    public JwtUser getCurrentUser() {
+        return (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

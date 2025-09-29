@@ -34,7 +34,7 @@ public class SecurityConfig {
                                 "/api/v1/cabinet/verification",
                                 "/api/v1/cabinet/login"
                         ).permitAll()
-                        .requestMatchers("/api/v1/users/**").permitAll()
+                        .requestMatchers("/api/v1/users/**").authenticated()
                         .requestMatchers("/api/v1/cabinet/me").authenticated()
                         .anyRequest().authenticated()
                 );
