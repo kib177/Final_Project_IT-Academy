@@ -1,0 +1,1 @@
+<img src="https://socialify.git.ci/kib177/Final_Project_IT-Academy/image?language=1&name=1&owner=1&pattern=Signal&pulls=1&stargazers=1&theme=Light" alt="Final_Project_IT-Academy" width="640" height="320" />
