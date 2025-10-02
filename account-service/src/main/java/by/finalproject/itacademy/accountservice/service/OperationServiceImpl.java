@@ -57,6 +57,9 @@ public class OperationServiceImpl implements IOperationService {
         }
 
         OperationEntity operation = new OperationEntity();
+        if(operationRequest.getDate().equals("0")){
+            operation.setDate(LocalDateTime.now());
+        }
         operation.setAccount(accountUuid);
         operation.setDate(LocalDateTime.now());
         operation.setDescription(operationRequest.getDescription());
@@ -107,7 +110,7 @@ public class OperationServiceImpl implements IOperationService {
         OperationEntity existingOperation = operationRepository.findByUuidAndAccount(operationUuid, accountUuid);
         accountService.updateBalance(accountUuid, existingOperation.getValue().negate(), getCurrentUserUuid().userId());
 
-        existingOperation.setDate(operationRequest.getDate());
+        existingOperation.setDate(operationRequest.getDate().toLocalDateTime());
         existingOperation.setDescription(operationRequest.getDescription());
         existingOperation.setCategory(operationRequest.getCategory());
         existingOperation.setValue(operationRequest.getValue());

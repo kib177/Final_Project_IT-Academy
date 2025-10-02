@@ -56,6 +56,8 @@ public class UserServiceImpl implements IUserService {
                 userEntity.setDtCreate(LocalDateTime.now());
                 userEntity.setDtUpdate(
                         userEntity.getDtCreate());
+                userEntity.setRole(userCreate.getRole());
+                userEntity.setStatus(userCreate.getStatus());
                 userRepository.save(userEntity);
             }
             verificationCodeService.generateCode(userCreate.getMail());

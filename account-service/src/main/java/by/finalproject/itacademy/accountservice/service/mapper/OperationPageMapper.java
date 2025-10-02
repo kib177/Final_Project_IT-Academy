@@ -1,6 +1,6 @@
 package by.finalproject.itacademy.accountservice.service.mapper;
 
-import by.finalproject.itacademy.accountservice.model.dto.OperationDTO;
+import by.finalproject.itacademy.accountservice.model.dto.OperationResponse;
 import by.finalproject.itacademy.accountservice.model.dto.PageOfOperation;
 import by.finalproject.itacademy.accountservice.model.entity.OperationEntity;
 import org.mapstruct.Mapper;
@@ -22,7 +22,7 @@ public interface OperationPageMapper {
     @Mapping(target = "content", expression = "java(mapContent(page.getContent(), contentMapper))")
     PageOfOperation toPageOfUser(Page<OperationEntity> page, OperationMapper contentMapper);
 
-    default List<OperationDTO> mapContent(List<OperationEntity> entities, OperationMapper mapper) {
+    default List<OperationResponse> mapContent(List<OperationEntity> entities, OperationMapper mapper) {
         return entities.stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
