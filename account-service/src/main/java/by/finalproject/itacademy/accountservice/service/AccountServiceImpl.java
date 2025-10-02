@@ -75,7 +75,7 @@ public class AccountServiceImpl implements IAccountService {
             throws AccountNotFoundException {
         log.info("Обновление счета: {} пользователя: {}", uuid, getCurrentUser().userId());
 
-        AccountEntity existingAccount = accountRepository.findByUuid(uuid)
+        accountRepository.findByUuid(uuid)
                 .orElseThrow(() -> new AccountNotFoundException("Счет не найден"));
 
         if (!classifierCerviceClient.getSpecificCurrency(accountRequest.getCurrency())) {

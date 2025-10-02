@@ -26,10 +26,10 @@ public class ReportEntity {
     private UUID uuid;
 
     @Column(nullable = false)
-    private Long dtCreate;
+    private LocalDateTime dtCreate;
 
     @Column(nullable = false)
-    private Long dtUpdate;
+    private LocalDateTime dtUpdate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -43,12 +43,4 @@ public class ReportEntity {
 
     private Object params;
 
-    @Column(columnDefinition = "uuid[]")
-    private List<UUID> accounts;
-
-    @Column(columnDefinition = "uuid[]")
-    private List<UUID> categories;
-
-    private LocalDateTime dateFrom;
-    private LocalDateTime dateTo;// Может быть ReportParamBalance, ReportParamByDate или ReportParamByCategory
 }

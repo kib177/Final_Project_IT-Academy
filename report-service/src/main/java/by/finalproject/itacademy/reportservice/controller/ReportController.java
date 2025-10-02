@@ -18,7 +18,8 @@ import java.util.UUID;
 public class ReportController {
 
     @PostMapping("/{type}")
-    public String addNewReport(@Valid @RequestBody ReportTypeEnum reportType) {
+    public String addNewReport(@PathVariable String type,
+            @Valid @RequestBody ReportTypeEnum reportType) {
 
     }
 

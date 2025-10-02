@@ -1,4 +1,4 @@
-package by.finalproject.itacademy.auditservice.config;
+package by.finalproject.itacademy.auditservice.model;
 
 import by.finalproject.itacademy.auditservice.model.dto.UserDTO;
 import org.springframework.security.core.GrantedAuthority;
