@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 public class EmailServiceImpl implements IEmailService {
     @Override
     public void sendVerificationEmail(String to, String code) {
-        // In production, integrate with a real email service
+
         log.info("Sending verification email to {} with code {}", to, code);
-        // Actual email sending implementation would go here
+
     }
 }

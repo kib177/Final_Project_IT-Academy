@@ -29,7 +29,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/account/{uuid}").authenticated()
+                        .requestMatchers(
+                                "/account/{uuid}",
+                        "/account/{uuid}/operation").authenticated()
                         .anyRequest().authenticated()
                 );
 

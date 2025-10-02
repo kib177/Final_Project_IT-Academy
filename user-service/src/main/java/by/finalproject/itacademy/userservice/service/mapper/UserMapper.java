@@ -11,6 +11,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
+    @Mapping(target = "dtCreate" , source = "dtCreate")
+    @Mapping(target = "dtUpdate" , source = "dtUpdate")
     User toDto(UserEntity entity);
     UserEntity toEntity(User dto);
     UserEntity fromRegistrationDto(UserRegistration dto);
