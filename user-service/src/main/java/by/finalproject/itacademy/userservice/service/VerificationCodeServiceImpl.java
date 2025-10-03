@@ -23,13 +23,13 @@ public class VerificationCodeServiceImpl implements IVerificationCodeService {
         verificationCodeRepository.save(verifyCode);
     }
 
-    /*@Override
+    @Override
     public boolean validateCode(String mail, String code) {
-        return codes.getOrDefault(mail, "").equals(code);
+        return verificationCodeRepository.existsByMailAndCode(mail, code);
     }
 
     @Override
     public void deleteCode(String mail) {
-        codes.remove(mail);
-    }*/
+        verificationCodeRepository.deleteByMail(mail);
+    }
 }

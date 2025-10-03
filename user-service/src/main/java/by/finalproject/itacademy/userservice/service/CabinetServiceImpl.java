@@ -32,7 +32,6 @@ import java.util.UUID;
 @Slf4j
 public class CabinetServiceImpl implements ICabinetService {
     private final UserRepository userRepository;
-    private final VerificationCodeRepository verificationCodeRepository;
     private final UserMapper userMapper;
     private final IVerificationCodeService verificationCodeService;
     private final JwtTokenUtil jwtTokenUtil;
@@ -46,7 +45,7 @@ public class CabinetServiceImpl implements ICabinetService {
         log.info("Registering new user with email: {}", userRegistration.getMail());
 
         if (userRepository.existsByMail(userRegistration.getMail())) {
-            throw new EntityAlreadyExistsException("Пользователь с email " + userRegistration.getMail() + " уже существует");
+            throw new UserNotFoundException("Пользователь с email " + userRegistration.getMail() + " уже существует");
         }
         try {
             userRegistration.setPassword(passwordEncoder.encode(userRegistration.getPassword()));
@@ -67,18 +66,19 @@ public class CabinetServiceImpl implements ICabinetService {
     public void verifyUser(String mail, String code) {
         log.info("Verifying user with email: {}", mail);
 
-        UserEntity userEntity = userRepository.findByMail(mail);
-
-        if (userEntity == null) {
-            throw new UserNotFoundException("Пользователь с email " + mail + " не найден");
+        if (verificationCodeService.validateCode(mail, code)) {
+            throw new UserNotFoundException("Не верный код или mail");
         }
-
-
-        userEntity.setStatus(UserStatus.ACTIVATED);
-        userRepository.save(userEntity);
-        verificationCodeRepository.deleteByMail(mail);
-
-        log.info("User {} successfully verified", mail);
+        try {
+            UserEntity userEntity = userRepository.findByMail(mail);
+            userEntity.setStatus(UserStatus.ACTIVATED);
+            userRepository.save(userEntity);
+            verificationCodeService.deleteCode(mail);
+            log.info("User {} successfully verified", mail);
+        }catch (Exception e) {
+            throw new VerificationCodeException("Не удачная попытка верификации", e);
+        }
+        log.info("User {} is not verified", mail);
 
     }
 

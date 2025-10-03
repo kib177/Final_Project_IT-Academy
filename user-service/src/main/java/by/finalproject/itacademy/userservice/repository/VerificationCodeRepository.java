@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface    VerificationCodeRepository extends JpaRepository<VerificationEntity, UUID> {
     Optional<VerificationEntity> findByMailAndCode(String mail, String code);
     void deleteByMail(String mail);
+    boolean existsByMailAndCode(String mail, String code);
 }

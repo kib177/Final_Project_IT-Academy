@@ -47,7 +47,7 @@ public class UserServiceImpl implements IUserService {
         log.info("Creating new user with email: {}", userCreate.getMail());
 
         if (userRepository.existsByMail(userCreate.getMail())) {
-            throw new EntityAlreadyExistsException("Некорректные данные");
+            throw new UserNotFoundException("Неверный email или пароль");
         }
 
             userCreate.setPassword(passwordEncoder.encode(userCreate.getPassword()));
@@ -75,7 +75,7 @@ public class UserServiceImpl implements IUserService {
     public User getById(UUID uuid) {
         log.info("Getting user by UUID: {}", uuid);
         UserEntity userEntity = userRepository.getByUuid(uuid)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));;
+                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
         return userMapper.toDto(userEntity);
     }
 
