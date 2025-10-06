@@ -18,6 +18,6 @@ public class AuditRequest {
     private JwtUser jwtUser;
     private String userInfo;
     private EssenceTypeEnum type;
-    private UUID essenseId;
+    private UUID essenceId;
 }
 

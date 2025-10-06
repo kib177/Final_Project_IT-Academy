@@ -68,6 +68,7 @@ public class ClassifierServiceImpl implements IClassifierService {
     public PageDTO<Object> getPageOfCurrency(Pageable pageable) {
         Page<CurrencyEntity> currencyPage = currencyRepository.findAll(pageable);
         List<Object> currencyList = new ArrayList<>();
+
         for(CurrencyEntity currencyEntity : currencyPage.getContent()) {
             currencyList.add(currencyMapper.toDTO(currencyEntity));
         }

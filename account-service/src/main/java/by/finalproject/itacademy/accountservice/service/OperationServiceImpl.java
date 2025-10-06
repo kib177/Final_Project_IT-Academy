@@ -9,12 +9,13 @@ import by.finalproject.itacademy.accountservice.model.entity.OperationEntity;
 import by.finalproject.itacademy.accountservice.repository.OperationRepository;
 import by.finalproject.itacademy.accountservice.service.api.IAccountService;
 import by.finalproject.itacademy.accountservice.service.api.IOperationService;
+import by.finalproject.itacademy.accountservice.service.exception.CurrencyNotFoundException;
+import by.finalproject.itacademy.accountservice.service.exception.OperationServiceException;
 import by.finalproject.itacademy.accountservice.service.mapper.OperationMapper;
 import by.finalproject.itacademy.accountservice.service.mapper.OperationPageMapper;
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.common.jwt.JwtUser;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -48,39 +49,43 @@ public class OperationServiceImpl implements IOperationService {
         }
 
         if (!classifierCerviceClient.getSpecificCurrency(operationRequest.getCurrency())) {
-            throw new ValidationException("Указанная валюта не существует");
+            throw new CurrencyNotFoundException("Указанная валюта не существует");
         }
 
         if (operationRequest.getCategory() != null
                 && !classifierCerviceClient.getSpecificCategory(operationRequest.getCategory())) {
-            throw new ValidationException("Указанная категория не существует");
+            throw new  CurrencyNotFoundException("Указанная категория не существует");
         }
 
-        OperationEntity operation = new OperationEntity();
-        if(operationRequest.getDate().equals("0")){
+        try {
+            OperationEntity operation = new OperationEntity();
+            if (operationRequest.getDate().equals("0")) { // временно
+                operation.setDate(LocalDateTime.now());
+            }
+            operation.setAccount(accountUuid);
             operation.setDate(LocalDateTime.now());
+            operation.setDescription(operationRequest.getDescription());
+            operation.setCategory(operationRequest.getCategory());
+            operation.setValue(operationRequest.getValue());
+            operation.setCurrency(operationRequest.getCurrency());
+
+            OperationEntity savedOperation = operationRepository.save(operation);
+
+            accountService.updateBalance(accountUuid, operationRequest.getValue(), getCurrentUserUuid().userId());
+
+            auditServiceClient.logEvent(
+                    AuditEventRequest.builder()
+                            .jwtUser(getCurrentUserUuid())
+                            .userInfo("Создана операция: " + operationRequest.getDescription()
+                                    + " на сумму: " + operationRequest.getValue())
+                            .essenceId(savedOperation.getUuid())
+                            .type(EssenceTypeEnum.OPERATION)
+                            .build());
+
+            log.info("Операция успешно создана: {}", savedOperation.getUuid());
+        } catch (Exception e) {
+                throw new OperationServiceException("ошибка при создании операции");
         }
-        operation.setAccount(accountUuid);
-        operation.setDate(LocalDateTime.now());
-        operation.setDescription(operationRequest.getDescription());
-        operation.setCategory(operationRequest.getCategory());
-        operation.setValue(operationRequest.getValue());
-        operation.setCurrency(operationRequest.getCurrency());
-
-        OperationEntity savedOperation = operationRepository.save(operation);
-
-        accountService.updateBalance(accountUuid, operationRequest.getValue(), getCurrentUserUuid().userId());
-
-        auditServiceClient.logEvent(
-                AuditEventRequest.builder()
-                        .jwtUser(getCurrentUserUuid())
-                        .userInfo("Создана операция: " + operationRequest.getDescription()
-                                + " на сумму: " + operationRequest.getValue())
-                        .essenceId(savedOperation.getUuid())
-                        .type(EssenceTypeEnum.OPERATION)
-                        .build());
-
-        log.info("Операция успешно создана: {}", savedOperation.getUuid());
     }
 
     @Override

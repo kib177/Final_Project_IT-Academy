@@ -13,12 +13,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuditDTO {
+public class AuditResponse {
     private UUID uuid;
     private LocalDateTime dtCreate;
     private UserDTO user;
     private String text;
     private EssenceTypeEnum type;
-    private UUID id;
+    private UUID essenceId;
 }
 

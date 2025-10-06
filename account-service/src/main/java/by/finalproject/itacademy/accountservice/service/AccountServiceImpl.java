@@ -9,11 +9,13 @@ import by.finalproject.itacademy.accountservice.model.dto.PageOfAccount;
 import by.finalproject.itacademy.accountservice.model.entity.AccountEntity;
 import by.finalproject.itacademy.accountservice.repository.AccountRepository;
 import by.finalproject.itacademy.accountservice.service.api.IAccountService;
+import by.finalproject.itacademy.accountservice.service.exception.AccountNotFoundException;
+import by.finalproject.itacademy.accountservice.service.exception.AccountServiceException;
+import by.finalproject.itacademy.accountservice.service.exception.CurrencyNotFoundException;
 import by.finalproject.itacademy.accountservice.service.mapper.AccountMapper;
 import by.finalproject.itacademy.accountservice.service.mapper.AccountPageMapper;
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.common.jwt.JwtUser;
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,7 +24,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.security.auth.login.AccountNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,29 +46,33 @@ public class AccountServiceImpl implements IAccountService {
         log.info("Создание счета для пользователя: {}", getCurrentUser());
 
         if (!classifierCerviceClient.getSpecificCurrency(accountRequest.getCurrency())) {
-            throw new ValidationException("Указанная валюта не существует");
+            throw new CurrencyNotFoundException("Указанная валюта не существует");
         }
 
-        AccountEntity savedAccount = accountRepository.save(AccountEntity.builder()
-                .dtCreate(LocalDateTime.now())
-                .dtUpdate(LocalDateTime.now())
-                .title(accountRequest.getTitle())
-                .description(accountRequest.getDescription())
-                .type(accountRequest.getType())
-                .currency(accountRequest.getCurrency())
-                .userUuid(getCurrentUser().userId())
-                .balance(BigDecimal.ZERO)
-                .build());
+        try {
+            AccountEntity savedAccount = accountRepository.save(AccountEntity.builder()
+                    .dtCreate(LocalDateTime.now())
+                    .dtUpdate(LocalDateTime.now())
+                    .title(accountRequest.getTitle())
+                    .description(accountRequest.getDescription())
+                    .type(accountRequest.getType())
+                    .currency(accountRequest.getCurrency())
+                    .userUuid(getCurrentUser().userId())
+                    .balance(BigDecimal.ZERO)
+                    .build());
 
-        auditServiceClient.logEvent(
-                AuditEventRequest.builder()
-                        .jwtUser(getCurrentUser())
-                        .userInfo("Создан новый счет: " + accountRequest.getTitle())
-                        .essenceId(savedAccount.getUuid())
-                        .type(EssenceTypeEnum.ACCOUNT)
-                        .build());
+            auditServiceClient.logEvent(
+                    AuditEventRequest.builder()
+                            .jwtUser(getCurrentUser())
+                            .userInfo("Создан новый счет: " + accountRequest.getTitle())
+                            .essenceId(savedAccount.getUuid())
+                            .type(EssenceTypeEnum.ACCOUNT)
+                            .build());
 
-        log.info("Счет успешно создан: {}", savedAccount.getUuid());
+            log.info("Счет успешно создан: {}", savedAccount.getUuid());
+        } catch (Exception e) {
+            throw new AccountServiceException("Ошибка при создании счета");
+        }
     }
 
     @Override
@@ -79,20 +84,24 @@ public class AccountServiceImpl implements IAccountService {
                 .orElseThrow(() -> new AccountNotFoundException("Счет не найден"));
 
         if (!classifierCerviceClient.getSpecificCurrency(accountRequest.getCurrency())) {
-            throw new ValidationException("Указанная валюта не существует");
+            throw new CurrencyNotFoundException("Указанная валюта не существует");
         }
 
-        AccountEntity updatedAccount = accountRepository.save(accountMapper.toEntity(accountRequest));
+        try {
+            AccountEntity updatedAccount = accountRepository.save(accountMapper.toEntity(accountRequest));
 
-        auditServiceClient.logEvent(
-                AuditEventRequest.builder()
-                        .jwtUser(getCurrentUser())
-                        .userInfo("Создан новый счет: " + accountRequest.getTitle())
-                        .essenceId(updatedAccount.getUuid())
-                        .type(EssenceTypeEnum.ACCOUNT)
-                        .build());
+            auditServiceClient.logEvent(
+                    AuditEventRequest.builder()
+                            .jwtUser(getCurrentUser())
+                            .userInfo("Создан новый счет: " + accountRequest.getTitle())
+                            .essenceId(updatedAccount.getUuid())
+                            .type(EssenceTypeEnum.ACCOUNT)
+                            .build());
 
-        log.info("Счет успешно обновлен: {}", updatedAccount.getUuid());
+            log.info("Счет успешно обновлен: {}", updatedAccount.getUuid());
+        } catch (Exception e) {
+            throw new AccountServiceException("Ошибка при обновлении счета");
+        }
     }
 
     @Override

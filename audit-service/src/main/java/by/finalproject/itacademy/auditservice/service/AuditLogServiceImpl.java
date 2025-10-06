@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 public class AuditLogServiceImpl implements IAuditLogService {
 
     private final AuditRepository auditRepository;
+   // private final AuditMapper auditMapper;
 
     @Transactional
     @Override
@@ -34,7 +35,7 @@ public class AuditLogServiceImpl implements IAuditLogService {
 
         audit.setText(auditRequest.getUserInfo());
         audit.setType(auditRequest.getType());
-        audit.setEssenceId(auditRequest.getEssenseId());
+        audit.setEssenceId(auditRequest.getEssenceId());
 
         auditRepository.save(audit);
     }
