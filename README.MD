@@ -1,42 +1,49 @@
 <img src="https://socialify.git.ci/kib177/Final_Project_IT-Academy/image?language=1&name=1&owner=1&pattern=Signal&pulls=1&stargazers=1&theme=Light" alt="Final_Project_IT-Academy" width="640" height="320" />
 
-## Описание проекта
+## Project Description
 
-Personal Finance Tools - это веб-приложение для учета личных финансов, разработанное на Java с использованием Spring и PostgreSQL. Приложение позволяет пользователям управлять своими счетами, отслеживать доходы и расходы, а также анализировать финансовую статистику.
+Personal Finance Tools is a web application for personal financial management, built in Java using Spring and PostgreSQL. The application allows users to manage their accounts, track income and expenses, and analyze financial statistics.
 
 ---
 
-## Основные функции
+## Core Features
 
-- **Управление аккаунтами**: Создание, удаление, изменение аккаунтов.
-- **Управление счетами**: Создание и управление банковскими счетами, наличными и депозитами
-- **Операции**: Добавление доходов и расходов по счетам
-- **Категории**: Классификация операций по категориям для удобного анализа
-- **Валюты**: Поддержка различных валют
-- **Аудит**: Журнал всех действий пользователей в системе
-- **Роли пользователей**: Разделение прав доступа между пользователями, менеджерами и администраторами
+- **Account Management**: Create, delete, and modify user accounts.
+
+- **Financial Accounts**: Create and manage bank accounts, cash, and deposits.
+
+- **Transactions**: Record income and expenses for accounts.
+
+- **Categories**: Classify transactions into categories for easy analysis.
+
+- **Currencies**: Support for multiple currencies.
+
+- **Audit Log**: Track all user activities within the system.
+
+- **User Roles**: Role-based access control for users, managers, and administrators.
+
 ---
 
-## Технологии
+## Technology Stack
 
 - Java 21
 - Spring Boot
-- Spring Security (JWT аутентификация)
+- Spring Security (JWT authentication)
 - Spring Data JPA
 - PostgreSQL
 - Lombok
 - Maven
 - Hibernate
+
 ---
 
+## Technology Stack
 
-## Установка и запуск
-
-1. Убедитесь, что у вас установлены Java 21 и PostgreSQL
-2. Создайте базу данных в PostgreSQL
-3. Настройте параметры подключения в `application.yml`
-4. Соберите проект: `./mvn clean install`
-5. Запустите приложение: `./mvn spring-boot:run`
+1. Ensure `Java 21` and `PostgreSQL` are installed.
+2. Create a database in `PostgreSQL`.
+3. Configure connection settings in `application.yml`
+4. Build the project: `./mvn clean install`
+5. Run the application: `./mvn spring-boot:run`
 
 ---
 
