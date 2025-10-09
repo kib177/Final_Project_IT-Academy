@@ -1,7 +1,5 @@
 package by.finalproject.itacademy.classifierservice.service.exception;
 
-import by.finalproject.itacademy.accountservice.service.exception.InvalidCredentialsException;
-import by.finalproject.itacademy.accountservice.service.exception.UserNotFoundException;
 import by.finalproject.itacademy.common.model.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

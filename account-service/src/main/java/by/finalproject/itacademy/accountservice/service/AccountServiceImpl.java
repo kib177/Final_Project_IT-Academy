@@ -11,7 +11,7 @@ import by.finalproject.itacademy.accountservice.repository.AccountRepository;
 import by.finalproject.itacademy.accountservice.service.api.IAccountService;
 import by.finalproject.itacademy.accountservice.service.exception.AccountNotFoundException;
 import by.finalproject.itacademy.accountservice.service.exception.AccountServiceException;
-import by.finalproject.itacademy.accountservice.service.exception.CurrencyNotFoundException;
+import by.finalproject.itacademy.accountservice.service.exception.ClassifierNotFoundException;
 import by.finalproject.itacademy.accountservice.service.mapper.AccountMapper;
 import by.finalproject.itacademy.accountservice.service.mapper.AccountPageMapper;
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
@@ -46,7 +46,7 @@ public class AccountServiceImpl implements IAccountService {
         log.info("Создание счета для пользователя: {}", getCurrentUser());
 
         if (!classifierCerviceClient.getSpecificCurrency(accountRequest.getCurrency())) {
-            throw new CurrencyNotFoundException("Указанная валюта не существует");
+            throw new ClassifierNotFoundException("Указанная валюта не существует");
         }
 
         try {
@@ -84,7 +84,7 @@ public class AccountServiceImpl implements IAccountService {
                 .orElseThrow(() -> new AccountNotFoundException("Счет не найден"));
 
         if (!classifierCerviceClient.getSpecificCurrency(accountRequest.getCurrency())) {
-            throw new CurrencyNotFoundException("Указанная валюта не существует");
+            throw new ClassifierNotFoundException("Указанная валюта не существует");
         }
 
         try {

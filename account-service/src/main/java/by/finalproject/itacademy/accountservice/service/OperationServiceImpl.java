@@ -9,7 +9,7 @@ import by.finalproject.itacademy.accountservice.model.entity.OperationEntity;
 import by.finalproject.itacademy.accountservice.repository.OperationRepository;
 import by.finalproject.itacademy.accountservice.service.api.IAccountService;
 import by.finalproject.itacademy.accountservice.service.api.IOperationService;
-import by.finalproject.itacademy.accountservice.service.exception.CurrencyNotFoundException;
+import by.finalproject.itacademy.accountservice.service.exception.ClassifierNotFoundException;
 import by.finalproject.itacademy.accountservice.service.exception.OperationServiceException;
 import by.finalproject.itacademy.accountservice.service.mapper.OperationMapper;
 import by.finalproject.itacademy.accountservice.service.mapper.OperationPageMapper;
@@ -49,12 +49,12 @@ public class OperationServiceImpl implements IOperationService {
         }
 
         if (!classifierCerviceClient.getSpecificCurrency(operationRequest.getCurrency())) {
-            throw new CurrencyNotFoundException("Указанная валюта не существует");
+            throw new ClassifierNotFoundException("Указанная валюта не существует");
         }
 
         if (operationRequest.getCategory() != null
                 && !classifierCerviceClient.getSpecificCategory(operationRequest.getCategory())) {
-            throw new  CurrencyNotFoundException("Указанная категория не существует");
+            throw new ClassifierNotFoundException("Указанная категория не существует");
         }
 
         try {
