@@ -37,7 +37,7 @@ Personal Finance Tools is a web application for personal financial management, b
 
 ---
 
-## Technology Stack
+## Installation & Setup
 
 1. Ensure `Java 21` and `PostgreSQL` are installed.
 2. Create a database in `PostgreSQL`.
