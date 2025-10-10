@@ -1,4 +1,4 @@
-package by.finalproject.itacademy.accountservice.model.exceptionDto;
+package by.finalproject.itacademy.userservice.model.dto.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

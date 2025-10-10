@@ -4,8 +4,6 @@ import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.userservice.service.exception.*;
 import by.finalproject.itacademy.common.jwt.JwtTokenUtil;
 import by.finalproject.itacademy.common.jwt.JwtUser;
-import by.finalproject.itacademy.userservice.feign.AuditServiceClient;
-import by.finalproject.itacademy.userservice.model.dto.AuditEventRequest;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserLogin;
 import by.finalproject.itacademy.userservice.model.dto.UserRegistration;
@@ -16,7 +14,6 @@ import by.finalproject.itacademy.userservice.service.api.IVerificationCodeServic
 import by.finalproject.itacademy.userservice.model.entity.UserEntity;
 import by.finalproject.itacademy.userservice.service.mapper.UserMapper;
 import by.finalproject.itacademy.userservice.repository.UserRepository;
-import by.finalproject.itacademy.userservice.repository.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,16 +33,18 @@ public class CabinetServiceImpl implements ICabinetService {
     private final IVerificationCodeService verificationCodeService;
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
-    private final AuditServiceClient auditServiceClient;
+    private final AuditLogEventServiceImpl auditLogEventService;
+    private final ValidService validService;
 
     @Transactional
     @Override
     public void registration(UserRegistration userRegistration) {
-
         log.info("Registering new user with email: {}", userRegistration.getMail());
 
+        validService.isValidEmail(userRegistration.getMail());
+
         if (userRepository.existsByMail(userRegistration.getMail())) {
-            throw new UserNotFoundException("Пользователь с email " + userRegistration.getMail() + " уже существует");
+            throw new UserServiceException("Пользователь с email " + userRegistration.getMail() + " уже существует");
         }
         try {
             userRegistration.setPassword(passwordEncoder.encode(userRegistration.getPassword()));
@@ -57,7 +56,7 @@ public class CabinetServiceImpl implements ICabinetService {
             userRepository.save(userEntity);
 
             verificationCodeService.generateCode(userRegistration.getMail());
-        } catch (Exception e) {
+        } catch (UserServiceException e) {
             throw new UserServiceException("Ошибка при регистрации пользователя", e);
         }
     }
@@ -66,31 +65,37 @@ public class CabinetServiceImpl implements ICabinetService {
     public void verifyUser(String mail, String code) {
         log.info("Verifying user with email: {}", mail);
 
+        validService.isValidEmail(mail);
+
         if (verificationCodeService.validateCode(mail, code)) {
-            throw new UserNotFoundException("Не верный код или mail");
+            throw new InvalidVerificationCodeException("Не верный код или mail");
         }
+        UserEntity userEntity = userRepository.findByMail(mail)
+                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
         try {
-            UserEntity userEntity = userRepository.findByMail(mail);
             userEntity.setStatus(UserStatus.ACTIVATED);
             userRepository.save(userEntity);
             verificationCodeService.deleteCode(mail);
+
+            auditLogEventService.sendAudit(getCurrentUser(),
+                    "Верификация пользователя",
+                    userEntity.getUuid(),
+                    EssenceTypeEnum.USER);
+
             log.info("User {} successfully verified", mail);
-        }catch (Exception e) {
+        } catch (VerificationCodeException e) {
             throw new VerificationCodeException("Не удачная попытка верификации", e);
         }
-        log.info("User {} is not verified", mail);
-
     }
 
     @Override
     public String login(UserLogin userLogin) {
         log.info("Login attempt for email: {}", userLogin.getMail());
 
-        UserEntity userEntity = userRepository.findByMail(userLogin.getMail());
+        /*validService.isValidEmail(userLogin.getMail());*/
 
-        if (userEntity == null) {
-            throw new InvalidCredentialsException("Неверный email или пароль");
-        }
+        UserEntity userEntity = userRepository.findByMail(userLogin.getMail())
+                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
 
         if (!passwordEncoder.matches(userLogin.getPassword(), userEntity.getPassword())) {
             throw new InvalidCredentialsException("Неверный email или пароль");
@@ -106,22 +111,19 @@ public class CabinetServiceImpl implements ICabinetService {
                                 userEntity.getMail(),
                                 userEntity.getFio(),
                                 String.valueOf(userEntity.getRole()));
-
     }
 
     @Override
     public User getAboutSelf() {
         log.info("Getting current user info: {}", getCurrentUserUuid());
         UserEntity userEntity = userRepository.getByUuid(getCurrentUserUuid())
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));;
+                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
 
-        auditServiceClient.logEvent(
-                AuditEventRequest.builder()
-                        .jwtUser(getCurrentUser())
-                        .userInfo("Информация о себе")
-                        .essenceId(userEntity.getUuid())
-                        .type(EssenceTypeEnum.USER)
-                        .build());
+        auditLogEventService.sendAudit(getCurrentUser(),
+                "Информация о себе",
+                userEntity.getUuid(),
+                EssenceTypeEnum.USER);
+
         return userMapper.toDto(userEntity);
     }
 

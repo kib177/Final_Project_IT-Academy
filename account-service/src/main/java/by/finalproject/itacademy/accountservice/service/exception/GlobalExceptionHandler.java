@@ -1,6 +1,6 @@
 package by.finalproject.itacademy.accountservice.service.exception;
 
-import by.finalproject.itacademy.accountservice.model.exceptionDto.ErrorResponse;
+import by.finalproject.itacademy.accountservice.model.dto.exception.ErrorResponse;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
