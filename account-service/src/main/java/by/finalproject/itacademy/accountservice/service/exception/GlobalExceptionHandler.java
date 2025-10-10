@@ -1,6 +1,5 @@
 package by.finalproject.itacademy.accountservice.service.exception;
 
-
 import by.finalproject.itacademy.accountservice.model.exceptionDto.ErrorResponse;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;

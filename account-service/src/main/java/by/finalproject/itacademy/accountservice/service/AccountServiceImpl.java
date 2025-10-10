@@ -1,14 +1,13 @@
 package by.finalproject.itacademy.accountservice.service;
 
-import by.finalproject.itacademy.accountservice.feign.AuditServiceClient;
 import by.finalproject.itacademy.accountservice.feign.ClassifierCerviceClient;
 import by.finalproject.itacademy.accountservice.model.dto.AccountResponse;
 import by.finalproject.itacademy.accountservice.model.dto.AccountRequest;
-import by.finalproject.itacademy.accountservice.model.dto.AuditEventRequest;
 import by.finalproject.itacademy.accountservice.model.dto.PageOfAccount;
 import by.finalproject.itacademy.accountservice.model.entity.AccountEntity;
 import by.finalproject.itacademy.accountservice.repository.AccountRepository;
 import by.finalproject.itacademy.accountservice.service.api.IAccountService;
+import by.finalproject.itacademy.accountservice.service.api.IAuditLogEventService;
 import by.finalproject.itacademy.accountservice.service.exception.AccountNotFoundException;
 import by.finalproject.itacademy.accountservice.service.exception.AccountServiceException;
 import by.finalproject.itacademy.accountservice.service.exception.ClassifierNotFoundException;
@@ -35,15 +34,16 @@ import java.util.UUID;
 public class AccountServiceImpl implements IAccountService {
 
     private final AccountRepository accountRepository;
-    private final AuditServiceClient auditServiceClient;
     private final ClassifierCerviceClient classifierCerviceClient;
     private final AccountMapper accountMapper;
     private final AccountPageMapper pageMapper;
+    private final IAuditLogEventService auditLogEventService;
 
     @Transactional
     @Override
     public void createAccount(AccountRequest accountRequest) {
-        log.info("Создание счета для пользователя: {}", getCurrentUser());
+        log.info("Создание счета для пользователя: {}",
+                SecurityContextHolder.getContext().getAuthentication().getName());
 
         if (!classifierCerviceClient.getSpecificCurrency(accountRequest.getCurrency())) {
             throw new ClassifierNotFoundException("Указанная валюта не существует");
@@ -61,16 +61,13 @@ public class AccountServiceImpl implements IAccountService {
                     .balance(BigDecimal.ZERO)
                     .build());
 
-            auditServiceClient.logEvent(
-                    AuditEventRequest.builder()
-                            .jwtUser(getCurrentUser())
-                            .userInfo("Создан новый счет: " + accountRequest.getTitle())
-                            .essenceId(savedAccount.getUuid())
-                            .type(EssenceTypeEnum.ACCOUNT)
-                            .build());
+            auditLogEventService.sendAudit(getCurrentUser(),
+                    "Создан новый счет: " + accountRequest.getTitle(),
+                    savedAccount.getUuid(),
+                    EssenceTypeEnum.ACCOUNT);
 
             log.info("Счет успешно создан: {}", savedAccount.getUuid());
-        } catch (Exception e) {
+        } catch (AccountServiceException e) {
             throw new AccountServiceException("Ошибка при создании счета");
         }
     }
@@ -89,23 +86,20 @@ public class AccountServiceImpl implements IAccountService {
         try {
             AccountEntity updatedAccount = accountRepository.save(accountMapper.toEntity(accountRequest));
 
-            auditServiceClient.logEvent(
-                    AuditEventRequest.builder()
-                            .jwtUser(getCurrentUser())
-                            .userInfo("Создан новый счет: " + accountRequest.getTitle())
-                            .essenceId(updatedAccount.getUuid())
-                            .type(EssenceTypeEnum.ACCOUNT)
-                            .build());
+            auditLogEventService.sendAudit(getCurrentUser(),
+                    "Изменен счет: " + accountRequest.getTitle(),
+                    updatedAccount.getUuid(),
+                    EssenceTypeEnum.ACCOUNT);
 
             log.info("Счет успешно обновлен: {}", updatedAccount.getUuid());
-        } catch (Exception e) {
+        } catch (AccountServiceException e) {
             throw new AccountServiceException("Ошибка при обновлении счета");
         }
     }
 
     @Override
     public PageOfAccount getUserAccounts(Pageable pageable) {
-        log.debug("Получение счетов пользователя: {}, страница: {}", getCurrentUser().userId(), pageable.getPageNumber());
+        log.debug("Получение счетов пользователя: {}, страница: {}", getCurrentUser(), pageable.getPageNumber());
 
         Page<AccountEntity> accountsPage = accountRepository.findByUserUuid(getCurrentUser().userId(), pageable);
         return pageMapper.toPageOfUser(accountsPage, accountMapper);
@@ -113,7 +107,7 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     public AccountResponse getAccount(UUID uuid){
-        log.debug("Получение счета: {} пользователя: {}", uuid, getCurrentUser().userId());
+        log.debug("Получение счета: {} пользователя: {}", uuid, getCurrentUser());
 
         AccountEntity account = accountRepository.findByUuid(uuid)
                 .orElseThrow(() -> new AccountNotFoundException("Счет не найден"));
@@ -122,13 +116,18 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public void updateBalance(UUID accountUuid, BigDecimal amount, UUID userUuid){
+    public void updateBalance(UUID accountUuid, BigDecimal amount){
         log.info("Обновление баланса счета: {} на сумму: {}", accountUuid, amount);
 
-        AccountEntity account = accountRepository.findByUuidAndUserUuid(accountUuid, userUuid)
+        AccountEntity account = accountRepository.findByUuid(accountUuid)
                 .orElseThrow(() -> new AccountNotFoundException("Счет не найден"));
 
         BigDecimal newBalance = account.getBalance().add(amount);
+
+        auditLogEventService.sendAudit(getCurrentUser(),
+                "Изменение баланса счета аккаунта: ",
+                accountUuid,
+                EssenceTypeEnum.ACCOUNT);
 
         account.setBalance(newBalance);
         accountRepository.save(account);

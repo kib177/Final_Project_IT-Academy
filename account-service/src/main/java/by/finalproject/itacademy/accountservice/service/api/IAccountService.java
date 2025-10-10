@@ -27,7 +27,7 @@ public interface IAccountService {
     AccountResponse getAccount(UUID uuid);
 
     @SneakyThrows
-    void updateBalance(UUID accountUuid, BigDecimal amount, UUID userUuid);
+    void updateBalance(UUID accountUuid, BigDecimal amount);
 
     boolean accountExists(UUID accountUuid);
 
