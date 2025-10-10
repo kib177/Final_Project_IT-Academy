@@ -1,4 +1,4 @@
-package by.finalproject.itacademy.userservice.model.dto;
+package by.finalproject.itacademy.auditservice.model.dto.audit;
 
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.common.jwt.JwtUser;

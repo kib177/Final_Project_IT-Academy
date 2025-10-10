@@ -1,6 +1,6 @@
-package by.finalproject.itacademy.userservice.service.exception;
+package by.finalproject.itacademy.accountservice.service.exception;
 
-import by.finalproject.itacademy.userservice.model.dto.exception.ErrorResponse;
+import by.finalproject.itacademy.accountservice.model.dto.exception.ErrorResponse;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.security.auth.login.AccountException;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,28 +18,27 @@ import java.util.concurrent.ConcurrentHashMap;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+
     private static final Map<Class<?>, HttpStatus> EXCEPTION_STATUS_MAP = new ConcurrentHashMap<>();
 
     static {
-        EXCEPTION_STATUS_MAP.put(EntityAlreadyExistsException.class, HttpStatus.CONFLICT);
-        EXCEPTION_STATUS_MAP.put(UserNotFoundException.class, HttpStatus.NOT_FOUND);
-        EXCEPTION_STATUS_MAP.put(InvalidCredentialsException.class, HttpStatus.NOT_FOUND);
-        EXCEPTION_STATUS_MAP.put(InvalidVerificationCodeException.class, HttpStatus.FORBIDDEN);
-        EXCEPTION_STATUS_MAP.put(UserNotActivatedException.class, HttpStatus.FORBIDDEN);
-        EXCEPTION_STATUS_MAP.put(UserServiceException.class, HttpStatus.BAD_REQUEST);
-        EXCEPTION_STATUS_MAP.put(VerificationCodeException.class, HttpStatus.BAD_REQUEST);
-        EXCEPTION_STATUS_MAP.put(FeignClientException.class, HttpStatus.INTERNAL_SERVER_ERROR);
+        EXCEPTION_STATUS_MAP.put(AccountNotFoundException.class, HttpStatus.NOT_FOUND);
+        EXCEPTION_STATUS_MAP.put(AccountException.class, HttpStatus.INTERNAL_SERVER_ERROR);
+        EXCEPTION_STATUS_MAP.put(ClassifierNotFoundException.class, HttpStatus.BAD_REQUEST);
+        EXCEPTION_STATUS_MAP.put(OperationNotFoundException.class, HttpStatus.NOT_FOUND);
+        EXCEPTION_STATUS_MAP.put(OperationServiceException.class, HttpStatus.INTERNAL_SERVER_ERROR);
+        EXCEPTION_STATUS_MAP.put(InvalidOperationDataException.class, HttpStatus.BAD_REQUEST);
         EXCEPTION_STATUS_MAP.put(IllegalArgumentException.class, HttpStatus.BAD_REQUEST);
+        EXCEPTION_STATUS_MAP.put(FeignClientException.class, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler({
-            EntityAlreadyExistsException.class,
-            UserNotFoundException.class,
-            InvalidVerificationCodeException.class,
-            InvalidCredentialsException.class,
-            InvalidVerificationCodeException.class,
-            UserNotActivatedException.class,
-            UserServiceException.class,
+            AccountNotFoundException.class,
+            AccountServiceException.class,
+            ClassifierNotFoundException.class,
+            OperationNotFoundException.class,
+            OperationServiceException.class,
+            InvalidOperationDataException.class,
             IllegalArgumentException.class,
             FeignClientException.class
     })
@@ -87,7 +87,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, status);
     }
 
-    @ExceptionHandler(Exception.class)
+   @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, WebRequest request) {
         log.error("Unexpected error: {}", ex.getMessage(), ex);
 
@@ -101,6 +101,4 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 }
-

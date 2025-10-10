@@ -1,21 +1,24 @@
-package by.finalproject.itacademy.accountservice.model.dto;
+package by.finalproject.itacademy.auditservice.model.dto;
 
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
-import by.finalproject.itacademy.common.jwt.JwtUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class AuditEventRequest {
-    private JwtUser jwtUser;
-    private String userInfo;
+public class AuditResponse {
+    private UUID uuid;
+    private LocalDateTime dtCreate;
+    private UserDTO user;
+    private String text;
     private EssenceTypeEnum type;
     private UUID essenceId;
 }
+

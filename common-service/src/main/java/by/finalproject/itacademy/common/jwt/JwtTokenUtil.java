@@ -38,8 +38,9 @@ public class JwtTokenUtil {
         return new JwtUser(
                 UUID.fromString(claims.get("userId", String.class)),
                 claims.getSubject(),
-                claims.get("role", String.class),
-                claims.get("fio", String.class)
+                claims.get("fio", String.class),
+                claims.get("role", String.class)
+
         );
     }
 
