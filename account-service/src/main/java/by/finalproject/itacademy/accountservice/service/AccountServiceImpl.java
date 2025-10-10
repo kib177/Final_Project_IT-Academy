@@ -76,8 +76,7 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public void updateAccount(UUID uuid, LocalDateTime dtUpdate, AccountRequest accountRequest)
-            throws AccountNotFoundException {
+    public void updateAccount(UUID uuid, LocalDateTime dtUpdate, AccountRequest accountRequest){
         log.info("Обновление счета: {} пользователя: {}", uuid, getCurrentUser().userId());
 
         accountRepository.findByUuid(uuid)
@@ -113,7 +112,7 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public AccountResponse getAccount(UUID uuid) throws AccountNotFoundException {
+    public AccountResponse getAccount(UUID uuid){
         log.debug("Получение счета: {} пользователя: {}", uuid, getCurrentUser().userId());
 
         AccountEntity account = accountRepository.findByUuid(uuid)
@@ -123,7 +122,7 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public void updateBalance(UUID accountUuid, BigDecimal amount, UUID userUuid) throws AccountNotFoundException {
+    public void updateBalance(UUID accountUuid, BigDecimal amount, UUID userUuid){
         log.info("Обновление баланса счета: {} на сумму: {}", accountUuid, amount);
 
         AccountEntity account = accountRepository.findByUuidAndUserUuid(accountUuid, userUuid)
@@ -143,7 +142,7 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public BigDecimal getAccountBalance(UUID accountUuid, UUID userUuid) throws AccountNotFoundException {
+    public BigDecimal getAccountBalance(UUID accountUuid, UUID userUuid){
         return accountRepository.findBalanceByUuidAndUserUuid(accountUuid, userUuid)
                 .orElseThrow(() -> new AccountNotFoundException("Счет не найден"));
     }

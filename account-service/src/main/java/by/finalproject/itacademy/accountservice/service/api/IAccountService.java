@@ -19,20 +19,20 @@ public interface IAccountService {
     void createAccount(AccountRequest accountRequest);
 
     @SneakyThrows
-    void updateAccount(UUID uuid, LocalDateTime dtUpdate, AccountRequest accountRequest) throws AccountNotFoundException;
+    void updateAccount(UUID uuid, LocalDateTime dtUpdate, AccountRequest accountRequest);
 
     PageOfAccount getUserAccounts(Pageable pageable);
 
     @SneakyThrows
-    AccountResponse getAccount(UUID uuid) throws AccountNotFoundException;
+    AccountResponse getAccount(UUID uuid);
 
     @SneakyThrows
-    void updateBalance(UUID accountUuid, BigDecimal amount, UUID userUuid) throws AccountNotFoundException;
+    void updateBalance(UUID accountUuid, BigDecimal amount, UUID userUuid);
 
     boolean accountExists(UUID accountUuid);
 
     @SneakyThrows
-    BigDecimal getAccountBalance(UUID accountUuid, UUID userUuid) throws AccountNotFoundException;
+    BigDecimal getAccountBalance(UUID accountUuid, UUID userUuid);
 
     List<AccountEntity> getUserAccountsForOperations(UUID userUuid, List<UUID> accountUuids);
 }

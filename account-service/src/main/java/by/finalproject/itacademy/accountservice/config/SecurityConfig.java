@@ -30,8 +30,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
-                                "/account/{uuid}").authenticated()
-                        .anyRequest().authenticated() // ошибки не отображаются ставим permitAll видим ошибку исправляем
+                                "/account/{uuid}").permitAll()
+                        .anyRequest().permitAll() // ошибки не отображаются ставим permitAll видим ошибку исправляем
                 );
 
         return http.build();

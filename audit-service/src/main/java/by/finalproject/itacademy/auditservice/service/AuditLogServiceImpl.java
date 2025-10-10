@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 public class AuditLogServiceImpl implements IAuditLogService {
 
     private final AuditRepository auditRepository;
-   // private final AuditMapper auditMapper;
 
     @Transactional
     @Override

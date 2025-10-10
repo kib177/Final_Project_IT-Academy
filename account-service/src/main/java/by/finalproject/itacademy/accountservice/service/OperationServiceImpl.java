@@ -11,6 +11,7 @@ import by.finalproject.itacademy.accountservice.service.api.IAccountService;
 import by.finalproject.itacademy.accountservice.service.api.IOperationService;
 import by.finalproject.itacademy.accountservice.service.exception.ClassifierNotFoundException;
 import by.finalproject.itacademy.accountservice.service.exception.OperationServiceException;
+import by.finalproject.itacademy.accountservice.service.exception.AccountNotFoundException;
 import by.finalproject.itacademy.accountservice.service.mapper.OperationMapper;
 import by.finalproject.itacademy.accountservice.service.mapper.OperationPageMapper;
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
@@ -23,7 +24,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import javax.security.auth.login.AccountNotFoundException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -40,8 +40,7 @@ public class OperationServiceImpl implements IOperationService {
 
     @Transactional
     @Override
-    public void createOperation(UUID accountUuid, OperationRequest operationRequest)
-            throws AccountNotFoundException {
+    public void createOperation(UUID accountUuid, OperationRequest operationRequest){
         log.info("Создание операции для счета: {} пользователя: {}", accountUuid, getCurrentUserUuid().userId());
 
         if (!accountService.accountExists(accountUuid)) {
@@ -89,8 +88,7 @@ public class OperationServiceImpl implements IOperationService {
     }
 
     @Override
-    public PageOfOperation getAccountOperations(UUID accountUuid, Pageable pageable)
-            throws AccountNotFoundException {
+    public PageOfOperation getAccountOperations(UUID accountUuid, Pageable pageable){
         log.debug("Получение операций по счету: {} пользователя: {}", accountUuid, getCurrentUserUuid().userId());
 
         if (!accountService.accountExists(accountUuid)) {
@@ -105,7 +103,7 @@ public class OperationServiceImpl implements IOperationService {
     @Transactional
     @Override
     public void updateOperation(UUID accountUuid, UUID operationUuid, LocalDateTime dtUpdate,
-                                OperationRequest operationRequest) throws AccountNotFoundException {
+                                OperationRequest operationRequest){
         log.info("Обновление операции: {} счета: {}", operationUuid, accountUuid);
 
         if (!accountService.accountExists(accountUuid)) {
@@ -136,8 +134,7 @@ public class OperationServiceImpl implements IOperationService {
 
     @Transactional
     @Override
-    public void deleteOperation(UUID accountUuid, UUID operationUuid, LocalDateTime dtUpdate)
-            throws AccountNotFoundException {
+    public void deleteOperation(UUID accountUuid, UUID operationUuid, LocalDateTime dtUpdate){
         log.info("Удаление операции: {} счета: {}", operationUuid, accountUuid);
 
         if (!accountService.accountExists(accountUuid)) {

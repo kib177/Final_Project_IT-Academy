@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GlobalExceptionHandler {
 
 
-    /*private static final Map<Class<?>, HttpStatus> EXCEPTION_STATUS_MAP = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, HttpStatus> EXCEPTION_STATUS_MAP = new ConcurrentHashMap<>();
 
     static {
         EXCEPTION_STATUS_MAP.put(AccountNotFoundException.class, HttpStatus.NOT_FOUND);
@@ -57,119 +57,8 @@ public class GlobalExceptionHandler {
                         .path(request.getDescription(false).replace("uri=", ""))
                         .build()
         );
-    }*/
-
-    @ExceptionHandler(AccountNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleAccountNotFoundException(
-            AccountNotFoundException ex, WebRequest request) {
-        log.warn("Account not found: {}", ex.getMessage());
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.NOT_FOUND.value())
-                .error("Account Not Found")
-                .message(ex.getMessage())
-                .path(request.getDescription(false).replace("uri=", ""))
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(ClassifierNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleCurrencyNotFoundException(
-            ClassifierNotFoundException ex, WebRequest request) {
-        log.warn("Currency not found: {}", ex.getMessage());
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .error("Invalid Classifier")
-                .message(ex.getMessage())
-                .path(request.getDescription(false).replace("uri=", ""))
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(OperationNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleOperationNotFoundException(
-            OperationNotFoundException ex, WebRequest request) {
-        log.warn("Operation not found: {}", ex.getMessage());
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.NOT_FOUND.value())
-                .error("Operation Not Found")
-                .message(ex.getMessage())
-                .path(request.getDescription(false).replace("uri=", ""))
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(OperationServiceException.class)
-    public ResponseEntity<ErrorResponse> handleOperationServiceException(
-            OperationServiceException ex, WebRequest request) {
-        log.error("Operation service error: {}", ex.getMessage(), ex);
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .error("Internal Server Error")
-                .message("Произошла ошибка при обработке операции")
-                .path(request.getDescription(false).replace("uri=", ""))
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(InvalidOperationDataException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidOperationDataException(
-            InvalidOperationDataException ex, WebRequest request) {
-        log.warn("Invalid operation data: {}", ex.getMessage());
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .error("Invalid Operation Data")
-                .message(ex.getMessage())
-                .path(request.getDescription(false).replace("uri=", ""))
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(AccountServiceException.class)
-    public ResponseEntity<ErrorResponse> handleAccountServiceException(
-            AccountServiceException ex, WebRequest request) {
-        log.error("Account service error: {}", ex.getMessage(), ex);
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .error("Internal Server Error")
-                .message("Произошла ошибка при обработке счета")
-                .path(request.getDescription(false).replace("uri=", ""))
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(FeignClientException.class)
-    public ResponseEntity<ErrorResponse> handleFeignClientException(
-            FeignClientException ex, WebRequest request) {
-        log.error("Feign client error: {}", ex.getMessage(), ex);
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.SERVICE_UNAVAILABLE.value())
-                .error("Service Unavailable")
-                .message("Внешний сервис временно недоступен")
-                .path(request.getDescription(false).replace("uri=", ""))
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.SERVICE_UNAVAILABLE);
-    }
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<ErrorResponse> handleFeignException(FeignException ex, WebRequest request) {
         log.error("Feign communication error: {}", ex.getMessage(), ex);
@@ -198,22 +87,8 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorResponse, status);
     }
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
-            IllegalArgumentException ex, WebRequest request) {
-        log.warn("Illegal argument: {}", ex.getMessage());
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .error("Bad Request")
-                .message(ex.getMessage())
-                .path(request.getDescription(false).replace("uri=", ""))
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
-   /* @ExceptionHandler(Exception.class)
+   @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, WebRequest request) {
         log.error("Unexpected error: {}", ex.getMessage(), ex);
 
@@ -226,5 +101,5 @@ public class GlobalExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    }*/
+    }
 }
