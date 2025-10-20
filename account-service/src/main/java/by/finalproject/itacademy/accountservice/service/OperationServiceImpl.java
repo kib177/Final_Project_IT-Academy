@@ -1,9 +1,11 @@
 package by.finalproject.itacademy.accountservice.service;
 
+import by.finalproject.itacademy.accountservice.config.jwt.JwtUser;
 import by.finalproject.itacademy.accountservice.feign.ClassifierCerviceClient;
 import by.finalproject.itacademy.accountservice.model.dto.OperationRequest;
 import by.finalproject.itacademy.accountservice.model.dto.PageOfOperation;
 import by.finalproject.itacademy.accountservice.model.entity.OperationEntity;
+import by.finalproject.itacademy.accountservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.accountservice.repository.OperationRepository;
 import by.finalproject.itacademy.accountservice.service.api.IAccountService;
 import by.finalproject.itacademy.accountservice.service.api.IAuditLogEventService;
@@ -13,8 +15,6 @@ import by.finalproject.itacademy.accountservice.service.exception.OperationServi
 import by.finalproject.itacademy.accountservice.service.exception.AccountNotFoundException;
 import by.finalproject.itacademy.accountservice.service.mapper.OperationMapper;
 import by.finalproject.itacademy.accountservice.service.mapper.OperationPageMapper;
-import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
-import by.finalproject.itacademy.common.jwt.JwtUser;
 import feign.FeignException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

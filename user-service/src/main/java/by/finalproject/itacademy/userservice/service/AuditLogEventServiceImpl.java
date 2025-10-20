@@ -1,9 +1,10 @@
 package by.finalproject.itacademy.userservice.service;
 
-import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
-import by.finalproject.itacademy.common.jwt.JwtUser;
+
+import by.finalproject.itacademy.userservice.config.jwt.JwtUser;
 import by.finalproject.itacademy.userservice.feign.AuditServiceClient;
 import by.finalproject.itacademy.userservice.model.dto.audit.AuditEventRequest;
+import by.finalproject.itacademy.userservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.userservice.service.api.IAuditLogEventService;
 import by.finalproject.itacademy.userservice.service.exception.FeignClientException;
 import lombok.RequiredArgsConstructor;

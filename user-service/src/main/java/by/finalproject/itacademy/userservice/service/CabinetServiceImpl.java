@@ -1,9 +1,9 @@
 package by.finalproject.itacademy.userservice.service;
 
-import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
+import by.finalproject.itacademy.userservice.config.jwt.JwtTokenUtil;
+import by.finalproject.itacademy.userservice.config.jwt.JwtUser;
+import by.finalproject.itacademy.userservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.userservice.service.exception.*;
-import by.finalproject.itacademy.common.jwt.JwtTokenUtil;
-import by.finalproject.itacademy.common.jwt.JwtUser;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserLogin;
 import by.finalproject.itacademy.userservice.model.dto.UserRegistration;

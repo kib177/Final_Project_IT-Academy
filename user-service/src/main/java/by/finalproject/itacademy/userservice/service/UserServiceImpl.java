@@ -1,17 +1,15 @@
 package by.finalproject.itacademy.userservice.service;
 
-import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
-import by.finalproject.itacademy.common.exception.InvalidCredentialsException;
-import by.finalproject.itacademy.common.exception.UserNotFoundException;
-import by.finalproject.itacademy.common.jwt.JwtUser;
-import by.finalproject.itacademy.userservice.feign.AuditServiceClient;
-import by.finalproject.itacademy.userservice.model.dto.audit.AuditEventRequest;
+import by.finalproject.itacademy.userservice.config.jwt.JwtUser;
 import by.finalproject.itacademy.userservice.model.dto.PageOfUser;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserCreate;
+import by.finalproject.itacademy.userservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.userservice.service.api.IUserService;
 import by.finalproject.itacademy.userservice.service.api.IVerificationCodeService;
 import by.finalproject.itacademy.userservice.model.entity.UserEntity;
+import by.finalproject.itacademy.userservice.service.exception.InvalidCredentialsException;
+import by.finalproject.itacademy.userservice.service.exception.UserNotFoundException;
 import by.finalproject.itacademy.userservice.service.mapper.PageMapper;
 import by.finalproject.itacademy.userservice.service.mapper.UserMapper;
 import by.finalproject.itacademy.userservice.repository.UserRepository;

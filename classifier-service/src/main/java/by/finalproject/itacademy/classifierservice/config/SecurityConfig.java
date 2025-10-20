@@ -1,7 +1,6 @@
 package by.finalproject.itacademy.classifierservice.config;
 
-
-import by.finalproject.itacademy.common.jwt.JwtAuthenticationFilter;
+import by.finalproject.itacademy.classifierservice.config.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -2,8 +2,6 @@ package by.finalproject.itacademy.accountschedulerservice.service.api;
 
 import by.finalproject.itacademy.accountschedulerservice.model.dto.PageOfScheduledOperation;
 import by.finalproject.itacademy.accountschedulerservice.model.dto.ScheduledOperationRequest;
-import by.finalproject.itacademy.accountschedulerservice.model.dto.ScheduledOperationResponse;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
