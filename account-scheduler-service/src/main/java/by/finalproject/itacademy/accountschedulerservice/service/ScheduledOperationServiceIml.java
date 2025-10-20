@@ -42,7 +42,7 @@ public class ScheduledOperationServiceIml implements IScheduledOperationService 
     @Override
     @Transactional(readOnly = true)
     public PageOfScheduledOperation getAll(Pageable pageable, List<UUID> accountIds) {
-        Page<ScheduledOperationEntity> page = repository.findAllByUuid(pageable, accountIds);
+        Page<ScheduledOperationEntity> page = repository.findAllByUuidIn(pageable, accountIds);
 
         return pageMapper.toPageOfUser(page, mapper);
     }

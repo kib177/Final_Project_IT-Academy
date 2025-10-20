@@ -16,5 +16,5 @@ public interface ScheduledOperationRepository extends JpaRepository<ScheduledOpe
     @Query("SELECT so FROM ScheduledOperationEntity so WHERE so.operation.account IN :accountIds")
     Page<ScheduledOperationEntity> findByAccountIds(@Param("accountIds") List<UUID> accountIds, Pageable pageable);
 
-    Page<ScheduledOperationEntity> findAllByUuid(Pageable pageable, List<UUID> uuids);
+    Page<ScheduledOperationEntity> findAllByUuidIn(Pageable pageable, List<UUID> uuids);
 }
