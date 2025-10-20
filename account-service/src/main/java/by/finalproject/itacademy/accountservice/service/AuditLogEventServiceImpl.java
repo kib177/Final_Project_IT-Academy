@@ -1,11 +1,11 @@
 package by.finalproject.itacademy.accountservice.service;
 
+import by.finalproject.itacademy.accountservice.config.jwt.JwtUser;
 import by.finalproject.itacademy.accountservice.feign.AuditServiceClient;
 import by.finalproject.itacademy.accountservice.model.dto.audit.AuditEventRequest;
+import by.finalproject.itacademy.accountservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.accountservice.service.api.IAuditLogEventService;
 import by.finalproject.itacademy.accountservice.service.exception.FeignClientException;
-import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
-import by.finalproject.itacademy.common.jwt.JwtUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

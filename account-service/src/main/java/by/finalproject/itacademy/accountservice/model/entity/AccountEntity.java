@@ -1,7 +1,6 @@
 package by.finalproject.itacademy.accountservice.model.entity;
 
 import by.finalproject.itacademy.accountservice.model.enums.AccountTypeEnum;
-import by.finalproject.itacademy.common.model.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,6 +1,5 @@
 package by.finalproject.itacademy.classifierservice.model.entity;
 
-import by.finalproject.itacademy.common.model.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

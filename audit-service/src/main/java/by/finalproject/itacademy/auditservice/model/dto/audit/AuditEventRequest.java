@@ -1,7 +1,7 @@
 package by.finalproject.itacademy.auditservice.model.dto.audit;
 
+import by.finalproject.itacademy.auditservice.config.jwt.JwtUser;
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
-import by.finalproject.itacademy.common.jwt.JwtUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

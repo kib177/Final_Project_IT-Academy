@@ -1,12 +1,24 @@
 package by.finalproject.itacademy.accountservice.model.dto;
 
-import by.finalproject.itacademy.common.model.dto.PageDTO;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
-@EqualsAndHashCode(callSuper=false)
+import java.util.List;
+
 @Data
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
-public class PageOfAccount extends PageDTO<AccountResponse> {
+public class PageOfAccount {
+    private int number;
+    private int size;
+    @JsonProperty("total_pages")
+    private int totalPages;
+    @JsonProperty("total_elements")
+    private long totalElements;
+    private boolean first;
+    @JsonProperty("number_of_elements")
+    private int numberOfElements;
+    private boolean last;
+    private List<AccountResponse> content;
 }

@@ -1,6 +1,7 @@
 package by.finalproject.itacademy.classifierservice.service.exception;
 
-import by.finalproject.itacademy.common.model.dto.ErrorResponse;
+
+import by.finalproject.itacademy.classifierservice.model.dto.exception.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

@@ -1,7 +1,7 @@
 package by.finalproject.itacademy.accountservice.service.api;
 
-import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
-import by.finalproject.itacademy.common.jwt.JwtUser;
+import by.finalproject.itacademy.accountservice.config.jwt.JwtUser;
+import by.finalproject.itacademy.accountservice.model.enums.EssenceTypeEnum;
 
 import java.util.UUID;
 

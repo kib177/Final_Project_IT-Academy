@@ -1,12 +1,12 @@
 package by.finalproject.itacademy.auditservice.service;
 
+import by.finalproject.itacademy.auditservice.config.jwt.JwtUser;
 import by.finalproject.itacademy.auditservice.model.dto.AuditRequest;
 import by.finalproject.itacademy.auditservice.model.dto.UserDTO;
 import by.finalproject.itacademy.auditservice.model.entity.AuditEntity;
 import by.finalproject.itacademy.auditservice.repository.AuditRepository;
 import by.finalproject.itacademy.auditservice.service.api.IAuditLogService;
 import by.finalproject.itacademy.auditservice.service.exception.AuditServiceException;
-import by.finalproject.itacademy.common.jwt.JwtUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

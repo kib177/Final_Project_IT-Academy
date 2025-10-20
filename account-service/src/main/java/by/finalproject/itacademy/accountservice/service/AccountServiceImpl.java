@@ -1,10 +1,12 @@
 package by.finalproject.itacademy.accountservice.service;
 
+import by.finalproject.itacademy.accountservice.config.jwt.JwtUser;
 import by.finalproject.itacademy.accountservice.feign.ClassifierCerviceClient;
 import by.finalproject.itacademy.accountservice.model.dto.AccountResponse;
 import by.finalproject.itacademy.accountservice.model.dto.AccountRequest;
 import by.finalproject.itacademy.accountservice.model.dto.PageOfAccount;
 import by.finalproject.itacademy.accountservice.model.entity.AccountEntity;
+import by.finalproject.itacademy.accountservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.accountservice.repository.AccountRepository;
 import by.finalproject.itacademy.accountservice.service.api.IAccountService;
 import by.finalproject.itacademy.accountservice.service.api.IAuditLogEventService;
@@ -13,8 +15,6 @@ import by.finalproject.itacademy.accountservice.service.exception.AccountService
 import by.finalproject.itacademy.accountservice.service.exception.ClassifierNotFoundException;
 import by.finalproject.itacademy.accountservice.service.mapper.AccountMapper;
 import by.finalproject.itacademy.accountservice.service.mapper.AccountPageMapper;
-import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
-import by.finalproject.itacademy.common.jwt.JwtUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

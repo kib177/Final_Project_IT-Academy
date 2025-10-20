@@ -2,7 +2,6 @@ package by.finalproject.itacademy.classifierservice.controller;
 
 import by.finalproject.itacademy.classifierservice.model.dto.*;
 import by.finalproject.itacademy.classifierservice.service.api.IClassifierService;
-import by.finalproject.itacademy.common.model.dto.PageDTO;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +18,7 @@ public class ClassifierController {
     private IClassifierService classifierService;
 
     @GetMapping("/currency")
-    public ResponseEntity<PageDTO<Object>> getPageOfCurrency(Pageable pageable) {
+    public ResponseEntity<PageOfCurrency> getPageOfCurrency(Pageable pageable) {
         return ResponseEntity.ok().body(classifierService.getPageOfCurrency(pageable));
     }
 
