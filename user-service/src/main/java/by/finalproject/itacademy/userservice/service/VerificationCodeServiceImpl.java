@@ -15,7 +15,7 @@ public class VerificationCodeServiceImpl implements IVerificationCodeService {
     private final VerificationCodeRepository verificationCodeRepository;
 
     @Override
-    public void generateCode(String uMail) {
+    public String generateCode(String uMail) {
         try {
             String code = UUID.randomUUID().toString().substring(0, 6);
             VerificationEntity verifyCode = VerificationEntity.builder()
@@ -23,6 +23,7 @@ public class VerificationCodeServiceImpl implements IVerificationCodeService {
                     .code(code)
                     .build();
             verificationCodeRepository.save(verifyCode);
+            return code;
         }catch (VerificationCodeException e){
             throw new VerificationCodeException("Ошибка при генерации кода");
         }

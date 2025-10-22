@@ -35,6 +35,7 @@ public class CabinetServiceImpl implements ICabinetService {
     private final PasswordEncoder passwordEncoder;
     private final AuditLogEventServiceImpl auditLogEventService;
     private final ValidService validService;
+    private final EmailServiceImpl emailService;
 
     @Transactional
     @Override
@@ -55,7 +56,10 @@ public class CabinetServiceImpl implements ICabinetService {
                     userEntity.getDtCreate());
             userRepository.save(userEntity);
 
-            verificationCodeService.generateCode(userRegistration.getMail());
+            String code = verificationCodeService.generateCode(userRegistration.getMail());
+
+            emailService.sendVerificationEmail(userRegistration.getMail(), code);
+
         } catch (UserServiceException e) {
             throw new UserServiceException("Ошибка при регистрации пользователя", e);
         }
@@ -67,9 +71,9 @@ public class CabinetServiceImpl implements ICabinetService {
 
         validService.isValidEmail(mail);
 
-        if (verificationCodeService.validateCode(mail, code)) {
+        /*if (verificationCodeService.validateCode(mail, code)) {
             throw new InvalidVerificationCodeException("Не верный код или mail");
-        }
+        }*/
         UserEntity userEntity = userRepository.findByMail(mail)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
         try {
@@ -77,10 +81,10 @@ public class CabinetServiceImpl implements ICabinetService {
             userRepository.save(userEntity);
             verificationCodeService.deleteCode(mail);
 
-            auditLogEventService.sendAudit(getCurrentUser(),
+           /* auditLogEventService.sendAudit(new JwtUser,
                     "Верификация пользователя",
                     userEntity.getUuid(),
-                    EssenceTypeEnum.USER);
+                    EssenceTypeEnum.USER);*/
 
             log.info("User {} successfully verified", mail);
         } catch (VerificationCodeException e) {
