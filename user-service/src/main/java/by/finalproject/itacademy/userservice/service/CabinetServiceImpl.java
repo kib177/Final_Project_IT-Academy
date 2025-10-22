@@ -3,6 +3,8 @@ package by.finalproject.itacademy.userservice.service;
 import by.finalproject.itacademy.userservice.config.jwt.JwtTokenUtil;
 import by.finalproject.itacademy.userservice.config.jwt.JwtUser;
 import by.finalproject.itacademy.userservice.model.enums.EssenceTypeEnum;
+import by.finalproject.itacademy.userservice.service.api.IAuditLogEventService;
+import by.finalproject.itacademy.userservice.service.api.IEmailService;
 import by.finalproject.itacademy.userservice.service.exception.*;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserLogin;
@@ -33,9 +35,9 @@ public class CabinetServiceImpl implements ICabinetService {
     private final IVerificationCodeService verificationCodeService;
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
-    private final AuditLogEventServiceImpl auditLogEventService;
-    private final ValidService validService;
-    private final EmailServiceImpl emailService;
+    private final IAuditLogEventService auditLogEventService;
+    private final ValidService validService;// add interface
+    private final IEmailService emailService;
 
     @Transactional
     @Override

@@ -3,25 +3,16 @@ package by.finalproject.itacademy.userservice.service;
 import by.finalproject.itacademy.userservice.service.api.IEmailService;
 import by.finalproject.itacademy.userservice.service.exception.EmailSendingException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
-import by.finalproject.itacademy.userservice.service.api.IEmailService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class EmailServiceImpl {
+public class EmailServiceImpl implements IEmailService {
 
     private final JavaMailSender mailSender;
    /* private final TemplateEngine templateEngine;*/
@@ -35,7 +26,7 @@ public class EmailServiceImpl {
     /*@Value("${app.verification.enable-html:true}")
     private boolean enableHtml;*/
 
-   // @Override
+    @Override
     public void sendVerificationEmail(String to, String code) {
         log.info("Sending verification email to {} with code {}", to, code);
 
