@@ -1,6 +1,4 @@
-package by.finalproject.itacademy.userservice.service.api;
-
-import by.finalproject.itacademy.userservice.model.dto.UserCreate;
+package by.finalproject.itacademy.mailservice.service.api;
 
 public interface IVerificationCodeService {
     String generateCode(String uMail);

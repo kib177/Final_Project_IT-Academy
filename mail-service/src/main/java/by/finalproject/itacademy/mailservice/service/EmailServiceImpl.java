@@ -1,21 +1,19 @@
-package by.finalproject.itacademy.userservice.service;
+package by.finalproject.itacademy.mailservice.service;
 
-import by.finalproject.itacademy.userservice.service.api.IEmailService;
-import by.finalproject.itacademy.userservice.service.exception.EmailSendingException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import by.finalproject.itacademy.mailservice.service.api.IEmailService;
+import by.finalproject.itacademy.mailservice.service.exception.EmailSendingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements IEmailService {
-
     private final JavaMailSender mailSender;
-   /* private final TemplateEngine templateEngine;*/
 
     @Value("${spring.mail.username}")
     private String fromEmail;
@@ -36,7 +34,7 @@ public class EmailServiceImpl implements IEmailService {
             if (enableHtml) {
                 sendHtmlVerificationEmail(to, code);
             } else {*/
-                sendPlainTextVerificationEmail(to, code);
+            sendPlainTextVerificationEmail(to, code);
 
             log.info("Verification email successfully sent to {}", to);
         } catch (Exception e) {

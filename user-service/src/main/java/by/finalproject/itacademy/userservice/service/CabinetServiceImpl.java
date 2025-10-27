@@ -1,10 +1,11 @@
 package by.finalproject.itacademy.userservice.service;
 
+import by.finalproject.itacademy.common.kafka.kafkaDTO.UserRegisteredEvent;
+import by.finalproject.itacademy.common.kafka.kafkaDTO.UserVerifiedEvent;
 import by.finalproject.itacademy.userservice.config.jwt.JwtTokenUtil;
 import by.finalproject.itacademy.userservice.config.jwt.JwtUser;
 import by.finalproject.itacademy.userservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.userservice.service.api.IAuditLogEventService;
-import by.finalproject.itacademy.userservice.service.api.IEmailService;
 import by.finalproject.itacademy.userservice.service.exception.*;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserLogin;
@@ -12,12 +13,12 @@ import by.finalproject.itacademy.userservice.model.dto.UserRegistration;
 import by.finalproject.itacademy.userservice.model.enums.UserStatus;
 import by.finalproject.itacademy.userservice.service.api.ICabinetService;
 
-import by.finalproject.itacademy.userservice.service.api.IVerificationCodeService;
 import by.finalproject.itacademy.userservice.model.entity.UserEntity;
 import by.finalproject.itacademy.userservice.service.mapper.UserMapper;
 import by.finalproject.itacademy.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,12 +33,14 @@ import java.util.UUID;
 public class CabinetServiceImpl implements ICabinetService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final IVerificationCodeService verificationCodeService;
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
     private final IAuditLogEventService auditLogEventService;
     private final ValidService validService;// add interface
-    private final IEmailService emailService;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
+    private static final String USER_REGISTERED_TOPIC = "user-registered-topic";
+    private static final String USER_VERIFIED_TOPIC = "user-verified-topic";
 
     @Transactional
     @Override
@@ -58,10 +61,15 @@ public class CabinetServiceImpl implements ICabinetService {
                     userEntity.getDtCreate());
             userRepository.save(userEntity);
 
-            String code = verificationCodeService.generateCode(userRegistration.getMail());
+            UserRegisteredEvent event = new UserRegisteredEvent(
+                    UUID.randomUUID(),
+                    LocalDateTime.now(),
+                    userRegistration.getMail()
+            );
 
-            emailService.sendVerificationEmail(userRegistration.getMail(), code);
+            kafkaTemplate.send(USER_REGISTERED_TOPIC, event);
 
+            log.info("User {} successfully registry", userRegistration.getMail());
         } catch (UserServiceException e) {
             throw new UserServiceException("Ошибка при регистрации пользователя", e);
         }
@@ -81,12 +89,16 @@ public class CabinetServiceImpl implements ICabinetService {
         try {
             userEntity.setStatus(UserStatus.ACTIVATED);
             userRepository.save(userEntity);
-            verificationCodeService.deleteCode(mail);
 
-           /* auditLogEventService.sendAudit(new JwtUser,
-                    "Верификация пользователя",
+            UserVerifiedEvent event = new UserVerifiedEvent(
+                    UUID.randomUUID(),
+                    LocalDateTime.now(),
+                    mail,
                     userEntity.getUuid(),
-                    EssenceTypeEnum.USER);*/
+                    code
+            );
+
+            kafkaTemplate.send(USER_VERIFIED_TOPIC, event);
 
             log.info("User {} successfully verified", mail);
         } catch (VerificationCodeException e) {

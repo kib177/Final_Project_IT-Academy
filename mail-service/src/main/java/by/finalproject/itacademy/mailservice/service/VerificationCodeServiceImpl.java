@@ -1,9 +1,10 @@
-package by.finalproject.itacademy.userservice.service;
+package by.finalproject.itacademy.mailservice.service;
 
-import by.finalproject.itacademy.userservice.model.entity.VerificationEntity;
-import by.finalproject.itacademy.userservice.repository.VerificationCodeRepository;
-import by.finalproject.itacademy.userservice.service.api.IVerificationCodeService;
-import by.finalproject.itacademy.userservice.service.exception.VerificationCodeException;
+import by.finalproject.itacademy.mailservice.model.entity.VerificationEntity;
+import by.finalproject.itacademy.mailservice.repository.VerificationRepository;
+
+import by.finalproject.itacademy.mailservice.service.api.IVerificationCodeService;
+import by.finalproject.itacademy.mailservice.service.exception.VerificationCodeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class VerificationCodeServiceImpl implements IVerificationCodeService {
-    private final VerificationCodeRepository verificationCodeRepository;
+    private final VerificationRepository emailRepository;
 
     @Override
     public String generateCode(String uMail) {
@@ -22,20 +23,20 @@ public class VerificationCodeServiceImpl implements IVerificationCodeService {
                     .mail(uMail)
                     .code(code)
                     .build();
-            verificationCodeRepository.save(verifyCode);
+            emailRepository.save(verifyCode);
             return code;
         }catch (VerificationCodeException e){
-            throw new VerificationCodeException("Ошибка при генерации кода");
+            throw new VerificationCodeException("Ошибка при генерации или сохранении кода");
         }
     }
 
     @Override
     public boolean validateCode(String mail, String code) {
-        return verificationCodeRepository.existsByMailAndCode(mail, code);
+        return emailRepository.existsByMailAndCode(mail, code);
     }
 
     @Override
     public void deleteCode(String mail) {
-        verificationCodeRepository.deleteByMail(mail);
+        emailRepository.deleteByMail(mail);
     }
 }

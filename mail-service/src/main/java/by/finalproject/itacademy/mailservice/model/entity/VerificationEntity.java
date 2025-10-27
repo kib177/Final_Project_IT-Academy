@@ -1,15 +1,15 @@
-package by.finalproject.itacademy.userservice.model.entity;
+package by.finalproject.itacademy.mailservice.model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
-import static java.time.Instant.now;
 
 @Entity
 @Data
