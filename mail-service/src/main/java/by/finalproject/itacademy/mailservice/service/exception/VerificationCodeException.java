@@ -1,4 +1,4 @@
-package by.finalproject.itacademy.userservice.service.exception;
+package by.finalproject.itacademy.mailservice.service.exception;
 
 public class VerificationCodeException extends RuntimeException {
     public VerificationCodeException(String message) {

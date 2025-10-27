@@ -6,7 +6,6 @@ import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserCreate;
 import by.finalproject.itacademy.userservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.userservice.service.api.IUserService;
-import by.finalproject.itacademy.userservice.service.api.IVerificationCodeService;
 import by.finalproject.itacademy.userservice.model.entity.UserEntity;
 import by.finalproject.itacademy.userservice.service.exception.InvalidCredentialsException;
 import by.finalproject.itacademy.userservice.service.exception.UserNotFoundException;
@@ -30,7 +29,6 @@ import java.util.*;
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements IUserService {
-    private final IVerificationCodeService verificationCodeService;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PageMapper pageMapper;
@@ -59,7 +57,7 @@ public class UserServiceImpl implements IUserService {
             userEntity.setStatus(userCreate.getStatus());
             userRepository.save(userEntity);
         }
-        verificationCodeService.generateCode(userCreate.getMail());
+        //verificationCodeService.generateCode(userCreate.getMail());
 
         auditLogEventService.sendAudit(getCurrentUser(),
                 "Создан пользователь",

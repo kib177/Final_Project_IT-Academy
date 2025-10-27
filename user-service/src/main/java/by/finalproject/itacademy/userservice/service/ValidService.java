@@ -8,8 +8,8 @@ import java.util.UUID;
 public class ValidService {
 
     public void isValidEmail(String email) {
-        if(email != null && email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+       /* if(email != null && email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             throw new IllegalArgumentException("Invalid email");
-        }
+        }*/
     }
 }
