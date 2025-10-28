@@ -12,15 +12,15 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class VerificationCodeServiceImpl implements IVerificationCodeService {
+public class CodeServiceImpl implements IVerificationCodeService {
     private final VerificationRepository emailRepository;
 
     @Override
-    public String generateCode(String uMail) {
+    public String generateCode(String mail) {
         try {
             String code = UUID.randomUUID().toString().substring(0, 6);
             VerificationEntity verifyCode = VerificationEntity.builder()
-                    .mail(uMail)
+                    .mail(mail)
                     .code(code)
                     .build();
             emailRepository.save(verifyCode);
@@ -37,6 +37,10 @@ public class VerificationCodeServiceImpl implements IVerificationCodeService {
 
     @Override
     public void deleteCode(String mail) {
-        emailRepository.deleteByMail(mail);
+        try {
+            emailRepository.deleteByMail(mail);
+        }catch (VerificationCodeException e){
+            throw new VerificationCodeException("Ошибка при удалении кода верификации");
+        }
     }
 }

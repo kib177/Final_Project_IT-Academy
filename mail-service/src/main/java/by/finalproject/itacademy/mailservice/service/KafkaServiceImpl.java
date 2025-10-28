@@ -26,10 +26,8 @@ public class KafkaServiceImpl implements IKafkaService {
             log.info("Received user registered event for email: {}", event.getEmail());
 
             try {
-
                 String verificationCode = verificationCodeService.generateCode(event.getEmail());
                 emailService.sendVerificationEmail(event.getEmail(), verificationCode);
-
                 log.info("Verification email sent successfully to: {}", event.getEmail());
             } catch (Exception e) {
                 log.error("Failed to process user registered event for email: {}", event.getEmail(), e);
@@ -48,9 +46,7 @@ public class KafkaServiceImpl implements IKafkaService {
             }
 
             try {
-
-                //emailService.sendWelcomeEmail(event.getEmail());
-
+                emailService.sendWelcomeEmail(event.getEmail());
                 log.info("Welcome email sent successfully to: {}", event.getEmail());
             } catch (Exception e) {
                 log.error("Failed to process user verified event for email: {}", event.getEmail(), e);

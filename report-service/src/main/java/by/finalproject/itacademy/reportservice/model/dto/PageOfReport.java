@@ -1,12 +1,27 @@
 package by.finalproject.itacademy.reportservice.model.dto;
 
-import by.finalproject.itacademy.common.model.dto.PageDTO;
-import by.finalproject.itacademy.reportservice.model.entity.ReportEntity;
-import by.finalproject.itacademy.reportservice.repository.ReportRepository;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-@EqualsAndHashCode(callSuper = true)
+import java.util.List;
+
 @Data
-public class PageOfReport extends PageDTO<ReportResponse> {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PageOfReport {
+    private int number;
+    private int size;
+    @JsonProperty("total_pages")
+    private int totalPages;
+    @JsonProperty("total_elements")
+    private long totalElements;
+    private boolean first;
+    @JsonProperty("number_of_elements")
+    private int numberOfElements;
+    private boolean last;
+    private List<ReportResponse> content;
 }
