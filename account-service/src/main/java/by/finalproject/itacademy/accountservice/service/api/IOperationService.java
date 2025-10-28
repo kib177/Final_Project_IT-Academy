@@ -11,15 +11,14 @@ import java.util.UUID;
 
 public interface IOperationService {
     @Transactional
-    void createOperation(UUID accountUuid, OperationRequest operationRequest)
-            throws AccountNotFoundException;
+    void createOperation(UUID accountUuid, OperationRequest operationRequest);
 
-    PageOfOperation getAccountOperations(UUID accountUuid, Pageable pageable) throws AccountNotFoundException;
+    PageOfOperation getAccountOperations(UUID accountUuid, Pageable pageable);
 
     @Transactional
     void updateOperation(UUID accountUuid, UUID operationUuid, LocalDateTime dtUpdate,
-                         OperationRequest operationRequest) throws AccountNotFoundException;
+                         OperationRequest operationRequest);
 
     @Transactional
-    void deleteOperation(UUID accountUuid, UUID operationUuid, LocalDateTime dtUpdate) throws AccountNotFoundException;
+    void deleteOperation(UUID accountUuid, UUID operationUuid, LocalDateTime dtUpdate);
 }

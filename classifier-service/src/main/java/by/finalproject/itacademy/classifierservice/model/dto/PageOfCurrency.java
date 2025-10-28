@@ -1,11 +1,24 @@
 package by.finalproject.itacademy.classifierservice.model.dto;
 
-import by.finalproject.itacademy.common.model.dto.PageDTO;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
-@EqualsAndHashCode(callSuper = true)
+import java.util.List;
+
 @Data
-public class PageOfCurrency extends PageDTO<CurrencyResponse> {
-
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PageOfCurrency{
+        private int number;
+        private int size;
+        @JsonProperty("total_pages")
+        private int totalPages;
+        @JsonProperty("total_elements")
+        private long totalElements;
+        private boolean first;
+        @JsonProperty("number_of_elements")
+        private int numberOfElements;
+        private boolean last;
+        private List<CurrencyResponse> content;
 }

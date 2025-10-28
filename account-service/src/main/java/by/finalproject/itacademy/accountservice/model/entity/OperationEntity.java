@@ -1,8 +1,5 @@
 package by.finalproject.itacademy.accountservice.model.entity;
 
-import by.finalproject.itacademy.classifierservice.model.entity.CurrencyEntity;
-import by.finalproject.itacademy.classifierservice.model.entity.OperationCategoryEntity;
-import by.finalproject.itacademy.common.model.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

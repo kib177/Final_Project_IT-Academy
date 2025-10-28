@@ -1,6 +1,6 @@
 package by.finalproject.itacademy.accountservice.config;
 
-import by.finalproject.itacademy.common.jwt.JwtAuthenticationFilter;
+import by.finalproject.itacademy.accountservice.config.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,8 +30,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
-                                "/account/{uuid}").authenticated()
-                        .anyRequest().authenticated() // ошибки не отображаются ставим permitAll видим ошибку исправляем
+                                "/account/{uuid}").permitAll()
+                        .anyRequest().permitAll() // ошибки не отображаются ставим permitAll видим ошибку исправляем
                 );
 
         return http.build();

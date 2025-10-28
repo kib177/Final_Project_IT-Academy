@@ -1,18 +1,15 @@
 package by.finalproject.itacademy.userservice.service;
 
-import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
-import by.finalproject.itacademy.common.exception.EntityAlreadyExistsException;
-import by.finalproject.itacademy.common.exception.InvalidCredentialsException;
-import by.finalproject.itacademy.common.exception.UserNotFoundException;
-import by.finalproject.itacademy.common.jwt.JwtUser;
-import by.finalproject.itacademy.userservice.feign.AuditServiceClient;
-import by.finalproject.itacademy.userservice.model.dto.AuditEventRequest;
+import by.finalproject.itacademy.userservice.config.jwt.JwtUser;
 import by.finalproject.itacademy.userservice.model.dto.PageOfUser;
 import by.finalproject.itacademy.userservice.model.dto.User;
 import by.finalproject.itacademy.userservice.model.dto.UserCreate;
+import by.finalproject.itacademy.userservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.userservice.service.api.IUserService;
 import by.finalproject.itacademy.userservice.service.api.IVerificationCodeService;
 import by.finalproject.itacademy.userservice.model.entity.UserEntity;
+import by.finalproject.itacademy.userservice.service.exception.InvalidCredentialsException;
+import by.finalproject.itacademy.userservice.service.exception.UserNotFoundException;
 import by.finalproject.itacademy.userservice.service.mapper.PageMapper;
 import by.finalproject.itacademy.userservice.service.mapper.UserMapper;
 import by.finalproject.itacademy.userservice.repository.UserRepository;
@@ -39,36 +36,35 @@ public class UserServiceImpl implements IUserService {
     private final PageMapper pageMapper;
     private final PasswordEncoder passwordEncoder;
     private final ValidService validService;
-    private final AuditServiceClient auditServiceClient;
+    private final AuditLogEventServiceImpl auditLogEventService;
 
     @Transactional
     @Override
     public void create(UserCreate userCreate) {
         log.info("Creating new user with email: {}", userCreate.getMail());
 
+        validService.isValidEmail(userCreate.getMail());
+
         if (userRepository.existsByMail(userCreate.getMail())) {
             throw new UserNotFoundException("Неверный email или пароль");
         }
 
-            userCreate.setPassword(passwordEncoder.encode(userCreate.getPassword()));
-            UserEntity userEntity = userMapper.fromCreateDto(userCreate);
-            if (userEntity != null) {
-                userEntity.setDtCreate(LocalDateTime.now());
-                userEntity.setDtUpdate(
-                        userEntity.getDtCreate());
-                userEntity.setRole(userCreate.getRole());
-                userEntity.setStatus(userCreate.getStatus());
-                userRepository.save(userEntity);
-            }
-            verificationCodeService.generateCode(userCreate.getMail());
+        userCreate.setPassword(passwordEncoder.encode(userCreate.getPassword()));
+        UserEntity userEntity = userMapper.fromCreateDto(userCreate);
+        if (userEntity != null) {
+            userEntity.setDtCreate(LocalDateTime.now());
+            userEntity.setDtUpdate(
+                    userEntity.getDtCreate());
+            userEntity.setRole(userCreate.getRole());
+            userEntity.setStatus(userCreate.getStatus());
+            userRepository.save(userEntity);
+        }
+        verificationCodeService.generateCode(userCreate.getMail());
 
-        auditServiceClient.logEvent(
-                AuditEventRequest.builder()
-                        .jwtUser(getCurrentUser())
-                        .userInfo("Создан пользователь")
-                        .essenceId(userEntity.getUuid())
-                        .type(EssenceTypeEnum.USER)
-                        .build());
+        auditLogEventService.sendAudit(getCurrentUser(),
+                "Создан пользователь",
+                userEntity.getUuid(),
+                EssenceTypeEnum.USER);
     }
 
     @Override
@@ -92,12 +88,8 @@ public class UserServiceImpl implements IUserService {
     public void updateUser(UUID uuid, Long dtUpdate, UserCreate userCreate) {
         log.info("Updating user with UUID: {}", uuid);
 
-        if (!validService.isValidUuid(String.valueOf(uuid))) {
-            throw new InvalidCredentialsException("Некорректный формат UUID: " + uuid);
-        }
-
         UserEntity userEntity = userRepository.getByUuid(uuid)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));;
+                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
 
         if (!userEntity.getDtUpdate().equals(dtUpdate)) {
             throw new InvalidCredentialsException("Конфликт версий данных. Получите актуальную версию пользователя");
@@ -111,13 +103,10 @@ public class UserServiceImpl implements IUserService {
         }
 
         userRepository.save(userEntity);
-            auditServiceClient.logEvent(
-                    AuditEventRequest.builder()
-                            .jwtUser(getCurrentUser())
-                            .userInfo("Изменен пользователь")
-                            .essenceId(userEntity.getUuid())
-                            .type(EssenceTypeEnum.USER)
-                            .build());
+        auditLogEventService.sendAudit(getCurrentUser(),
+                "Изменен пользователь",
+                userEntity.getUuid(),
+                EssenceTypeEnum.USER);
     }
 
     public JwtUser getCurrentUser() {

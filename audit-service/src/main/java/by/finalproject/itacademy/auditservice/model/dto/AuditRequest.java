@@ -1,7 +1,7 @@
 package by.finalproject.itacademy.auditservice.model.dto;
 
+import by.finalproject.itacademy.auditservice.config.jwt.JwtUser;
 import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
-import by.finalproject.itacademy.common.jwt.JwtUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +18,6 @@ public class AuditRequest {
     private JwtUser jwtUser;
     private String userInfo;
     private EssenceTypeEnum type;
-    private UUID essenseId;
+    private UUID essenceId;
 }
 

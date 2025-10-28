@@ -1,17 +1,16 @@
 package by.finalproject.itacademy.classifierservice.service;
 
-import by.finalproject.itacademy.auditservice.model.enums.EssenceTypeEnum;
+import by.finalproject.itacademy.classifierservice.config.jwt.JwtUser;
 import by.finalproject.itacademy.classifierservice.feign.AuditServiceClient;
 import by.finalproject.itacademy.classifierservice.model.dto.*;
 import by.finalproject.itacademy.classifierservice.model.entity.CurrencyEntity;
 import by.finalproject.itacademy.classifierservice.model.entity.OperationCategoryEntity;
+import by.finalproject.itacademy.classifierservice.model.enums.EssenceTypeEnum;
 import by.finalproject.itacademy.classifierservice.repository.CurrencyRepository;
 import by.finalproject.itacademy.classifierservice.repository.OperationCategoryRepository;
 import by.finalproject.itacademy.classifierservice.service.api.IClassifierService;
 import by.finalproject.itacademy.classifierservice.service.mapper.CurrencyMapper;
 import by.finalproject.itacademy.classifierservice.service.mapper.OperationCategoryMapper;
-import by.finalproject.itacademy.common.jwt.JwtUser;
-import by.finalproject.itacademy.common.model.dto.PageDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -65,9 +64,10 @@ public class ClassifierServiceImpl implements IClassifierService {
     }
 
     @Override
-    public PageDTO<Object> getPageOfCurrency(Pageable pageable) {
+    public PageOfCurrency getPageOfCurrency(Pageable pageable) {
         Page<CurrencyEntity> currencyPage = currencyRepository.findAll(pageable);
-        List<Object> currencyList = new ArrayList<>();
+        List<CurrencyResponse> currencyList = new ArrayList<>();
+
         for(CurrencyEntity currencyEntity : currencyPage.getContent()) {
             currencyList.add(currencyMapper.toDTO(currencyEntity));
         }

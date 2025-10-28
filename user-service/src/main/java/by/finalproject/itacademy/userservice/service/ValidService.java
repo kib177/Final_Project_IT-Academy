@@ -7,16 +7,9 @@ import java.util.UUID;
 @Service
 public class ValidService {
 
-    public boolean isValidUuid(String uuid) {
-        try {
-            UUID.fromString(uuid);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
+    public void isValidEmail(String email) {
+        if(email != null && email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            throw new IllegalArgumentException("Invalid email");
         }
-    }
-
-    private boolean isValidEmail(String email) {
-        return email != null && email.matches("^[A-Za-z0-9+_.-]+@(.+)$");
     }
 }

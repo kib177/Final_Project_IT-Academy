@@ -33,7 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        // Разрешаем доступ к endpoint'у /audit/log без аутентификации
         if ("/api/v1/audit/log".equals(path)) {
             chain.doFilter(request, response);
             return;
