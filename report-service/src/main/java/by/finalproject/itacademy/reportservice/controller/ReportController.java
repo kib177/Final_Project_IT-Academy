@@ -1,8 +1,10 @@
 package by.finalproject.itacademy.reportservice.controller;
 
-
 import by.finalproject.itacademy.reportservice.model.dto.PageOfReport;
+import by.finalproject.itacademy.reportservice.model.dto.ReportRequest;
+import by.finalproject.itacademy.reportservice.model.dto.ReportResponse;
 import by.finalproject.itacademy.reportservice.model.enums.ReportTypeEnum;
+import by.finalproject.itacademy.reportservice.service.api.IReportService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -16,26 +18,29 @@ import java.util.UUID;
 @RequestMapping("/api/v1/report")
 @RequiredArgsConstructor
 public class ReportController {
+    private final IReportService reportService;
 
     @PostMapping("/{type}")
-    public String addNewReport(@PathVariable String type,
-            @Valid @RequestBody ReportTypeEnum reportType) {
-
+    public ResponseEntity<?> addNewReport(@Valid @PathVariable ReportTypeEnum type,
+                                          @Valid @RequestBody ReportRequest reportRequest) {
+        reportService.save(reportRequest, type);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping()
     public ResponseEntity<PageOfReport> createPageOfReport(Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body();
+        return ResponseEntity.status(HttpStatus.OK).body(reportService.getPage(pageable));
     }
 
     @GetMapping("/{uuid}/export")
-    public PageOfReport getPageOfReport(@PathVariable UUID uuid) {
-
+    public ReportResponse getPageOfReport(@PathVariable UUID uuid) {
+        return ResponseEntity.status(HttpStatus.OK).body(reportService.getById(uuid)).getBody();
     }
 
     @RequestMapping(path = "/{uuid}/export", method = RequestMethod.HEAD)
-    public PageOfReport getPageOfReport(@PathVariable UUID uuid) {
-
+    public ResponseEntity<?> checkReport(@PathVariable UUID uuid) {
+        reportService.checkReport(uuid);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 

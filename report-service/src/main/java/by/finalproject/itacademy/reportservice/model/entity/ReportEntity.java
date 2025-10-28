@@ -41,6 +41,6 @@ public class ReportEntity {
 
     private String description;
 
-    private Object params;
+   // private Object params;
 
 }

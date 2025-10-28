@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подтверждение регистрации</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+        }
+        .verification-code {
+            background: #ffffff;
+            border: 2px dashed #667eea;
+            padding: 20px;
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 14px;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Добро пожаловать!</h1>
+    <p>Завершите регистрацию вашего аккаунта</p>
+</div>
+
+<div class="content">
+    <h2>Здравствуйте!</h2>
+    <p>Для завершения регистрации вашего аккаунта с email <strong>${email}</strong>, пожалуйста, используйте следующий код подтверждения:</p>
+
+    <div class="verification-code">${code}</div>
+
+    <p style="text-align: center;">
+        <a href="${verificationUrl}" class="button">Подтвердить регистрацию</a>
+    </p>
+
+    <p>Или скопируйте ссылку в браузер:</p>
+    <p style="word-break: break-all; color: #667eea;">${verificationUrl}</p>
+
+    <div class="warning">
+        <strong>Важно:</strong> Код действителен в течение ограниченного времени.
+        Если вы не регистрировались в нашем сервисе, проигнорируйте это письмо.
+    </div>
+</div>
+
+<div class="footer">
+    <p>С уважением,<br>Команда сервиса</p>
+    <p>Если у вас возникли вопросы, свяжитесь с нашей службой поддержки.</p>
+</div>
+</body>
+</html>

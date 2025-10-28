@@ -23,7 +23,6 @@ public class GlobalExceptionHandler {
         EXCEPTION_STATUS_MAP.put(EntityAlreadyExistsException.class, HttpStatus.CONFLICT);
         EXCEPTION_STATUS_MAP.put(UserNotFoundException.class, HttpStatus.NOT_FOUND);
         EXCEPTION_STATUS_MAP.put(InvalidCredentialsException.class, HttpStatus.NOT_FOUND);
-        EXCEPTION_STATUS_MAP.put(InvalidVerificationCodeException.class, HttpStatus.FORBIDDEN);
         EXCEPTION_STATUS_MAP.put(UserNotActivatedException.class, HttpStatus.FORBIDDEN);
         EXCEPTION_STATUS_MAP.put(UserServiceException.class, HttpStatus.BAD_REQUEST);
         EXCEPTION_STATUS_MAP.put(VerificationCodeException.class, HttpStatus.BAD_REQUEST);
@@ -34,13 +33,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             EntityAlreadyExistsException.class,
             UserNotFoundException.class,
-            InvalidVerificationCodeException.class,
             InvalidCredentialsException.class,
-            InvalidVerificationCodeException.class,
             UserNotActivatedException.class,
             UserServiceException.class,
             IllegalArgumentException.class,
-            FeignClientException.class
+            FeignClientException.class,
+            VerificationCodeException.class,
     })
     public ResponseEntity<ErrorResponse> handleBusinessExceptions(RuntimeException ex, WebRequest request) {
         HttpStatus status = EXCEPTION_STATUS_MAP.getOrDefault(ex.getClass(), HttpStatus.INTERNAL_SERVER_ERROR);

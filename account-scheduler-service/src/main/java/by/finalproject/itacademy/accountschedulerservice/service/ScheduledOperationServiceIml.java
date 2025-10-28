@@ -6,6 +6,9 @@ import by.finalproject.itacademy.accountschedulerservice.model.dto.ScheduledOper
 import by.finalproject.itacademy.accountschedulerservice.model.entity.ScheduledOperationEntity;
 import by.finalproject.itacademy.accountschedulerservice.repository.ScheduledOperationRepository;
 import by.finalproject.itacademy.accountschedulerservice.service.api.IScheduledOperationService;
+import by.finalproject.itacademy.accountschedulerservice.service.exception.InvalidCredentialsException;
+import by.finalproject.itacademy.accountschedulerservice.service.exception.ScheduledOperationServiceException;
+import by.finalproject.itacademy.accountschedulerservice.service.exception.UpdateOperationException;
 import by.finalproject.itacademy.accountschedulerservice.service.mapper.PageMapper;
 import by.finalproject.itacademy.accountschedulerservice.service.mapper.ScheduledMapper;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -30,13 +34,16 @@ public class ScheduledOperationServiceIml implements IScheduledOperationService 
     @Override
     @Transactional
     public void create(ScheduledOperationRequest request) {
-
-        repository.save(ScheduledOperationEntity.builder()
-                .dtCreate(Timestamp.from(Instant.now()))
-                .dtUpdate(Timestamp.from(Instant.now()))
-                .schedule(request.getSchedule())
-                .operation(request.getOperation())
-                .build());
+        try {
+            repository.save(ScheduledOperationEntity.builder()
+                    .dtCreate(Timestamp.from(Instant.now()))
+                    .dtUpdate(Timestamp.from(Instant.now()))
+                    .schedule(request.getSchedule())
+                    .operation(request.getOperation())
+                    .build());
+        } catch (ScheduledOperationServiceException e){
+            throw new ScheduledOperationServiceException("Не удалось создать операцию", e);
+        }
     }
 
     @Override
@@ -54,7 +61,7 @@ public class ScheduledOperationServiceIml implements IScheduledOperationService 
                 .orElseThrow(() -> new RuntimeException(String.valueOf(uuid)));
 
         if (!existing.getDtUpdate().equals(dtUpdate)) {
-            throw new ConcurrentModificationException("Запись была изменена другим пользователем");
+            throw new UpdateOperationException("Запись была изменена другим пользователем");
         }
 
         ScheduledOperationEntity updated = repository.save(ScheduledOperationEntity.builder()
@@ -68,6 +75,10 @@ public class ScheduledOperationServiceIml implements IScheduledOperationService 
 
     @Transactional(readOnly = true)
     public ScheduledOperationResponse getById(UUID uuid) {
+        if(!repository.existsById(uuid)) {
+            throw new InvalidCredentialsException(String.valueOf(uuid));
+        }
+
         ScheduledOperationEntity entity = repository.findById(uuid)
                 .orElseThrow(() -> new RuntimeException(String.valueOf(uuid)));
 

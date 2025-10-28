@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -15,8 +16,8 @@ import java.util.UUID;
 @Builder
 public class ReportResponse {
     private UUID uuid;
-    private Long dtCreate;
-    private Long dtUpdate;
+    private LocalDateTime dtCreate;
+    private LocalDateTime dtUpdate;
     private ReportStatusEnum status;
     private ReportTypeEnum type;
     private String description;

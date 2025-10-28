@@ -26,31 +26,35 @@ public class ReportServiceImpl implements IReportService {
 
 
     @Override
-    public ReportResponse getById(UUID id) {
-        ReportEntity entity = reportRepository.getById(id);
+    public ReportResponse getById(UUID uuid) {
+        ReportEntity entity = reportRepository.findByUuid(uuid);
        return reportMapper.toDto(entity);
     }
 
     @Transactional
     @Override
-    public void save(ReportRequest report, String type) {
+    public void save(ReportRequest report, ReportTypeEnum type) {
 
-        ReportEntity reportEntity = ReportEntity.builder()
+        reportRepository.save(ReportEntity.builder()
                 .dtCreate(LocalDateTime.now())
                 .dtUpdate(LocalDateTime.now())
                 .status(ReportStatusEnum.DONE)
-                .type(ReportTypeEnum.valueOf(type))
-                .params(report)
-                .build();
-
-        reportRepository.save(reportEntity);
+                .type(type)
+               // .params(report)
+                .build());
 
     }
 
     @Override
     public PageOfReport getPage(Pageable pageable) {
-        Page<ReportEntity> entityPage =
-                reportRepository.findAll(pageable);
+        Page<ReportEntity> entityPage = reportRepository.findAll(pageable);
         return pageMapper.toPageOfUser(entityPage, reportMapper);
+    }
+
+    @Override
+    public void checkReport(UUID uuid){
+        if(!reportRepository.existsByUuid(uuid)){
+            throw new RuntimeException("Сервер, по предоставленному uuid, не смог найти информацию");
+        }
     }
 }
