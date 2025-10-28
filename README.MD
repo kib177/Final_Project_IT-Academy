@@ -49,15 +49,17 @@ Personal Finance Tools is a web application for personal financial management, b
 
 ## Services / Modules
 
-| Service              | Port | Description                                                                       |
-|----------------------|------|-----------------------------------------------------------------------------------|
-| `postgreSQL`         | 5432 | Database service for storing app data.                                            |
-| `user-service`       | 8080 | Handles user registration, authentication,verification, and user data management. |
-| `classifier-service` | 8083 | Provides classification and reference data.                                       |
-| `account-service`    | 8082 | Manages user accounts and financial operations.                                   |
-| `audit-service`      | 8081 | Tracks changes and events in the system.                                          |
-| `scheduler-service`  | 8084 | Handles scheduled operations.                                                     |
-| `report-service`     | 8085 | Generates and provides financial reports.                                         |
+| Service              | Port | Description                                                         |
+|----------------------|------|---------------------------------------------------------------------|
+| `postgreSQL`         | 5432 | Database service for storing app data.                              |
+| `user-service`       | 8080 | Handles user registration, authentication and user data management. |
+| `classifier-service` | 8083 | Provides classification and reference data.                         |
+| `account-service`    | 8082 | Manages user accounts and financial operations.                     |
+| `audit-service`      | 8081 | Tracks changes and events in the system.                            |
+| `scheduler-service`  | 8084 | Handles scheduled operations.                                       |
+| `report-service`     | 8085 | Generates and provides financial reports.                           |
+| `mail-service`       | 8086 | Generates code, send verification email and welcome email.          |
+ 
 
 ---
 
